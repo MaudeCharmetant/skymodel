@@ -44,7 +44,7 @@ def pix_reso(nside,arcmin=True):
     return reso
   
   
-  def WN_map(nside,data_path,file_out,noise,unit_noise,arcmin,units,pictures_path): 
+def WN_map(nside,data_path,file_out,noise,unit_noise,arcmin,units,pictures_path): 
 
         
     """

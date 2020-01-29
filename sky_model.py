@@ -5,6 +5,7 @@ from matplotlib import rc
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
 from astropy.io import fits
+from astropy import constants as cst
 
 def pix_reso(nside,arcmin=True): 
     
@@ -187,7 +188,10 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 	converted_signal: float or float array
 		Converted signal
 	'''
-
+	
+	h=cst.h.value 
+	k_B = cst.k_B.value
+	c = cst.c.value
 	x = h * freq / k_B / T_CMB
     
 	if cmb2mjy is True:
@@ -209,4 +213,456 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 
 	return(converted_signal)
 
+def random_map(PS,nside,lmax):  
+    
+    """
+    Function generating random realization of Healpix map from a given power spectrum. 
 
+    Parameters
+    ----------
+     
+    PS : array
+        Array containing the power spectrum that will be used to generate the map.
+    nside : int 
+        Number of seperation of a healpix pixel. 
+    lmax : int 
+        maximum l that can be reach, by default lmax=3*nside-1.
+        
+    Returns
+    -------
+    array
+        Array containing the map generated from the power spectrum.
+
+    """
+        
+    #Generate display and save the map generated from the Power spectrum : 
+    random_map = hp.sphtfunc.synfast(PS, nside, lmax=lmax, mmax=lmax, alm=False, pol=False, pixwin=False, fwhm=0.0, sigma=None, new=False, verbose=True)
+    
+    #Feedback user : 
+    print('The random map have been generated')
+
+    
+    return random_map 
+
+def udgrade_NSIDE(maps,nside):
+    
+    """
+    Function which upgrade or degrade the NSIDE of an HEALPix map. 
+
+    Parameters
+    ----------
+    
+    maps : array
+        Array containing the map we want to ud_grade.
+    nside : int 
+        Value of the new resolution we want to apply to the healpix map to upgrade or degrade it.
+        
+    Returns
+    -------
+    array
+        Array contaning the upgraded map.
+
+    """
+    
+    #Upgarde or degrade the map : 
+    ud_map = hp.pixelfunc.ud_grade(map_in=maps, nside_out=nside, pess=False, order_in='RING', order_out=None, power=None, dtype=None)
+    
+    #Feedback to the operator : 
+    print('the map have been ud_grade to '+str(nside))
+    
+    return ud_map
+
+def alm2map_CITA(data_path,file_name, nside,lmax):
+    
+    """
+    Function which create a map out of a file containing the alm under a tuple format. 
+
+    Parameters
+    ----------
+    
+    data_path : str
+        Path were the data of the maps are stored and we the cutout are going to be stored. 
+    file_name : str
+        Name of the file containing the alms. 
+    name_final_maps : str
+        Name under which the maps image and fits file are going to be saved.    
+    nside : int 
+        Number of cut in the the healpix originals pixels. It is link to the final number of pixels in the map, N_pix = 
+        12 x nside^2 
+    title_map : str 
+        Title that will be displayed on the image of the map. 
+    unit_map : str 
+        Units of the maps that are displayed, for exemple K_CMB, MJy/sr. This is going to be use for figure titles and 
+        names of files.         
+    pictures_path : str
+        Path where we are going to save the pictures.   
+    lmax : int 
+        Maximum l that can be reach. By default lmax = 3*nside-1.
+        
+    Returns
+    -------
+    array
+        Containing the map at a given frequency. 
+
+    """
+    
+    #Open and read the file : 
+    file = data_path + file_name
+    hdul = fits.open(file)
+    data = hdul[1].data
+
+    #Get each parts of the alms : 
+    j = complex(0,1) #Create the pure imaginary i 
+    alm_1 = data['real'][:] #Take the full column of data under the name 'real'
+    alm_2 = data['imag'][:]
+    alm_T2 = np.array(alm_2,dtype=complex) #Make alm_2 a complex array 
+    alm_T = alm_1 + alm_T2*j 
+    
+    #Define the l : 
+    ell = np.arange(lmax) #Array going from 1 to lmax
+    ellfactor = ell*(ell+1)/(2.*np.pi) #Array containing all the values of the factor used in CMB science  
+
+    #Display map reconstruct from the alms : 
+    map_T = hp.alm2map(alm_T, nside, pol=False, inplace=False) #Make a map out of the alm
+      
+    #Feeedback operator : 
+    print('Map have been computed from the alm') 
+    
+    return map_T
+
+def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lensed,nside_out): 
+    
+        
+    """
+    Function which compute a CMB map from a power spectrum.
+
+    Parameters
+    ----------
+    
+    data_path : str
+        Path were the data of the maps are stored and we the cutout are going to be stored. 
+    file_in : str or array 
+        Name of the .dat contaning the values of the power spectrum given by CAMB.
+        Or array containing the power spectrum to generate random maps. 
+    nside : int
+        Resolution of the map. The power spectrum will go until l = 3 * nside -1.
+    maps_unit : str 
+        Unit in which the original map or power spectrum is coming in.       
+    lmax : int 
+        Maximum Multipole desired or that can be reach by the data, in which case lmax = 3*nside-1
+    types : str 
+    	type of CMB map you want to produce. 1. random 2. from CAMB 3. from CITA 4. from SO 5. from Sehgal.
+    unit_out : str 
+    	Unit in which you want to get your CMB map in. Can be : 'K', 'mK', 'Jysr', 'MJysr', 'RJ'
+    freq : float 
+    	frequency in which you want to produce a CMB map. Has to be given on Hz. 
+    lensed : bool 
+    	if True select the lensed CMB map when possible. This is only possible for 'CITA' and 'Sehgal.'
+    nside_out : int 
+    	If you wish to change the nside of the CMB map, this is avalaible for 'CITA', 'Sehgal' and 'SO'.
+        
+    Returns
+    -------
+    array
+        Contaning the CMB map. 
+
+    """
+    
+    if types == 'random':
+        
+        #Compute and convert the random map : 
+        if maps_unit == 'mK' :            
+        
+            CMB = random_map(PS=file_in,nside=nside,lmax=lmax)
+            
+            if unit_out == 'K':
+            
+                CMB = CMB*10**-6
+            
+            if unit_out =='mK':
+                
+                CMB=CMB
+
+            if unit_out == 'MJysr':  
+                
+                CMB = CMB*10**-6
+            
+                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+            if unit_out == 'Jysr': 
+                
+                CMB = CMB*10**-6
+            
+                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+                CMB = CMB*10**6
+            
+            if unit_out == 'RJ': 
+        
+                CMB = CMB*10**-6
+            
+                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=True, rj2cmb=False)   
+        
+        #Compute and convert the random map : 
+        if maps_unit =='K': 
+            
+            if unit_out == 'K':
+            
+                CMB = CMB
+            
+            if unit_out =='mK':
+                
+                CMB=CMB*10**6
+
+            if unit_out == 'MJysr':  
+            
+                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+            if unit_out == 'Jysr': 
+            
+                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+                CMB = CMB*10**6
+            
+            if unit_out == 'RJ': 
+            
+                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=True, rj2cmb=False)
+                
+                
+        #Display and save the random map :   
+        #hp.write_map(data_path + name_writemap,CMB,overwrite=True) # Wrtie the map as a FITS file
+        hp.mollview(map=CMB,coord=None, nest=False, title=title_map, unit=unit_out, norm='hist')
+        #plt.savefig(pictures_path + name_imfile  + '.png') #Save the image of the filtered map 
+        #plt.show()          
+            
+    
+    if types == 'CAMB':
+    
+        #Load the datas : 
+        data = np.loadtxt(data_path + file_name)
+        TT_data = data[:,1] # Take only the first column, which is the temperature T
+
+        #Vairables : 
+        ell = np.arange(2,lmax) #Array going from 2 to lmax
+        ellfactor = ell*(ell+1)/(2.*np.pi) #Array containing all the values of the factor used in CMB science 
+Markdown
+        TT = TT_data[ell] / ellfactor #The file given by CAMB is the power spectrum multiplied by this factor 
+        #Because the monopole and dipole are not in the data of the power spectrum given by CAMB we need to add them back
+        #They need to be 0 because we usually remove them no to influence our studies. 
+        TT_1 = np.insert(TT,0,0)
+        TT_final = np.insert(TT_1,0,0)
+
+        fb.file2FITS(data=TT_final,dtype=np.float32,data_path=data_path,name_save='TT_CMB_CAMB_'+str(nside), overwrite=True)
+
+        #Compute the CMB map from the power spectrum :
+        CMB = hp.sphtfunc.synfast(TT_final, nside, lmax=lmax, mmax=lmax, alm=False, pol=False, pixwin=False)
+        
+        #Convert the map from micro to ... : 
+        if unit_out == 'K':
+            
+            CMB = CMB*10**-6
+            
+        if unit_out =='mK':
+                
+            CMB=CMB
+
+        if unit_out == 'MJysr':  
+                
+            CMB = CMB*10**-6
+            
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+        if unit_out == 'Jysr': 
+                
+            CMB = CMB*10**-6
+            
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+            CMB = CMB*10**6
+            
+        if unit_out == 'RJ': 
+        
+            CMB = CMB*10**-6
+            
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=True, rj2cmb=False) 
+        
+        
+        #Save and display the map : 
+        #hp.write_map(data_save + name_writemap,CMB,overwrite=True) # Wrtie the map as a FITS file
+        hp.mollview(map=CMB,coord=None, nest=False, title=title_map, unit=maps_unit, norm='hist')
+        #plt.savefig(pictures_path + name_imfile  + '.png') #Save the image of the filtered map 
+        plt.show()
+        
+    if types == 'CITA':
+        
+        if lensed == True: 
+        
+            CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='lensed_alm.fits', nside=4096,
+                               lmax=4096*3-1)
+
+        else: 
+            
+            CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='unlensed_alm.fits', nside=4096,
+                               lmax=4096*3-1)      
+            
+        if unit_out == 'K':
+            
+            CMB = CMB*10**-6
+            
+        if unit_out =='mK':
+                
+            CMB=CMB
+
+        if unit_out == 'MJysr':  
+                
+            CMB = CMB*10**-6
+            
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+        if unit_out == 'Jysr': 
+                
+            CMB = CMB*10**-6
+            
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+            CMB = CMB*10**6
+            
+        if unit_out == 'RJ': 
+        
+            CMB = CMB*10**-6
+            
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=True, rj2cmb=False) 
+            
+        if nside_out < nside or nside_out > nside: 
+            
+            CMB = udgrade_NSIDE(maps=CMB, nside=nside_out)
+            
+        #Display and save the CMB map :   
+        #hp.write_map(data_path + name_writemap,CMB,overwrite=True) # Wrtie the map as a FITS file
+        hp.mollview(map=CMB,coord=None, nest=False, title=title_map, unit=unit_out, norm='hist')
+        #plt.savefig(pictures_path + name_imfile  + '.png') #Save the image of the filtered map 
+        #plt.show()  
+            
+    if types == 'SO': 
+        
+        data_path = '/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
+        file_name = 'Sehgalsimparams_healpix_4096_KappaeffLSStoCMBfullsky_phi_SimLens_Tsynfastnopell_fast_lmax8000_nside4096_interp2.5_method1_1_lensed_map.fits'
+        CMB = hp.read_map(data_path + file_name)
+        
+        if unit_out == 'K':
+            
+            CMB = CMB*10**-6
+            
+        if unit_out =='mK':
+                
+            CMB=CMB
+
+        if unit_out == 'MJysr':  
+                
+            CMB = CMB*10**-6
+            
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+        if unit_out == 'Jysr': 
+                
+            CMB = CMB*10**-6
+            
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+            CMB = CMB*10**6
+            
+        if unit_out == 'RJ': 
+        
+            CMB = CMB*10**-6
+            
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=True, rj2cmb=False) 
+            
+        if nside_out < nside or nside_out > nside: 
+            
+            CMB = udgrade_NSIDE(maps=CMB, nside=nside_out)
+            
+        #Display and save the  CMB map :   
+        #hp.write_map(data_path + name_writemap,CMB,overwrite=True) # Wrtie the map as a FITS file
+        hp.mollview(map=CMB,coord=None, nest=False, title=title_map, unit=unit_out, norm='hist')
+        #plt.savefig(pictures_path + name_imfile  + '.png') #Save the image of the filtered map 
+        #plt.show()  
+        
+    
+    if types == 'Sehgal':
+        
+        data_path = '/vol/arc3/data1/sz/Sehgal/'
+        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/Sehgal/'
+        
+        if lensed == True:
+            
+            file_name = '030_lensedcmb_healpix.fits'
+            CMB = hp.read_map(data_path + file_name)
+            
+        else: 
+            
+            file_name = '030_unlensedcmb_healpix.fits'
+            CMB = hp.read_map(data_path + file_name)
+                
+        if unit_out == 'Jysr': 
+                
+            CMB = CMB 
+                
+        if unit_out == 'MJysr': 
+                
+            CMB = CMB * 10**-6
+                
+        if unit_out == 'K':
+            
+            CMB = CMB * 10**-6
+                
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=True, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+        if unit_out == 'mK':
+                
+            CMB = CMB * 10**-6
+                
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=True, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)  
+                
+            CMB = CMB * 10**6
+            
+        if unit_out == 'RJ': 
+        
+            CMB = CMB*10**-6
+            
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=True, 
+                              cmb2rj=True, rj2cmb=False)              
+            
+            
+        if nside_out < nside or nside_out > nside: 
+            
+            CMB = udgrade_NSIDE(maps=CMB, nside=nside_out)
+            
+        else: 
+            
+            CMB = CMB
+            
+        #Display and save the  CMB map :   
+        #hp.write_map(data_save + name_writemap,CMB,overwrite=True) # Wrtie the map as a FITS file
+        hp.mollview(map=CMB,coord=None, nest=False, title=title_map, unit=unit_out, norm='hist')
+        #plt.savefig(data_save + name_imfile  + '.png') #Save the image of the filtered map 
+        plt.show() 
+    
+    
+    return CMB

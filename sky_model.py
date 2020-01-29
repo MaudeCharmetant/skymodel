@@ -432,15 +432,7 @@ def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lens
             if unit_out == 'RJ': 
             
                 CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=True, rj2cmb=False)
-                
-                
-        #Display and save the random map :   
-        #hp.write_map(data_path + name_writemap,CMB,overwrite=True) # Wrtie the map as a FITS file
-        hp.mollview(map=CMB,coord=None, nest=False, title=title_map, unit=unit_out, norm='hist')
-        #plt.savefig(pictures_path + name_imfile  + '.png') #Save the image of the filtered map 
-        #plt.show()          
-            
+                          cmb2rj=True, rj2cmb=False)                        
     
     if types == 'CAMB':
     
@@ -495,13 +487,6 @@ Markdown
             CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
                           cmb2rj=True, rj2cmb=False) 
         
-        
-        #Save and display the map : 
-        #hp.write_map(data_save + name_writemap,CMB,overwrite=True) # Wrtie the map as a FITS file
-        hp.mollview(map=CMB,coord=None, nest=False, title=title_map, unit=maps_unit, norm='hist')
-        #plt.savefig(pictures_path + name_imfile  + '.png') #Save the image of the filtered map 
-        plt.show()
-        
     if types == 'CITA':
         
         if lensed == True: 
@@ -549,12 +534,6 @@ Markdown
             
             CMB = udgrade_NSIDE(maps=CMB, nside=nside_out)
             
-        #Display and save the CMB map :   
-        #hp.write_map(data_path + name_writemap,CMB,overwrite=True) # Wrtie the map as a FITS file
-        hp.mollview(map=CMB,coord=None, nest=False, title=title_map, unit=unit_out, norm='hist')
-        #plt.savefig(pictures_path + name_imfile  + '.png') #Save the image of the filtered map 
-        #plt.show()  
-            
     if types == 'SO': 
         
         data_path = '/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
@@ -595,13 +574,6 @@ Markdown
         if nside_out < nside or nside_out > nside: 
             
             CMB = udgrade_NSIDE(maps=CMB, nside=nside_out)
-            
-        #Display and save the  CMB map :   
-        #hp.write_map(data_path + name_writemap,CMB,overwrite=True) # Wrtie the map as a FITS file
-        hp.mollview(map=CMB,coord=None, nest=False, title=title_map, unit=unit_out, norm='hist')
-        #plt.savefig(pictures_path + name_imfile  + '.png') #Save the image of the filtered map 
-        #plt.show()  
-        
     
     if types == 'Sehgal':
         
@@ -657,12 +629,5 @@ Markdown
         else: 
             
             CMB = CMB
-            
-        #Display and save the  CMB map :   
-        #hp.write_map(data_save + name_writemap,CMB,overwrite=True) # Wrtie the map as a FITS file
-        hp.mollview(map=CMB,coord=None, nest=False, title=title_map, unit=unit_out, norm='hist')
-        #plt.savefig(data_save + name_imfile  + '.png') #Save the image of the filtered map 
-        plt.show() 
-    
-    
+        
     return CMB

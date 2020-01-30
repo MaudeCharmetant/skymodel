@@ -433,8 +433,8 @@ def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lens
             if unit_out == 'RJ': 
             
                 CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=True, rj2cmb=False)                        
-    
+                          cmb2rj=True, rj2cmb=False)
+                
     if types == 'CAMB':
     
         #Load the datas : 
@@ -444,7 +444,7 @@ def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lens
         #Vairables : 
         ell = np.arange(2,lmax) #Array going from 2 to lmax
         ellfactor = ell*(ell+1)/(2.*np.pi) #Array containing all the values of the factor used in CMB science 
-Markdown
+
         TT = TT_data[ell] / ellfactor #The file given by CAMB is the power spectrum multiplied by this factor 
         #Because the monopole and dipole are not in the data of the power spectrum given by CAMB we need to add them back
         #They need to be 0 because we usually remove them no to influence our studies. 
@@ -488,156 +488,90 @@ Markdown
             CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
                           cmb2rj=True, rj2cmb=False) 
         
-    if types == 'CITA':
+    if types == 'CITA' or types == 'Sehgal' or types =='SO' : 
         
-        if lensed == True: 
+        if types == 'CITA':
         
-            CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='lensed_alm.fits', nside=4096,
+            if lensed == True: 
+        
+                CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='lensed_alm.fits', nside=4096,
                                lmax=4096*3-1)
 
-        else: 
+            else: 
             
-            CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='unlensed_alm.fits', nside=4096,
+                CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='unlensed_alm.fits', nside=4096,
                                lmax=4096*3-1)      
-            
-        if unit_out == 'K':
-            
-            CMB = CMB*10**-6
-            
-        if unit_out =='mK':
-                
-            CMB=CMB
-
-        if unit_out == 'MJysr':  
-                
-            CMB = CMB*10**-6
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-        if unit_out == 'Jysr': 
-                
-            CMB = CMB*10**-6
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-            CMB = CMB*10**6
-            
-        if unit_out == 'RJ': 
-        
-            CMB = CMB*10**-6
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=True, rj2cmb=False) 
-            
-        if nside_out < nside or nside_out > nside: 
-            
-            CMB = udgrade_NSIDE(maps=CMB, nside=nside_out)
-	
-	else: 
-		CMB=CMB
-            
-    if types == 'SO': 
-        
-        data_path = '/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
-        file_name = 'Sehgalsimparams_healpix_4096_KappaeffLSStoCMBfullsky_phi_SimLens_Tsynfastnopell_fast_lmax8000_nside4096_interp2.5_method1_1_lensed_map.fits'
-        CMB = hp.read_map(data_path + file_name)
-        
-        if unit_out == 'K':
-            
-            CMB = CMB*10**-6
-            
-        if unit_out =='mK':
-                
-            CMB=CMB
-
-        if unit_out == 'MJysr':  
-                
-            CMB = CMB*10**-6
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-        if unit_out == 'Jysr': 
-                
-            CMB = CMB*10**-6
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-            CMB = CMB*10**6
-            
-        if unit_out == 'RJ': 
-        
-            CMB = CMB*10**-6
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=True, rj2cmb=False) 
-            
-        if nside_out < nside or nside_out > nside: 
-            
-            CMB = udgrade_NSIDE(maps=CMB, nside=nside_out)
-		
-	else:
-		CMB=CMB
     
-    if types == 'Sehgal':
-        
-        data_path = '/vol/arc3/data1/sz/Sehgal/'
-        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/Sehgal/'
-        
-        if lensed == True:
-            
-            file_name = '030_lensedcmb_healpix.fits'
+        if types == 'SO': 
+
+            data_path = '/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
+            file_name = 'Sehgalsimparams_healpix_4096_KappaeffLSStoCMBfullsky_phi_SimLens_Tsynfastnopell_fast_lmax8000_nside4096_interp2.5_method1_1_lensed_map.fits'
             CMB = hp.read_map(data_path + file_name)
-            
-        else: 
-            
-            file_name = '030_unlensedcmb_healpix.fits'
-            CMB = hp.read_map(data_path + file_name)
-                
-        if unit_out == 'Jysr': 
-                
-            CMB = CMB 
-                
-        if unit_out == 'MJysr': 
-                
-            CMB = CMB * 10**-6
-                
+
+
+        if types == 'Sehgal':
+
+            data_path = '/vol/arc3/data1/sz/Sehgal/'
+            data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/Sehgal/'
+
+            if lensed == True:
+
+                file_name = '030_lensedcmb_healpix.fits'
+                CMB = hp.read_map(data_path + file_name)
+
+            else: 
+
+                file_name = '030_unlensedcmb_healpix.fits'
+                CMB = hp.read_map(data_path + file_name)
+
+
+            #Create y_kSZ map : 
+            conv = conv_vector(30)
+            CMB = (CMB / conv)*T_CMB*10**6
+
+
         if unit_out == 'K':
-            
-            CMB = CMB * 10**-6
-                
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=True, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-        if unit_out == 'mK':
-                
-            CMB = CMB * 10**-6
-                
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=True, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)  
-                
-            CMB = CMB * 10**6
-            
-        if unit_out == 'RJ': 
-        
+
             CMB = CMB*10**-6
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=True, 
-                              cmb2rj=True, rj2cmb=False)              
-            
-            
+
+        if unit_out =='mK':
+
+            CMB=CMB
+
+        if unit_out == 'MJysr':  
+
+            CMB = CMB*10**-6
+
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                              cmb2rj=False, rj2cmb=False)
+
+        if unit_out == 'Jysr': 
+
+            CMB = CMB*10**-6
+
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                              cmb2rj=False, rj2cmb=False)
+
+            CMB = CMB*10**6
+
+        if unit_out == 'RJ': 
+
+            CMB = CMB*10**-6
+
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                              cmb2rj=True, rj2cmb=False) 
+
         if nside_out < nside or nside_out > nside: 
-            
+
             CMB = udgrade_NSIDE(maps=CMB, nside=nside_out)
-            
+
         else: 
-            
-            CMB = CMB
-        
+
+            CMB = CMB    
+   
     return CMB
+
+
 
 def D_I_tSZ(x,y):
     

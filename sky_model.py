@@ -6,6 +6,10 @@ rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
 from astropy.io import fits
 from astropy import constants as cst
+T_CMB = cosmo.Tcmb0.si.value
+k_B = cst.k_B.value
+h = cst.h.value
+c = cst.c.value
 
 def pix_reso(nside,arcmin=True): 
     
@@ -189,9 +193,6 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 		Converted signal
 	'''
 	
-	h=cst.h.value 
-	k_B = cst.k_B.value
-	c = cst.c.value
 	x = h * freq / k_B / T_CMB
     
 	if cmb2mjy is True:
@@ -638,166 +639,6 @@ Markdown
         
     return CMB
 
-def simulate_kSZ(simu,freq,unit_out,nside,nside_out):
-    
-    if simu == 'SO':
-        
-        #Fixed datas : 
-        data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
-        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/SO/'
-        pictures_path = '/vol/arc3/data1/sz/SO_sky_model/pictures/'
-        file_in = data_path + '148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
-        
-        ykSZ_map = hp.read_map(file_in,nest=False,partial=False)
-    
-        if unit_out == 'mK': 
-        
-            ykSZ_map = ykSZ_map 
-    
-        if unit_out == 'K':
-            
-            ykSZ_map = ykSZ_map*10**-6
-
-
-        if unit_out == 'MJysr':  
-                
-            ykSZ_map = ykSZ_map*10**-6
-            
-            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-        if unit_out == 'Jysr': 
-                
-            ykSZ_map = ykSZ_map*10**-6
-            
-            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-            ykSZ_map = ykSZ_map*10**6
-            
-        if unit_out == 'RJ': 
-        
-            ykSZ_map = ykSZ_map*10**-6
-            
-            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=True, rj2cmb=False) 
-            
-        if nside_out < nside or nside_out > nside: 
-            
-            ykSZ_map = udgrade_NSIDE(maps=ykSZ_map, nside=nside_out)
-            
-        else:
-            
-            ykSZ_map =ykSZ_map
-            
-        hp.mollview(map=ykSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
-            
-    if simu == 'Sehgal' : 
-        
-        #Fixed datas :         
-        data_path='/vol/arc3/data1/sz/Sehgal/'
-        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/Sehgal/'
-        pictures_path = '/vol/arc3/data1/sz/Sehgal/pictures/'
-        file_in = '030_ksz_healpix.fits'
-        
-    
-        ykSZ_map = hp.read_map(data_path + file_in)
-                
-        if unit_out == 'Jysr': 
-                
-            ykSZ_map = ykSZ_map
-                
-        if unit_out == 'MJysr': 
-                
-            ykSZ_map = ykSZ_map * 10**-6
-                
-        if unit_out == 'K':
-            
-            ykSZ_map = ykSZ_map * 10**-6
-                
-            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=True, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-        if unit_out == 'mK':
-                
-            ykSZ_map = ykSZ_map * 10**-6
-                
-            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=True, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)  
-                
-            ykSZ_map = ykSZ_map * 10**6
-            
-        if unit_out == 'RJ': 
-        
-            ykSZ_map = ykSZ_map*10**-6
-            
-            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=True, 
-                              cmb2rj=True, rj2cmb=False)              
-            
-            
-        if nside_out < nside or nside_out > nside: 
-            
-            ykSZ_map = udgrade_NSIDE(maps=ykSZ_map, nside=nside_out)
-            
-        else: 
-            
-            ykSZ_map = ykSZ_map
-            
-        hp.mollview(map=ykSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
-        
-    
-    if simu == 'CITA':
-        
-        #Fixed datas : 
-        data_path = '/vol/arc3/data1/sz/CITA/'
-        file_in = 'ksz.fits'
-        
-        ykSZ_map = hp.read_map(data_path + file_in)
-        
-        if unit_out == 'K':
-            
-            ykSZ_map = ykSZ_map*10**-6
-            
-        if unit_out =='mK':
-                
-            ykSZ_map=ykSZ_map
-
-        if unit_out == 'MJysr':  
-                
-            ykSZ_map = ykSZ_map*10**-6
-            
-            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-        if unit_out == 'Jysr': 
-                
-            ykSZ_map = ykSZ_map*10**-6
-            
-            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-            ykSZ_map = ykSZ_map*10**6
-            
-        if unit_out == 'RJ': 
-        
-            ykSZ_map = ykSZ_map*10**-6
-            
-            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=True, rj2cmb=False) 
-            
-        if nside_out < nside or nside_out > nside: 
-            
-            ykSZ_map = udgrade_NSIDE(maps=ykSZ_map, nside=nside_out)
-        
-        else: 
-            
-            ykSZ_map = ykSZ_map
-            
-        hp.mollview(map=ykSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
-    
-    
-    return ykSZ_map
-
 def D_I_tSZ(x,y):
     
     """
@@ -874,13 +715,13 @@ def simulate_tSZ(simu,freq,unit_out,rescale,nside,nside_out):
     freq : float 
         frequency in which you want to produce a tSZ map. Has to be given on Hz.
     unit_out : str 
-        Unit in which you want to get your CMB map in. Can be : 'K', 'mK', 'Jysr', 'MJysr', 'RJ'
+        Unit in which you want to get your tSZ map in. Can be : 'K', 'mK', 'Jysr', 'MJysr', 'RJ'
     rescale : bool 
         if True, in the case of 'SO' divide by the rescaling factor that was applied to the datas.  
     nside : int
         Original nside of the simulations, SO:4096, CITA:4096, Sehgal:8192
     nside_out : int 
-        If you wish to change the nside of the CMB map, this is avalaible for 'CITA', 'Sehgal' and 'SO'.
+        If you wish to change the nside of the tSZ map, this is avalaible for 'CITA', 'Sehgal' and 'SO'.
         
     Returns
     -------
@@ -980,3 +821,162 @@ def simulate_tSZ(simu,freq,unit_out,rescale,nside,nside_out):
         
    
     return tSZ_map
+
+
+def DT_kSZ(x,y):
+
+    """
+    Function which compute the kSZ spectral shape.
+
+    Parameters
+    ----------
+    
+    x : str
+        Path were the data of the maps are stored and we the cutout are going to be stored. 
+    y : str
+        Name of the data file. 
+        
+    Returns
+    -------
+    str
+        Tell us where the function stored the datas and images.
+
+    """
+    
+    I_0 = 2*(k_B*T_CMB)**3/(h*c)**2*1e26
+    x_nu = (h*x)/(k_B*T_CMB)
+    Delta_T = ((np.exp(x_nu)-1)**2)/(I_0*x_nu**4*np.exp(x_nu))
+    
+    print("Delta T as been computed ")
+    
+    return   Delta_T
+
+def conv_vector(frequency): 
+	
+    """
+    Function which compute the conversion from kSZ to ykSZ.
+
+    Parameters
+    ----------
+    
+    frequency : float
+        Frequency of the original kSZ map.
+        
+    Returns
+    -------
+    array
+        Contanining the conversion factor.
+
+    """
+    
+    freq = np.arange(0,1000)*10**9  
+    Delta_T = DT_kSZ(freq,1)
+    conv_vect = []
+    
+    conv_vect.append(1/Delta_T[int(frequency)])
+    print('The conversion vector is : ',conv_vect)
+
+    return conv_vect
+
+def simulate_kSZ(simu,freq,unit_out,nside,nside_out):
+
+    """
+    Function which compute kSZ maps at different frequencies and different nside. 
+    
+    Parameters
+    ----------
+    
+    simu : str
+        Name of the simulation we want a kSZ map of. Possibles choices : 'SO','CITA','Sehgal'
+    freq : float 
+        frequency in which you want to produce a kSZ map. Has to be given on Hz.
+    unit_out : str 
+        Unit in which you want to get your kSZ map in. Can be : 'K', 'mK', 'Jysr', 'MJysr', 'RJ'
+    nside : int
+        Original nside of the simulations, SO:4096, CITA:4096, Sehgal:8192
+    nside_out : int 
+        If you wish to change the nside of the kSZ map, this is avalaible for 'CITA', 'Sehgal' and 'SO'.
+        
+    Returns
+    -------
+    array
+        Contaning the kSZ map at a given frequency. 
+    """
+        
+    if simu == 'SO':
+        
+        #Fixed datas : 
+        data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
+        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/SO/'
+        pictures_path = '/vol/arc3/data1/sz/SO_sky_model/pictures/'
+        file_in = '148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
+        
+        ykSZ_map = hp.read_map(data_path +file_in)
+        
+    if simu == 'CITA':
+        
+        #Fixed datas : 
+        data_path = '/vol/arc3/data1/sz/CITA/'
+        file_in = 'ksz.fits'
+        
+        ykSZ_map = hp.read_map(data_path +file_in)
+        
+    if simu == 'Sehgal' : 
+        
+        #Fixed datas :         
+        data_path='/vol/arc3/data1/sz/Sehgal/'
+        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/Sehgal/'
+        pictures_path = '/vol/arc3/data1/sz/Sehgal/pictures/'
+        file_in = '030_ksz_healpix.fits'    
+        
+        kSZ_map = hp.read_map(data_path + file_in)
+        
+        #Create y_kSZ map : 
+        conv = conv_vector(30)
+        ykSZ_map = (kSZ_map / conv)*T_CMB*10**6
+        
+    
+    if unit_out == 'mK': 
+        
+        ykSZ_map = ykSZ_map 
+    
+    if unit_out == 'K':
+            
+        ykSZ_map = ykSZ_map*10**-6
+
+
+    if unit_out == 'MJysr':  
+                
+        ykSZ_map = ykSZ_map*10**-6
+            
+        ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+    if unit_out == 'Jysr': 
+                
+        ykSZ_map = ykSZ_map*10**-6
+            
+        ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+        ykSZ_map = ykSZ_map*10**6
+            
+    if unit_out == 'RJ': 
+        
+        ykSZ_map = ykSZ_map*10**-6
+            
+        ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=True, rj2cmb=False) 
+            
+    if nside_out < nside or nside_out > nside: 
+            
+        ykSZ_map = udgrade_NSIDE(maps=ykSZ_map, nside=nside_out)
+            
+    else:
+            
+        ykSZ_map =ykSZ_map
+            
+    hp.mollview(map=ykSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
+                 
+                 
+    return ykSZ_map

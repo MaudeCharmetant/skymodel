@@ -533,6 +533,9 @@ Markdown
         if nside_out < nside or nside_out > nside: 
             
             CMB = udgrade_NSIDE(maps=CMB, nside=nside_out)
+	
+	else: 
+		CMB=CMB
             
     if types == 'SO': 
         
@@ -574,6 +577,9 @@ Markdown
         if nside_out < nside or nside_out > nside: 
             
             CMB = udgrade_NSIDE(maps=CMB, nside=nside_out)
+		
+	else:
+		CMB=CMB
     
     if types == 'Sehgal':
         

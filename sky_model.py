@@ -637,3 +637,163 @@ Markdown
             CMB = CMB
         
     return CMB
+
+def simulate_kSZ(simu,freq,unit_out,nside,nside_out):
+    
+    if simu == 'SO':
+        
+        #Fixed datas : 
+        data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
+        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/SO/'
+        pictures_path = '/vol/arc3/data1/sz/SO_sky_model/pictures/'
+        file_in = data_path + '148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
+        
+        ykSZ_map = hp.read_map(file_in,nest=False,partial=False)
+    
+        if unit_out == 'mK': 
+        
+            ykSZ_map = ykSZ_map 
+    
+        if unit_out == 'K':
+            
+            ykSZ_map = ykSZ_map*10**-6
+
+
+        if unit_out == 'MJysr':  
+                
+            ykSZ_map = ykSZ_map*10**-6
+            
+            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+        if unit_out == 'Jysr': 
+                
+            ykSZ_map = ykSZ_map*10**-6
+            
+            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+            ykSZ_map = ykSZ_map*10**6
+            
+        if unit_out == 'RJ': 
+        
+            ykSZ_map = ykSZ_map*10**-6
+            
+            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=True, rj2cmb=False) 
+            
+        if nside_out < nside or nside_out > nside: 
+            
+            ykSZ_map = udgrade_NSIDE(maps=ykSZ_map, nside=nside_out)
+            
+        else:
+            
+            ykSZ_map =ykSZ_map
+            
+        hp.mollview(map=ykSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
+            
+    if simu == 'Sehgal' : 
+        
+        #Fixed datas :         
+        data_path='/vol/arc3/data1/sz/Sehgal/'
+        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/Sehgal/'
+        pictures_path = '/vol/arc3/data1/sz/Sehgal/pictures/'
+        file_in = '030_ksz_healpix.fits'
+        
+    
+        ykSZ_map = hp.read_map(data_path + file_in)
+                
+        if unit_out == 'Jysr': 
+                
+            ykSZ_map = ykSZ_map
+                
+        if unit_out == 'MJysr': 
+                
+            ykSZ_map = ykSZ_map * 10**-6
+                
+        if unit_out == 'K':
+            
+            ykSZ_map = ykSZ_map * 10**-6
+                
+            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=True, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+        if unit_out == 'mK':
+                
+            ykSZ_map = ykSZ_map * 10**-6
+                
+            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=True, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)  
+                
+            ykSZ_map = ykSZ_map * 10**6
+            
+        if unit_out == 'RJ': 
+        
+            ykSZ_map = ykSZ_map*10**-6
+            
+            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=True, 
+                              cmb2rj=True, rj2cmb=False)              
+            
+            
+        if nside_out < nside or nside_out > nside: 
+            
+            ykSZ_map = udgrade_NSIDE(maps=ykSZ_map, nside=nside_out)
+            
+        else: 
+            
+            ykSZ_map = ykSZ_map
+            
+        hp.mollview(map=ykSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
+        
+    
+    if simu == 'CITA':
+        
+        #Fixed datas : 
+        data_path = '/vol/arc3/data1/sz/CITA/'
+        file_in = 'ksz.fits'
+        
+        ykSZ_map = hp.read_map(data_path + file_in)
+        
+        if unit_out == 'K':
+            
+            ykSZ_map = ykSZ_map*10**-6
+            
+        if unit_out =='mK':
+                
+            ykSZ_map=ykSZ_map
+
+        if unit_out == 'MJysr':  
+                
+            ykSZ_map = ykSZ_map*10**-6
+            
+            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+        if unit_out == 'Jysr': 
+                
+            ykSZ_map = ykSZ_map*10**-6
+            
+            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+            ykSZ_map = ykSZ_map*10**6
+            
+        if unit_out == 'RJ': 
+        
+            ykSZ_map = ykSZ_map*10**-6
+            
+            ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=True, rj2cmb=False) 
+            
+        if nside_out < nside or nside_out > nside: 
+            
+            ykSZ_map = udgrade_NSIDE(maps=ykSZ_map, nside=nside_out)
+        
+        else: 
+            
+            ykSZ_map = ykSZ_map
+            
+        hp.mollview(map=ykSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
+    
+    
+    return ykSZ_map

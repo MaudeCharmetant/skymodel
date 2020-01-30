@@ -797,3 +797,186 @@ def simulate_kSZ(simu,freq,unit_out,nside,nside_out):
     
     
     return ykSZ_map
+
+def D_I_tSZ(x,y):
+    
+    """
+    Function which compute the tSZ spectral shape. 
+
+    Parameters
+    ----------
+    
+    x : array
+        Frequency range over which the tSZ spectral shape will be computed. 
+    y : float
+        Value of the Compton-y parameter assumed here. 
+        
+    Returns
+    -------
+    array
+        Array contaning the Variarion of intensity produced by tSZ over the fequencies. 
+
+    """
+    
+    #Compute Delta I : 
+    I_0 = (2*(cst.k_B.value*T_CMB)**3)/(cst.h.value*cst.c.value)**2    
+    x_nu = np.array((cst.h.value*x)/(cst.k_B.value*T_CMB))    
+    Delta_I = np.array(I_0*y*(x_nu**4)*(np.exp(x_nu)/(np.exp(x_nu)-1)**2)*((x_nu*(np.exp(x_nu)+1)/(np.exp(x_nu)-1))-4))
+    
+    #Give feedback to the operator : 
+    print("Delta I as been computed ")
+    
+    return   Delta_I
+
+def mixing_vector(frequency): 
+    
+    """
+    Function which compute the multiplying vector to transform a y-map into a tSZ(f). 
+
+    Parameters
+    ----------
+    
+    frequency : array
+        Array or single number containing the frequencies we want to compute the mixing vector for. 
+        
+    Returns
+    -------
+    array
+        Array contaning the multiplying vector. 
+
+    """    
+    
+    #Initilisation : 
+    freq = np.arange(0,1000)*10**9  
+    mix_vect = []
+    Delta_I = D_I_tSZ(freq,1)
+
+    #For each frequency channel, compute Delta_I : 
+    mix_vect.append(Delta_I[int(frequency)]*(10**20))
+    
+        
+    #Give feeback to the operator :    
+    print('The mixing vector is : ',mix_vect)
+   
+    return mix_vect
+
+def simulate_tSZ(simu,freq,unit_out,rescale,nside,nside_out):
+
+    
+    """
+    Function which compute tSZ maps at different frequencies and different nside. 
+    
+    Parameters
+    ----------
+    
+    simu : str
+        Name of the simulation we want a tSZ map of. Possibles choices : 'SO','CITA','Sehgal'
+    freq : float 
+        frequency in which you want to produce a tSZ map. Has to be given on Hz.
+    unit_out : str 
+        Unit in which you want to get your CMB map in. Can be : 'K', 'mK', 'Jysr', 'MJysr', 'RJ'
+    rescale : bool 
+        if True, in the case of 'SO' divide by the rescaling factor that was applied to the datas.  
+    nside : int
+        Original nside of the simulations, SO:4096, CITA:4096, Sehgal:8192
+    nside_out : int 
+        If you wish to change the nside of the CMB map, this is avalaible for 'CITA', 'Sehgal' and 'SO'.
+        
+    Returns
+    -------
+    array
+        Contaning the tSZ map at a given frequency. 
+    """
+    
+    if simu == 'SO':
+        
+        #Fixed datas : 
+        data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
+        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/SO/'
+        pictures_path = '/vol/arc3/data1/sz/SO_sky_model/pictures/'
+        file_in ='tSZ_skymap_healpix_nopell_Nside4096_y_tSZrescale0p75.fits'
+        
+        tSZ = hp.read_map(data_path + file_in)
+        tSZ = tSZ * 2.726e6
+        
+    if simu == 'CITA': 
+        
+        #Fixed datas :         
+        data_path='/vol/arc3/data1/sz/CITA/'
+        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/CITA/'
+        pictures_path = '/vol/arc3/data1/sz/CITA/pictures/'
+        file_in = 'tsz.fits'
+        
+        tSZ = hp.read_map(data_path + file_in)        
+        tSZ = tSZ * 2.726e6
+        
+    if simu == 'Sehgal': 
+        
+        #Fixed datas :         
+        data_path='/vol/arc3/data1/sz/Sehgal/'
+        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/Sehgal/'
+        pictures_path = '/vol/arc3/data1/sz/Sehgal/pictures/'
+        file_in='030_tsz_healpix.fits'
+        
+        #Create compton-y map : 
+        tSZ_freq = hp.read_map(data_path + file_in)
+           
+        multiplier = mixing_vector(30)
+        tSZ = (tSZ_freq / multiplier) #Compton-y map 
+         
+
+    #Get tSZ at different frequencies :           
+    multiplier = mixing_vector(freq*10**-9)
+    tSZ = (tSZ * multiplier)
+        
+    if simu =='SO' and rescale == 'True': 
+            
+        tSZ_map = tSZ / 0.75 #Factor used to bring Sehgal(2010) values of tSZ in agreement with Planck,ACT,SPT
+        
+    else:
+            
+        tSZ_map = tSZ
+            
+    if unit_out == 'mK':
+            
+        tSZ_map = tSZ_map
+            
+    if unit_out == 'K':
+            
+        tSZ_map = tSZ_map*10**-6
+
+    if unit_out == 'MJysr':  
+                
+        tSZ_map = tSZ_map*10**-6
+            
+        tSZ_map = convert_units(freq=freq, values=tSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+    if unit_out == 'Jysr': 
+                
+        tSZ_map = tSZ_map*10**-6
+            
+        tSZ_map = convert_units(freq=freq, values=tSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=False, rj2cmb=False)
+                
+        tSZ_map = tSZ_map*10**6
+            
+    if unit_out == 'RJ': 
+        
+        tSZ_map = tSZ_map*10**-6
+            
+        tSZ_map = convert_units(freq=freq, values=tSZ_map, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+                          cmb2rj=True, rj2cmb=False) 
+            
+    if nside_out < nside or nside_out > nside: 
+            
+        tSZ_map = udgrade_NSIDE(maps=tSZ_map, nside=nside_out)
+        
+    else: 
+            
+        tSZ_map = tSZ_map
+            
+    hp.mollview(map=tSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
+        
+   
+    return tSZ_map

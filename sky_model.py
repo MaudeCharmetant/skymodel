@@ -5,7 +5,9 @@ from matplotlib import rc
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
 from astropy.io import fits
+from astropy.cosmology import FlatLambdaCDM
 from astropy import constants as cst
+cosmo = FlatLambdaCDM(H0=70, Om0=0.3, Tcmb0=2.7255)
 T_CMB = cosmo.Tcmb0.si.value
 k_B = cst.k_B.value
 h = cst.h.value

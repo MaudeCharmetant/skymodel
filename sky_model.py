@@ -5,6 +5,11 @@ from matplotlib import rc
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
 
+k_B = cst.k_B.si.value
+h = cst.h.si.value
+c = cst.c.si.value
+T_CMB = 2.7255
+
 def pix_reso(nside,arcmin=True): 
     
             
@@ -207,3 +212,76 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 	converted_signal = conversion * values
 
 	return(converted_signal)
+
+
+def generate_cib(freq, nside_out=4096, beam_FWHM = None, template = "SO", unit = "mjy"):
+    '''Computes an all-sky CIB map at a given frequency and nside based on . 
+
+    Parameters
+    ----------
+    freq: float or float array
+        Frequency of the output map in Hz.
+    nside_out: float
+        Healpix nside parameter of the output map. Must be a valid value for nside.
+        Default: 4096
+    beam_FWHM: bool, optional
+        If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
+        in units of arcmin is given by the provided value. Default: None
+    template: bool, optional
+        Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
+        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
+        by CITA. Default: 'SO'
+    unit: bool, optional
+        Determines the units of the output map. The available units are 'mjy' --> MJy/sr
+        (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
+        'rj' --> K_RJ (brightness temperature). Default: 'mjy'.
+
+    Returns
+    -------
+    cib: float array
+        Healpix all-sky map of the CIB mission that the specified frequency.
+    '''
+
+    #Load all-sky parameter value maps	
+    if template == "SO":
+        path = "/vol/arc3/data1/sz/CCATp_sky_model/workspace_jens/so_components/"
+        A = hp.fitsfunc.read_map(path + "SO_CIB_A_DUST_4096.fits", dtype = np.float32)    
+        T = hp.fitsfunc.read_map(path + "SO_CIB_T_DUST_4096.fits", dtype = np.float32)
+        beta = hp.fitsfunc.read_map(path + "SO_CIB_beta_DUST_4096.fits", dtype = np.float32)
+        f_0 = 353e9
+    elif template == "CITA":
+        path = "/vol/arc3/data1/sz/CCATp_sky_model/workspace_jens/cita_components/"
+        A = hp.fitsfunc.read_map(path + "CITA_CIB_A_DUST_4096.fits", dtype = np.float32)    
+        T = hp.fitsfunc.read_map(path + "CITA_CIB_T_DUST_4096.fits", dtype = np.float32)
+        beta = hp.fitsfunc.read_map(path + "CITA_CIB_beta_DUST_4096.fits", dtype = np.float32)
+        f_0 = 353e9
+    else:
+        print("Waring: Unknown template requested! Output will be based on SO sky model")
+
+    #Compute CIB brightness at given frequency
+    cib = A * (freq/f_0)**(3.+beta) * (np.exp(h*f_0/k_B/T)-1) / (np.exp(h*freq/k_B/T)-1)
+    del A, T, beta
+    
+    #Re-bin map if necessary
+    if hp.get_nside(cib) != nside_out:
+        cib = hp.pixelfunc.ud_grade(cib, nside_out = nside_out)
+
+    #Smooth map if necessary
+    if beam_FWHM is not None:
+        print("begin smoothing")
+        cib = hp.sphtfunc.smoothing(cib, iter = 0, lmax = 2*nside-1, fwhm = beam_FWHM/60*np.pi/180)
+
+    #Convert units if necessary
+    if unit == "mjy":
+        None
+    elif unit == "cmb":
+        cib = convert_units(freq, cib, mjy2cmb=True)
+    elif unit == "rj":
+        cib = convert_units(freq, cib, mjy2rj=True)
+    else:
+        print("Waring: Unknown unit! Output will be in MJy/sr")
+
+    #Return output
+    return(np.float32(cib))

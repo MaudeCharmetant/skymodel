@@ -1060,3 +1060,79 @@ def generate_atmosphere(freq, nside_out=4096, lmax = None, beam_FWHM = None, uni
 
         #Return output
         return(np.float32(noise_map))
+
+def generate_atmosphere(freq, components, nside_out=4096, lmax = None, beam_FWHM = None, unit = "mjy"):
+    '''Computes an all-sky galactic foregrounds noise map at a given frequency and nside using 
+    the Python Sky model (PySM, Thorne et al. 2017), which is build from Planck data. 
+
+    Parameters
+    ----------
+    freq: float or float array
+        Frequency of the output map in Hz. 
+    nside_out: float
+        Healpix nside parameter of the output map. Must be a valid value for nside.
+        Default: 4096
+    lmax: float
+        Maximum value of the multipolemoment at which the atmospheric power spectrum
+        wil be computed. Default: 3*nside_out-1    
+    beam_FWHM: bool, optional
+        If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
+        in units of arcmin is given by the provided value. Default: None
+    unit: bool, optional
+        Determines the units of the output map. The available units are 'mjy' --> MJy/sr
+        (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
+        'rj' --> K_RJ (brightness temperature). Default: 'mjy'.
+
+    Returns
+    -------
+    foregrounds: float array
+        Healpix all-sky map of the galactic foregrounds at the specified frequency.
+    '''
+
+    #Define foreground model
+    sky_config = {
+        'synchrotron' : models("s1", 512),
+        'dust' : models("d1", 512),
+        'freefree' : models("f1", 512),
+        'ame' : models("a1", 512),
+    }
+
+    #Initialise Sky 
+    sky = pysm.Sky(sky_config)
+
+    #Compute component maps
+    foregrounds = np.zeros(hp.nside2npix(512))
+    rj2mjy_factor = sz.convert_units(freq, 1e-6, rj2mjy = True)
+    
+    if np.sum("dust" == components) == 1:
+        foregrounds += sky.dust(freq/1e9)[0,:] * rj2mjy_factor
+        
+    if np.sum("synchrotron" == components) == 1:
+        foregrounds += sky.synchrotron(freq/1e9)[0,:] * rj2mjy_factor
+        
+    if np.sum("freefree" == components) == 1:
+        foregrounds += sky.freefree(freq/1e9)[0,:] * rj2mjy_factor
+        
+    if np.sum("ame" == components) == 1:
+        foregrounds += sky.ame(freq/1e9)[0,:] * rj2mjy_factor
+
+    #Define smoothing kernal, upgrade, and smooth map
+    fwhm = 10
+    if beam_FWHM is not None:
+        if beam_FWHM > fwhm:
+            fwhm = np.sqrt(fwhm*2 + beam_FWHM**2)
+            
+    foregrounds = hp.pixelfunc.ud_grade(foregrounds, nside_out = nside_out)
+    foregrounds = hp.sphtfunc.smoothing(foregrounds, iter = 0, fwhm = fwhm/60*np.pi/180, lmax = lmax)
+    
+    #Convert units if necessary
+    if unit == "mjy":
+        None
+    elif unit == "cmb":
+        foregrounds = sz.convert_units(freq, foregrounds, mjy2cmb=True)
+    elif unit == "rj":
+        foregrounds = sz.convert_units(freq, foregrounds, mjy2rj=True)
+    else:
+        print("Waring: Unknown unit! Output will be in MJy/sr")
+        
+    return(foregrounds)

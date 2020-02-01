@@ -991,3 +991,72 @@ def simulate_kSZ(simu,freq,unit_out,nside,nside_out):
                  
                  
     return ykSZ_map
+
+def generate_atmosphere(freq, nside_out=4096, lmax = None, beam_FWHM = None, unit = "mjy"):
+    '''Computes an all-sky atmospheric noise map at a given frequency and nside based on 
+    the SO noise model presented by the SO Collaboration (2019) and using the model parameters
+    provided by Choi et al. (2019). 
+
+    Parameters
+    ----------
+    freq: float or float array
+        Frequency of the output map in Hz. Must be a valid SO or CCAT-prime central
+        band frequency, i.e. 27, 29, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz.
+    nside_out: float
+        Healpix nside parameter of the output map. Must be a valid value for nside.
+        Default: 4096
+    lmax: float
+        Maximum value of the multipolemoment at which the atmospheric power spectrum
+        wil be computed. Default: 3*nside_out-1    
+    beam_FWHM: bool, optional
+        If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
+        in units of arcmin is given by the provided value. Default: None
+    unit: bool, optional
+        Determines the units of the output map. The available units are 'mjy' --> MJy/sr
+        (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
+        'rj' --> K_RJ (brightness temperature). Default: 'mjy'.
+
+    Returns
+    -------
+    noise_map: float array
+        Healpix all-sky map of the atmospheric noise at the specified frequency.
+    '''
+
+    if lmax is None:
+        lmax = 3*nside_out-1
+
+    #Define frequencies and noise characteristics of the SO and CCAT-prime
+    nu = np.array([27, 29, 93, 145, 225, 279, 220, 280, 350, 405, 860])*1e9
+    N_white = np.array([2.351167E-04, 6.414462E-05, 2.975014E-06, 3.458125E-06, 2.011171E-05, 1.272230E-04, 1.8e-5, 6.4e-5, 9.3e-4, 1.2e-2, 2.8e4])
+    N_red = np.array([9.248376E-06, 2.236786E-06, 2.622661E-05, 3.298953E-04, 1.462620E-02, 8.579506E-02, 1.6e-2, 1.1e-1, 2.7e0, 1.7e1, 6.1e6])
+    ell_knee = 1000 
+    alpha_knee = -3.5
+    
+    #Check if input frequency is a valid SO or CCAT-prime central band frequency
+    index = freq == nu
+    if np.sum(index) == 0:
+
+        print("Warning: Input frequency is not a valid SO or CCAT-prime band. Try 27, 29, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz")
+        return(None)
+
+    else:
+
+        #Compute power spectrum
+        ell = np.linspace(1,lmax,lmax)
+        Cl = N_red[index] * (ell/ell_knee)**alpha_knee + N_white[index]
+
+        #Create all-sky map
+        noise_map = hp.sphtfunc.synfast(Cl, nside_out, lmax=lmax)/1e6
+
+        #Convert units if necessary
+        if unit == "mjy":
+            noise_map = sz.convert_units(freq, noise_map, cmb2mjy=True)
+        elif unit == "cmb":
+            None
+        elif unit == "rj":
+            noise_map = sz.convert_units(freq, noise_map, cmb2rj=True)
+        else:
+            print("Waring: Unknown unit! Output will be in MJy/sr")
+
+        #Return output
+        return(np.float32(noise_map))

@@ -8,6 +8,8 @@ from astropy.io import fits
 from astropy.cosmology import FlatLambdaCDM
 from astropy import constants as cst
 cosmo = FlatLambdaCDM(H0=70, Om0=0.3, Tcmb0=2.7255)
+import pysm
+from pysm.nominal import models
 
 k_B = cst.k_B.si.value
 h = cst.h.si.value

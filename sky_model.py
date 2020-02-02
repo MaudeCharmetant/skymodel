@@ -1063,7 +1063,7 @@ def generate_atmosphere(freq, nside_out=4096, lmax = None, beam_FWHM = None, uni
         #Return output
         return(np.float32(noise_map))
 
-def generate_atmosphere(freq, components, nside_out=4096, lmax = None, beam_FWHM = None, unit = "mjy"):
+def generate_gal_foregrounds(freq, components, nside_out=4096, lmax = None, beam_FWHM = None, unit = "mjy"):
     '''Computes an all-sky galactic foregrounds noise map at a given frequency and nside using 
     the Python Sky model (PySM, Thorne et al. 2017), which is build from Planck data. 
 

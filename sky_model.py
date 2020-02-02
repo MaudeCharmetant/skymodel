@@ -1138,3 +1138,92 @@ def generate_atmosphere(freq, components, nside_out=4096, lmax = None, beam_FWHM
         print("Waring: Unknown unit! Output will be in MJy/sr")
         
     return(foregrounds)
+
+
+def generate_radio_ps(freq, nside_out=4096, lmax = None, beam_FWHM = None, template = "SO", unit = "mjy"):
+    '''Computes an all-sky radio point source map at a given frequency and nside based on 
+    the simulations provided by Sehgal et al. (2010), which have been recalibrated by the
+    SO collaboration. Du to the complex SEDs of the radio sources, bilinear interpolation
+    is applied for input frequencies between 27 and 353 GHz. For higher frequencies, a null
+    map is returned.
+
+    Parameters
+    ----------
+    freq: float or float array
+        Frequency of the output map in Hz.
+    nside_out: float
+        Healpix nside parameter of the output map. Must be a valid value for nside.
+        Default: 4096
+    lmax: float
+        Maximum value of the multipolemoment at which the atmospheric power spectrum
+        wil be computed. Default: 3*nside_out-1            
+    beam_FWHM: bool, optional
+        If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
+        in units of arcmin is given by the provided value. Default: None
+    template: bool, optional
+        Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
+        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
+        by CITA. Default: 'SO'
+    unit: bool, optional
+        Determines the units of the output map. The available units are 'mjy' --> MJy/sr
+        (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
+        'rj' --> K_RJ (brightness temperature). Default: 'mjy'.
+
+    Returns
+    -------
+    radio_ps: float array
+        Healpix all-sky map of the radio point source emission at the specified frequency.
+    '''
+
+    if lmax is None:
+        lmax = int(3*nside_out-1)
+    
+    #Define path to data and frequencies
+    path = "/media/jens/SSD/stuff/so/"    
+    nu = np.array([27,30,39,44,70,93,100,143,145,217,225,280,353])*1e9
+    nu_names = ['027','030','039','044','070','093','100','143','145','217','225','280','353']
+
+    #Read data files
+    npix = hp.pixelfunc.nside2npix(4096)
+    data = np.zeros((len(nu), npix), dtype = np.float32)    
+
+    for i in np.arange(len(nu)):
+        file_name = path + nu_names[i] + "_rad_pts_healpix_nopell_Nside4096_DeltaT_uK_fluxcut148_7mJy_lininterp.fits"
+        data[i,:] = hp.fitsfunc.read_map(file_name, dtype = np.float32) * sz.convert_units(nu[i], 1e-6, cmb2mjy=True)
+
+    #Interpolate data points
+    radio_ps = np.zeros(hp.nside2npix(4096))
+    if template == "SO":
+        
+        if freq > 353e9:
+            print("Warning: Input frequency lies beyoned the 353 GHz. Since higher frequencies are not constraint by simulations, the data will be 0.")
+        else:
+            for i in tqdm(np.arange(hp.nside2npix(4096))):
+                radio_ps[i] = np.interp(freq, nu, data[:,i])
+                
+    elif template == "CITA":
+        print("Warning: No radio PS template provided by the CITA simulations")
+
+    #Re-bin map if necessary
+    if hp.get_nside(radio_ps) != nside_out:
+        radio_ps = hp.pixelfunc.ud_grade(radio_ps, nside_out = nside_out)
+
+    #Smooth map if necessary
+    if beam_FWHM is not None:
+        print("begin smoothing")
+        radio_ps = hp.sphtfunc.smoothing(radio_ps, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
+
+    #Convert units if necessary
+    if unit == "mjy":
+        None
+    elif unit == "cmb":
+        radio_ps = convert_units(freq, radio_ps, mjy2cmb=True)
+    elif unit == "rj":
+        radio_ps = convert_units(freq, radio_ps, mjy2rj=True)
+    else:
+        print("Waring: Unknown unit! Output will be in MJy/sr")
+
+    #Return output
+    return(np.float32(radio_ps))

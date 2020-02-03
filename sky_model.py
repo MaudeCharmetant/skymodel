@@ -152,7 +152,7 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 	return(phi, theta)
   
     
-    def convert_units(freq, values, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, cmb2rj=False, rj2cmb=False):
+    def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False, mjy2rj = False, cmb2rj = False, rj2cmb = False):
 
 	'''Convert observed signal at given frequencies to different units. 
 	Parameters
@@ -207,7 +207,7 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 	return(converted_signal)
 
 
-def simulate_cib(freq, nside_out=4096, beam_FWHM = None, template = "SO", unit = "mjy"):
+def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit = "cmb"):
 
     '''Computes an all-sky CIB map at a given frequency and nside based on . 
 
@@ -230,7 +230,7 @@ def simulate_cib(freq, nside_out=4096, beam_FWHM = None, template = "SO", unit =
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
-        'rj' --> K_RJ (brightness temperature). Default: 'mjy'.
+        'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
 
     Returns
     -------
@@ -310,7 +310,8 @@ def udgrade_NSIDE(maps,nside):
     #Feedback to the operator : 
     print('the map have been ud_grade to '+str(nside))
     
-    return ud_map
+    return(ud_map)
+
 
 def alm2map_CITA(data_path,file_name, nside,lmax):
     
@@ -368,7 +369,8 @@ def alm2map_CITA(data_path,file_name, nside,lmax):
     #Feeedback operator : 
     print('Map have been computed from the alm') 
     
-    return map_T
+    return(map_T)
+
 
 def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lensed,nside_out): 
     
@@ -608,8 +610,7 @@ def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lens
 
             CMB = CMB    
    
-    return CMB
-
+    return(CMB)
 
 
 def D_I_tSZ(x,y):
@@ -640,7 +641,8 @@ def D_I_tSZ(x,y):
     #Give feedback to the operator : 
     print("Delta I as been computed ")
     
-    return   Delta_I
+    return(Delta_I)
+
 
 def mixing_vector(frequency): 
     
@@ -672,7 +674,8 @@ def mixing_vector(frequency):
     #Give feeback to the operator :    
     print('The mixing vector is : ',mix_vect)
    
-    return mix_vect
+    return(mix_vect)
+
 
 def simulate_tSZ(simu,freq,unit_out,rescale,nside,nside_out):
 
@@ -793,7 +796,7 @@ def simulate_tSZ(simu,freq,unit_out,rescale,nside,nside_out):
     hp.mollview(map=tSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
         
    
-    return tSZ_map
+    return(tSZ_map)
 
 
 def DT_kSZ(x,y):
@@ -822,7 +825,8 @@ def DT_kSZ(x,y):
     
     print("Delta T as been computed ")
     
-    return   Delta_T
+    return(Delta_T)
+
 
 def conv_vector(frequency): 
 	
@@ -849,7 +853,8 @@ def conv_vector(frequency):
     conv_vect.append(1/Delta_T[int(frequency)])
     print('The conversion vector is : ',conv_vect)
 
-    return conv_vect
+    return(conv_vect)
+
 
 def simulate_kSZ(simu,freq,unit_out,nside,nside_out):
 
@@ -952,9 +957,11 @@ def simulate_kSZ(simu,freq,unit_out,nside,nside_out):
     hp.mollview(map=ykSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
                  
                  
-    return ykSZ_map
+    return(ykSZ_map)
 
-def generate_atmosphere(freq, nside_out=4096, lmax = None, beam_FWHM = None, unit = "mjy"):
+
+def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, unit = "cmb"):
+
     '''Computes an all-sky atmospheric noise map at a given frequency and nside based on 
     the SO noise model presented by the SO Collaboration (2019) and using the model parameters
     provided by Choi et al. (2019). 
@@ -976,7 +983,7 @@ def generate_atmosphere(freq, nside_out=4096, lmax = None, beam_FWHM = None, uni
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
-        'rj' --> K_RJ (brightness temperature). Default: 'mjy'.
+        'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
 
     Returns
     -------
@@ -1023,7 +1030,9 @@ def generate_atmosphere(freq, nside_out=4096, lmax = None, beam_FWHM = None, uni
         #Return output
         return(np.float32(noise_map))
 
-def generate_gal_foregrounds(freq, components, nside_out=4096, lmax = None, beam_FWHM = None, unit = "mjy"):
+
+def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = None, beam_FWHM = None, unit = "cmb"):
+
     '''Computes an all-sky galactic foregrounds noise map at a given frequency and nside using 
     the Python Sky model (PySM, Thorne et al. 2017), which is build from Planck data. 
 
@@ -1031,6 +1040,11 @@ def generate_gal_foregrounds(freq, components, nside_out=4096, lmax = None, beam
     ----------
     freq: float or float array
         Frequency of the output map in Hz. 
+    components: list of stings
+        List of components to be included in the galactic foreground model. Possible 
+        components are "gal_synchrotron", "gal_dust", "gal_freefree", and "gal_ame".
+        Alternatively, all components are included if the variable is set to "all".
+        Default: "all"	
     nside_out: float
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
@@ -1043,13 +1057,16 @@ def generate_gal_foregrounds(freq, components, nside_out=4096, lmax = None, beam
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
-        'rj' --> K_RJ (brightness temperature). Default: 'mjy'.
+        'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
 
     Returns
     -------
     foregrounds: float array
         Healpix all-sky map of the galactic foregrounds at the specified frequency.
     '''
+
+    if components == "all":
+        components = ["gal_synchrotron", "gal_dust", "gal_freefree", "gal_ame"]	
 
     #Define foreground model
     sky_config = {
@@ -1066,16 +1083,16 @@ def generate_gal_foregrounds(freq, components, nside_out=4096, lmax = None, beam
     foregrounds = np.zeros(hp.nside2npix(512))
     rj2mjy_factor = sz.convert_units(freq, 1e-6, rj2mjy = True)
     
-    if np.sum("dust" == components) == 1:
-        foregrounds += sky.dust(freq/1e9)[0,:] * rj2mjy_factor
-        
-    if np.sum("synchrotron" == components) == 1:
+    if np.sum("gal_synchrotron" == components) == 1:
         foregrounds += sky.synchrotron(freq/1e9)[0,:] * rj2mjy_factor
-        
-    if np.sum("freefree" == components) == 1:
+
+    if np.sum("gal_dust" == components) == 1:
+        foregrounds += sky.dust(freq/1e9)[0,:] * rj2mjy_factor
+          
+    if np.sum("gal_freefree" == components) == 1:
         foregrounds += sky.freefree(freq/1e9)[0,:] * rj2mjy_factor
         
-    if np.sum("ame" == components) == 1:
+    if np.sum("gal_ame" == components) == 1:
         foregrounds += sky.ame(freq/1e9)[0,:] * rj2mjy_factor
 
     #Define smoothing kernal, upgrade, and smooth map
@@ -1100,7 +1117,8 @@ def generate_gal_foregrounds(freq, components, nside_out=4096, lmax = None, beam
     return(foregrounds)
 
 
-def generate_radio_ps(freq, nside_out=4096, lmax = None, beam_FWHM = None, template = "SO", unit = "mjy"):
+def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"):
+
     '''Computes an all-sky radio point source map at a given frequency and nside based on 
     the simulations provided by Sehgal et al. (2010), which have been recalibrated by the
     SO collaboration. Du to the complex SEDs of the radio sources, bilinear interpolation
@@ -1129,7 +1147,7 @@ def generate_radio_ps(freq, nside_out=4096, lmax = None, beam_FWHM = None, templ
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
-        'rj' --> K_RJ (brightness temperature). Default: 'mjy'.
+        'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
 
     Returns
     -------
@@ -1187,3 +1205,78 @@ def generate_radio_ps(freq, nside_out=4096, lmax = None, beam_FWHM = None, templ
 
     #Return output
     return(np.float32(radio_ps))
+
+
+def ccat_sky_model(freq, sensitivity = None, components = "all", red_noise = False, beam_FWHM = None, nside_out = 4096, lmax = None, template = "SO", unit = "cmb"):
+    '''Computes an all-sky radio point source map at a given frequency and nside based on 
+    the simulations provided by Sehgal et al. (2010), which have been recalibrated by the
+    SO collaboration. Du to the complex SEDs of the radio sources, bilinear interpolation
+    is applied for input frequencies between 27 and 353 GHz. For higher frequencies, a null
+    map is returned.
+
+    Parameters
+    ----------
+    freq: float or float array
+        Frequency of the output map in Hz.
+    nside_out: float
+        Healpix nside parameter of the output map. Must be a valid value for nside.
+        Default: 4096
+    lmax: float
+        Maximum value of the multipolemoment at which the atmospheric power spectrum
+        wil be computed. Default: 3*nside_out-1            
+    beam_FWHM: bool, optional
+        If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
+        in units of arcmin is given by the provided value. Default: None
+    template: bool, optional
+        Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
+        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
+        by CITA. Default: 'SO'
+    unit: bool, optional
+        Determines the units of the output map. The available units are 'mjy' --> MJy/sr
+        (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
+        'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
+
+    Returns
+    -------
+    radio_ps: float array
+        Healpix all-sky map of the radio point source emission at the specified frequency.
+    '''
+
+    if lmax is None:
+        lmax = int(3*nside_out-1)
+
+    if components == "all":
+        components = ["gal_synchrotron", "gal_dust", "gal_freefree", "gal_ame", "cib", "radio_ps", "cmb", "tsz", "ksz"]
+
+    all_sky_map = np.zeros(hp.nside2npix(4096))
+
+    if np.sum("gal_synchrotron" == components) == 1:
+        all_sky_map += simulate_gal_foregrounds(freq, components, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit)
+
+    if np.sum("cib" == components) == 1:
+        all_sky_map += simulate_cib(freq, nside_out = nside_out, beam_FWHM = None, template = template, unit = unit):
+
+    if np.sum("radio_ps" == components) == 1:
+        all_sky_map += simulate_radio_ps(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
+
+    if np.sum("cmb" == components) == 1:
+        all_sky_map += 
+
+    if np.sum("tsz" == components) == 1:
+        all_sky_map += 
+
+    if np.sum("ksz" == components) == 1:
+        all_sky_map += 
+
+    if red_noise is not False:
+        all_sky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit):
+
+	if sensitivity is not None and red_noise is False:
+        all_sky_map += 
+
+    #Smooth map if necessary
+    if beam_FWHM is not None:
+        print("begin smoothing")
+        all_sky_map = hp.sphtfunc.smoothing(all_sky_map, iter = 1, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)

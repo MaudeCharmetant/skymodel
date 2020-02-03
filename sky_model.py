@@ -1,13 +1,7 @@
 import numpy as np 
 import healpy as hp
-import matplotlib.pyplot as plt
-from matplotlib import rc
-rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-rc('text', usetex=True)
 from astropy.io import fits
-from astropy.cosmology import FlatLambdaCDM
 from astropy import constants as cst
-cosmo = FlatLambdaCDM(H0=70, Om0=0.3, Tcmb0=2.7255)
 import pysm
 from pysm.nominal import models
 
@@ -16,11 +10,10 @@ h = cst.h.si.value
 c = cst.c.si.value
 T_CMB = 2.7255
 
-def pix_reso(nside,arcmin=True): 
-    
+def pix_reso(nside,arcmin=True):   
             
     """
-    Compute the resolution of Healpy pixels in function of the nside of the map.  
+    Compute the size of Healpy pixels in function of the nside of the map.  
 
     Parameters
     ----------
@@ -28,12 +21,12 @@ def pix_reso(nside,arcmin=True):
     nside : int
         Nside, number of separation of the healpy blocks. 
     arcmin : bool
-        if True return the resolution in arcmin, otherwise in radians. 
+        if True return the size in arcmin, otherwise in radians. 
         
     Returns
     -------
     float
-        The resolution of one healpy pixel. 
+        The size of one healpy pixel. 
 
     """
     
@@ -48,38 +41,33 @@ def pix_reso(nside,arcmin=True):
         
     #Compute the resolution :     
     reso = np.sqrt(((4*np.pi)/N_pix)*multi**2)
-    
-    #Feedback user : 
-    print('The pixel resolution has been computed')
 
-    return reso
+    return(reso)
   
   
-def WN_map(nside,data_path,file_out,noise,unit_noise,arcmin,units,pictures_path): 
-
+def WN_map(freq, noise, nside_out = 4096, unit_noise = 1, arcmin = True, unit = 'cmb'): 
         
     """
-    Function which create a White noise map for a given noise/arcmin or noise/radians.  
+    Function which create a White noise map for a given noise/arcmin or noise/radians. 
+    By default the code expect the noise to be given in microK/arcmin
 
     Parameters
     ----------
-    
-    nside : int
-        Nside, number of separation of the healpy blocks. 
-    data_path : str
-        Path where the datas will be stored.
-    file_out : str
-        Name of the White noise healpy map.
+
+    freq: float or float array
+        Frequency of the output map in Hz.
     noise : float 
         noise value desired in any units by radians or arcmin.
+    nside_out : int
+        Nside, number of separation of the healpy blocks. 
     unit_noise : float 
         resolution of the noise, for exemple 1' or 1 radians. 
     arcmin : bool 
         if true mean that the noise is given in /arcmin. 
-    units : str 
-        units of the noise 
-    pictures_path : str 
-        path where the pictures will be stored.
+    unit: bool, optional
+        Determines the units of the output map. The available units are 'mjy' --> MJy/sr
+        (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
+        'rj' --> K_RJ (brightness temperature). Default: 'mjy'.
         
     Returns
     -------
@@ -89,29 +77,27 @@ def WN_map(nside,data_path,file_out,noise,unit_noise,arcmin,units,pictures_path)
     """
     
     #Compute the average noise in each pixel : 
-    noise = (noise * unit_noise)/pix_reso(nside,arcmin)
+    noise = (noise * unit_noise)/pix_reso(nside_out,arcmin)
         
     #Create White-noise map :
-    Npix = hp.pixelfunc.nside2npix(nside) #Compute the number of pixels
-    m =  np.random.normal(0,noise,Npix) #Random normal distribution centered over the desired noise
-    
-    #Display and save the distribution: 
-    plt.hist(m,200,normed=True) #Display histogram of the distribution
-    plt.title('$Noise$ $distribution$')
-    plt.xlabel('$Noise$ $in$ '+ units)
-    plt.ylabel('$Distribution$')
-    plt.savefig(pictures_path + 'WN_PDF_'+str(int(noise))+units+'.png')
+    Npix = hp.pixelfunc.nside2npix(nside_out) #Compute the number of pixels
+    m =  np.random.normal(0,noise,Npix)*1e-6 #Random normal distribution centered over the desired noise
 
-    #Display map and save map: 
-    WN_map = hp.write_map(data_path + file_out,m, overwrite=True) #Save the distribution into a healpy map
-    hp.mollview(m, title="White Noise map : n= "+ str(int(noise)) + units, norm='hist',unit=units)
-    plt.savefig(pictures_path + 'WN_map_'+str(int(noise))+units+'.png') 
-    plt.show()
+    #Convert units if necessary
+    if unit == "cmb":
+        None
+    elif unit == "mjy":
+        radio_ps = convert_units(freq, m, cmb2mjy=True)
+    elif unit == "rj":
+        radio_ps = convert_units(freq, m, cmb2rj=True)
+    else:
+        print("Waring: Unknown unit! Output will be in MJy/sr")
     
-    return WN_map 
+    return(WN_map) 
   
   
 def sample_sphere_uniform(n, mask = None, radec = True):
+
 	'''Draws uniformly sampled tuples of coordinates on the sphere. 
 	All-sky masks in the healpix format can be applied, in which case 
 	masked areas will be excluded.
@@ -167,6 +153,7 @@ def sample_sphere_uniform(n, mask = None, radec = True):
   
     
     def convert_units(freq, values, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, cmb2rj=False, rj2cmb=False):
+
 	'''Convert observed signal at given frequencies to different units. 
 	Parameters
 	----------
@@ -220,7 +207,8 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 	return(converted_signal)
 
 
-def generate_cib(freq, nside_out=4096, beam_FWHM = None, template = "SO", unit = "mjy"):
+def simulate_cib(freq, nside_out=4096, beam_FWHM = None, template = "SO", unit = "mjy"):
+
     '''Computes an all-sky CIB map at a given frequency and nside based on . 
 
     Parameters
@@ -250,7 +238,11 @@ def generate_cib(freq, nside_out=4096, beam_FWHM = None, template = "SO", unit =
         Healpix all-sky map of the CIB mission that the specified frequency.
     '''
 
-    #Load all-sky parameter value maps	
+    #Load all-sky parameter value maps
+    if template != "SO" or template != "CITA":
+        print("Waring: Unknown template requested! Output will be based on SO sky model")
+        template = "SO"
+
     if template == "SO":
         path = "/vol/arc3/data1/sz/CCATp_sky_model/workspace_jens/so_components/"
         A = hp.fitsfunc.read_map(path + "SO_CIB_A_DUST_4096.fits", dtype = np.float32)    
@@ -263,8 +255,6 @@ def generate_cib(freq, nside_out=4096, beam_FWHM = None, template = "SO", unit =
         T = hp.fitsfunc.read_map(path + "CITA_CIB_T_DUST_4096.fits", dtype = np.float32)
         beta = hp.fitsfunc.read_map(path + "CITA_CIB_beta_DUST_4096.fits", dtype = np.float32)
         f_0 = 353e9
-    else:
-        print("Waring: Unknown template requested! Output will be based on SO sky model")
 
     #Compute CIB brightness at given frequency
     cib = A * (freq/f_0)**(3.+beta) * (np.exp(h*f_0/k_B/T)-1) / (np.exp(h*freq/k_B/T)-1)
@@ -292,37 +282,7 @@ def generate_cib(freq, nside_out=4096, beam_FWHM = None, template = "SO", unit =
     #Return output
     return(np.float32(cib))
 
-  
-def random_map(PS,nside,lmax):  
-    
-    """
-    Function generating random realization of Healpix map from a given power spectrum. 
-
-    Parameters
-    ----------
-     
-    PS : array
-        Array containing the power spectrum that will be used to generate the map.
-    nside : int 
-        Number of seperation of a healpix pixel. 
-    lmax : int 
-        maximum l that can be reach, by default lmax=3*nside-1.
-        
-    Returns
-    -------
-    array
-        Array containing the map generated from the power spectrum.
-
-    """
-        
-    #Generate display and save the map generated from the Power spectrum : 
-    random_map = hp.sphtfunc.synfast(PS, nside, lmax=lmax, mmax=lmax, alm=False, pol=False, pixwin=False, fwhm=0.0, sigma=None, new=False, verbose=True)
-    
-    #Feedback user : 
-    print('The random map have been generated')
-
-    
-    return random_map 
+ 
 
 def udgrade_NSIDE(maps,nside):
     
@@ -451,9 +411,9 @@ def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lens
     if types == 'random':
         
         #Compute and convert the random map : 
-        if maps_unit == 'mK' :            
-        
-            CMB = random_map(PS=file_in,nside=nside,lmax=lmax)
+        if maps_unit == 'mK' :        
+
+            CMB = hp.sphtfunc.synfast(PS=file_in, nside=nside, lmax=lmax, mmax=lmax)    
             
             if unit_out == 'K':
             

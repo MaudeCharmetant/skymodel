@@ -282,36 +282,6 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     #Return output
     return(np.float32(cib))
 
- 
-
-def udgrade_NSIDE(maps,nside):
-    
-    """
-    Function which upgrade or degrade the NSIDE of an HEALPix map. 
-
-    Parameters
-    ----------
-    
-    maps : array
-        Array containing the map we want to ud_grade.
-    nside : int 
-        Value of the new resolution we want to apply to the healpix map to upgrade or degrade it.
-        
-    Returns
-    -------
-    array
-        Array contaning the upgraded map.
-
-    """
-    
-    #Upgarde or degrade the map : 
-    ud_map = hp.pixelfunc.ud_grade(map_in=maps, nside_out=nside, pess=False, order_in='RING', order_out=None, power=None, dtype=None)
-    
-    #Feedback to the operator : 
-    print('the map have been ud_grade to '+str(nside))
-    
-    return(ud_map)
-
 
 def alm2map_CITA(data_path,file_name, nside,lmax):
     
@@ -365,14 +335,11 @@ def alm2map_CITA(data_path,file_name, nside,lmax):
 
     #Display map reconstruct from the alms : 
     map_T = hp.alm2map(alm_T, nside, pol=False, inplace=False) #Make a map out of the alm
-      
-    #Feeedback operator : 
-    print('Map have been computed from the alm') 
     
     return(map_T)
 
 
-def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lensed,nside_out): 
+def Simulate_CMB(data_path,data_save,file_in,nside,maps_unit,lmax,types,unit_out,freq,lensed,nside_out): 
     
         
     """
@@ -383,9 +350,11 @@ def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lens
     
     data_path : str
         Path were the data of the maps are stored and we the cutout are going to be stored. 
+    data_save : str 
+    	Path were the datas will be saved. 
     file_in : str or array 
         Name of the .dat contaning the values of the power spectrum given by CAMB.
-        Or array containing the power spectrum to generate random maps. 
+        Or array containing the power spectrum to generate random maps in Kelvin. 
     nside : int
         Resolution of the map. The power spectrum will go until l = 3 * nside -1.
     maps_unit : str 
@@ -411,69 +380,33 @@ def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lens
     """
     
     if types == 'random':
-        
-        #Compute and convert the random map : 
-        if maps_unit == 'mK' :        
+               
+        #Compute and convert the random map : 	
+	CMB = hp.sphtfunc.synfast(PS=file_in, nside=nside, lmax=lmax, mmax=lmax) 
+            
+        if unit_out == 'K':
+            
+            CMB = CMB
+            
+        if unit_out =='mK':
+                
+            CMB=CMB*10**6
 
-            CMB = hp.sphtfunc.synfast(PS=file_in, nside=nside, lmax=lmax, mmax=lmax)    
+        if unit_out == 'MJysr':  
             
-            if unit_out == 'K':
-            
-                CMB = CMB*10**-6
-            
-            if unit_out =='mK':
-                
-                CMB=CMB
-
-            if unit_out == 'MJysr':  
-                
-                CMB = CMB*10**-6
-            
-                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
                           cmb2rj=False, rj2cmb=False)
                 
-            if unit_out == 'Jysr': 
-                
-                CMB = CMB*10**-6
+        if unit_out == 'Jysr': 
             
-                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
                           cmb2rj=False, rj2cmb=False)
                 
-                CMB = CMB*10**6
+            CMB = CMB*10**6
             
-            if unit_out == 'RJ': 
-        
-                CMB = CMB*10**-6
+        if unit_out == 'RJ': 
             
-                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=True, rj2cmb=False)   
-        
-        #Compute and convert the random map : 
-        if maps_unit =='K': 
-            
-            if unit_out == 'K':
-            
-                CMB = CMB
-            
-            if unit_out =='mK':
-                
-                CMB=CMB*10**6
-
-            if unit_out == 'MJysr':  
-            
-                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-            if unit_out == 'Jysr': 
-            
-                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-                CMB = CMB*10**6
-            
-            if unit_out == 'RJ': 
-            
-                CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
+             CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
                           cmb2rj=True, rj2cmb=False)
                 
     if types == 'CAMB':
@@ -492,7 +425,7 @@ def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lens
         TT_1 = np.insert(TT,0,0)
         TT_final = np.insert(TT_1,0,0)
 
-        fb.file2FITS(data=TT_final,dtype=np.float32,data_path=data_path,name_save='TT_CMB_CAMB_'+str(nside), overwrite=True)
+        fb.file2FITS(data=TT_final,dtype=np.float32,data_path=data_save,name_save='TT_CMB_CAMB_'+str(nside), overwrite=True)
 
         #Compute the CMB map from the power spectrum :
         CMB = hp.sphtfunc.synfast(TT_final, nside, lmax=lmax, mmax=lmax, alm=False, pol=False, pixwin=False)
@@ -570,7 +503,6 @@ def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lens
             conv = conv_vector(30)
             CMB = (CMB / conv)*T_CMB*10**6
 
-
         if unit_out == 'K':
 
             CMB = CMB*10**-6
@@ -602,9 +534,9 @@ def Simulate_CMB(data_path,file_in,nside,maps_unit,lmax,types,unit_out,freq,lens
             CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
                               cmb2rj=True, rj2cmb=False) 
 
-        if nside_out < nside or nside_out > nside: 
-
-            CMB = udgrade_NSIDE(maps=CMB, nside=nside_out)
+        if nside_out < nside or nside_out > nside:
+		
+	    CMB = hp.pixelfunc.ud_grade(map_in=CMB, nside_out=nside_out)
 
         else: 
 
@@ -636,14 +568,11 @@ def D_I_tSZ(x,y):
     #Compute Delta I : 
     I_0 = (2*(cst.k_B.value*T_CMB)**3)/(cst.h.value*cst.c.value)**2    
     x_nu = np.array((cst.h.value*x)/(cst.k_B.value*T_CMB))    
-    Delta_I = np.array(I_0*y*(x_nu**4)*(np.exp(x_nu)/(np.exp(x_nu)-1)**2)*((x_nu*(np.exp(x_nu)+1)/(np.exp(x_nu)-1))-4))
-    
-    #Give feedback to the operator : 
-    print("Delta I as been computed ")
-    
+    Delta_I = np.array(I_0*y*(x_nu**4)*(np.exp(x_nu)/(np.exp(x_nu)-1)**2)*((x_nu*(np.exp(x_nu)+1)/(np.exp(x_nu)-1))-4))    
+
     return(Delta_I)
 
-
+  
 def mixing_vector(frequency): 
     
     """
@@ -669,16 +598,11 @@ def mixing_vector(frequency):
 
     #For each frequency channel, compute Delta_I : 
     mix_vect.append(Delta_I[int(frequency)]*(10**20))
-    
-        
-    #Give feeback to the operator :    
-    print('The mixing vector is : ',mix_vect)
    
     return(mix_vect)
 
 
 def simulate_tSZ(simu,freq,unit_out,rescale,nside,nside_out):
-
     
     """
     Function which compute tSZ maps at different frequencies and different nside. 
@@ -786,16 +710,13 @@ def simulate_tSZ(simu,freq,unit_out,rescale,nside,nside_out):
                           cmb2rj=True, rj2cmb=False) 
             
     if nside_out < nside or nside_out > nside: 
-            
-        tSZ_map = udgrade_NSIDE(maps=tSZ_map, nside=nside_out)
+          
+        tSZ_map = hp.pixelfunc.ud_grade(map_in=tSZ_map, nside_out=nside_out)
         
     else: 
             
         tSZ_map = tSZ_map
-            
-    hp.mollview(map=tSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
-        
-   
+
     return(tSZ_map)
 
 
@@ -822,9 +743,7 @@ def DT_kSZ(x,y):
     I_0 = 2*(k_B*T_CMB)**3/(h*c)**2*1e26
     x_nu = (h*x)/(k_B*T_CMB)
     Delta_T = ((np.exp(x_nu)-1)**2)/(I_0*x_nu**4*np.exp(x_nu))
-    
-    print("Delta T as been computed ")
-    
+
     return(Delta_T)
 
 
@@ -851,10 +770,9 @@ def conv_vector(frequency):
     conv_vect = []
     
     conv_vect.append(1/Delta_T[int(frequency)])
-    print('The conversion vector is : ',conv_vect)
 
     return(conv_vect)
-
+  
 
 def simulate_kSZ(simu,freq,unit_out,nside,nside_out):
 
@@ -947,15 +865,12 @@ def simulate_kSZ(simu,freq,unit_out,nside,nside_out):
                           cmb2rj=True, rj2cmb=False) 
             
     if nside_out < nside or nside_out > nside: 
-            
-        ykSZ_map = udgrade_NSIDE(maps=ykSZ_map, nside=nside_out)
+	
+        ykSZ_map = hp.pixelfunc.ud_grade(map_in=ykSZ_map, nside_out=nside_out)          
             
     else:
             
         ykSZ_map =ykSZ_map
-            
-    hp.mollview(map=ykSZ_map, coord=None, nest=False,title='',norm='hist', xsize=2000,return_projected_map=True)
-                 
                  
     return(ykSZ_map)
 

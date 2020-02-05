@@ -161,7 +161,7 @@ def WN_map(freq, noise, nside_out = 4096, unit_noise = 1, arcmin = True, unit = 
         
     """
     Function which create a White noise map for a given noise/arcmin or noise/radians. 
-    By default the code expect the noise to be given in microK/arcmin
+    By default the code expect the noise to be given in microK_CMB/arcmin
 
     Parameters
     ----------
@@ -203,7 +203,7 @@ def WN_map(freq, noise, nside_out = 4096, unit_noise = 1, arcmin = True, unit = 
     elif unit == "rj":
         radio_ps = convert_units(freq, m, cmb2rj=True)
     else:
-        print("Waring: Unknown unit! Output will be in MJy/sr")
+        print("Waring: Unknown unit! Output will be in K_CMB")
     
     return(WN_map) 
   
@@ -278,66 +278,10 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     elif unit == "rj":
         cib = convert_units(freq, cib, mjy2rj=True)
     else:
-        print("Waring: Unknown unit! Output will be in MJy/sr")
+        print("Waring: Unknown unit! Output will be in K_CMB")
 
     #Return output
     return(np.float32(cib))
-
-
-def alm2map_CITA(data_path,file_name, nside,lmax):
-    
-    """
-    Function which create a map out of a file containing the alm under a tuple format. 
-
-    Parameters
-    ----------
-    
-    data_path : str
-        Path were the data of the maps are stored and we the cutout are going to be stored. 
-    file_name : str
-        Name of the file containing the alms. 
-    name_final_maps : str
-        Name under which the maps image and fits file are going to be saved.    
-    nside : int 
-        Number of cut in the the healpix originals pixels. It is link to the final number of pixels in the map, N_pix = 
-        12 x nside^2 
-    title_map : str 
-        Title that will be displayed on the image of the map. 
-    unit_map : str 
-        Units of the maps that are displayed, for exemple K_CMB, MJy/sr. This is going to be use for figure titles and 
-        names of files.         
-    pictures_path : str
-        Path where we are going to save the pictures.   
-    lmax : int 
-        Maximum l that can be reach. By default lmax = 3*nside-1.
-        
-    Returns
-    -------
-    array
-        Containing the map at a given frequency. 
-
-    """
-    
-    #Open and read the file : 
-    file = data_path + file_name
-    hdul = fits.open(file)
-    data = hdul[1].data
-
-    #Get each parts of the alms : 
-    j = complex(0,1) #Create the pure imaginary i 
-    alm_1 = data['real'][:] #Take the full column of data under the name 'real'
-    alm_2 = data['imag'][:]
-    alm_T2 = np.array(alm_2,dtype=complex) #Make alm_2 a complex array 
-    alm_T = alm_1 + alm_T2*j 
-    
-    #Define the l : 
-    ell = np.arange(lmax) #Array going from 1 to lmax
-    ellfactor = ell*(ell+1)/(2.*np.pi) #Array containing all the values of the factor used in CMB science  
-
-    #Display map reconstruct from the alms : 
-    map_T = hp.alm2map(alm_T, nside, pol=False, inplace=False) #Make a map out of the alm
-    
-    return(map_T)
 
 
 def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"): 
@@ -407,11 +351,11 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         
             if lensed == True: 
         
-                CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='lensed_alm.fits', nside=4096, lmax=4096*3-1)
+                CMB = hp.read_map('/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude'+' CMB_lensed_CITA_mK')
 
             else: 
             
-                CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='unlensed_alm.fits', nside=4096, lmax=4096*3-1)      
+                CMB = hp.read_map('/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude'+' CMB_unlensed_CITA_mK')     
     
         if template == 'SO': 
 
@@ -449,339 +393,177 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     elif unit == "rj":
         CMB = convert_units(freq, CMB/1e6, cmb2rj=True)
     else:
-        print("Waring: Unknown unit! Output will be in MJy/sr")   
+        print("Waring: Unknown unit! Output will be in K_CMB")   
 
     return(CMB)
 
 
-def D_I_tSZ(x,y):
-    
-    """
-    Function which compute the tSZ spectral shape. 
-
-    Parameters
-    ----------
-    
-    x : array
-        Frequency range over which the tSZ spectral shape will be computed. 
-    y : float
-        Value of the Compton-y parameter assumed here. 
-        
-    Returns
-    -------
-    array
-        Array contaning the Variarion of intensity produced by tSZ over the fequencies. 
-
-    """
-    
-    #Compute Delta I : 
-    I_0 = (2*(cst.k_B.value*T_CMB)**3)/(cst.h.value*cst.c.value)**2    
-    x_nu = np.array((cst.h.value*x)/(cst.k_B.value*T_CMB))    
-    Delta_I = np.array(I_0*y*(x_nu**4)*(np.exp(x_nu)/(np.exp(x_nu)-1)**2)*((x_nu*(np.exp(x_nu)+1)/(np.exp(x_nu)-1))-4))    
-
-    return(Delta_I)
-
-  
-def mixing_vector(frequency): 
-    
-    """
-    Function which compute the multiplying vector to transform a y-map into a tSZ(f). 
-
-    Parameters
-    ----------
-    
-    frequency : array
-        Array or single number containing the frequencies we want to compute the mixing vector for. 
-        
-    Returns
-    -------
-    array
-        Array contaning the multiplying vector. 
-
-    """    
-    
-    #Initilisation : 
-    freq = np.arange(0,1000)*10**9  
-    mix_vect = []
-    Delta_I = D_I_tSZ(freq,1)
-
-    #For each frequency channel, compute Delta_I : 
-    mix_vect.append(Delta_I[int(frequency)]*(10**20))
-   
-    return(mix_vect)
-
-
-def simulate_tSZ(simu,freq,unit_out,rescale,nside,nside_out):
+def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"):
     
     """
     Function which compute tSZ maps at different frequencies and different nside. 
     
     Parameters
     ----------
-    
-    simu : str
-        Name of the simulation we want a tSZ map of. Possibles choices : 'SO','CITA','Sehgal'
-    freq : float 
-        frequency in which you want to produce a tSZ map. Has to be given on Hz.
-    unit_out : str 
-        Unit in which you want to get your tSZ map in. Can be : 'K', 'mK', 'Jysr', 'MJysr', 'RJ'
-    rescale : bool 
-        if True, in the case of 'SO' divide by the rescaling factor that was applied to the datas.  
-    nside : int
-        Original nside of the simulations, SO:4096, CITA:4096, Sehgal:8192
-    nside_out : int 
-        If you wish to change the nside of the tSZ map, this is avalaible for 'CITA', 'Sehgal' and 'SO'.
+    freq: float or float array
+        Frequency of the output map in Hz.
+    nside_out: float
+        Healpix nside parameter of the output map. Must be a valid value for nside.
+        Default: 4096
+    lmax: float
+        Maximum value of the multipolemoment at which the atmospheric power spectrum
+        wil be computed. Default: 3*nside_out-1            
+    beam_FWHM: bool, optional
+        If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
+        in units of arcmin is given by the provided value. Default: None
+    template: bool, optional
+        Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
+        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
+        by CITA. Default: 'SO'
+    unit: bool, optional
+        Determines the units of the output map. The available units are 'mjy' --> MJy/sr
+        (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
+        'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
         
     Returns
     -------
-    array
-        Contaning the tSZ map at a given frequency. 
+    tSZ: float array
+        Healpix allsky map contaning the tSZ map at a given frequency. 
     """
-    
-    if simu == 'SO':
+
+    #Read data
+    if template == 'SO':
         
-        #Fixed datas : 
         data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
-        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/SO/'
-        pictures_path = '/vol/arc3/data1/sz/SO_sky_model/pictures/'
         file_in ='tSZ_skymap_healpix_nopell_Nside4096_y_tSZrescale0p75.fits'
+        y_map = hp.read_map(data_path + file_in)
+
         
-        tSZ = hp.read_map(data_path + file_in)
-        tSZ = tSZ * 2.726e6
+    if template == 'CITA': 
         
-    if simu == 'CITA': 
-        
-        #Fixed datas :         
         data_path='/vol/arc3/data1/sz/CITA/'
-        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/CITA/'
-        pictures_path = '/vol/arc3/data1/sz/CITA/pictures/'
         file_in = 'tsz.fits'
+        y_map = hp.read_map(data_path + file_in)        
+
         
-        tSZ = hp.read_map(data_path + file_in)        
-        tSZ = tSZ * 2.726e6
+    if template == 'Sehgal': 
         
-    if simu == 'Sehgal': 
-        
-        #Fixed datas :         
         data_path='/vol/arc3/data1/sz/Sehgal/'
-        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/Sehgal/'
-        pictures_path = '/vol/arc3/data1/sz/Sehgal/pictures/'
         file_in='030_tsz_healpix.fits'
         
         #Create compton-y map : 
-        tSZ_freq = hp.read_map(data_path + file_in)
+        tSZ_30GHz = hp.read_map(data_path + file_in) * convert_units(freq, 1e-6, mjy2cmb=True)
            
-        multiplier = mixing_vector(30)
-        tSZ = (tSZ_freq / multiplier) #Compton-y map 
-         
+        x_nu = np.array((h*30e9)/(k_B*T_CMB))    
+        tSZ_SED = ((x_nu*(np.exp(x_nu)+1)/(np.exp(x_nu)-1))-4)
 
-    #Get tSZ at different frequencies :           
-    multiplier = mixing_vector(freq*10**-9)
-    tSZ = (tSZ * multiplier)
+        y_map = tSZ_30GHz / tSZ_SED / T_CMB
+
+    #Get tSZ at different frequencies : 
+    x_nu = np.array((h*freq)/(k_B*T_CMB))    
+    t_SZ_SED = ((x_nu*(np.exp(x_nu)+1)/(np.exp(x_nu)-1))-4)
+
+    tSZ = (y_map * t_SZ_SED * T_CMB)
         
-    if simu =='SO' and rescale == 'True': 
-            
-        tSZ_map = tSZ / 0.75 #Factor used to bring Sehgal(2010) values of tSZ in agreement with Planck,ACT,SPT
-        
+    #Re-bin map if necessary
+    if hp.get_nside(tSZ) != nside_out:
+        tSZ = hp.pixelfunc.ud_grade(tSZ, nside_out = nside_out)
+
+    #Smooth map if necessary
+    if beam_FWHM is not None:
+        print("begin smoothing")
+        tSZ = hp.sphtfunc.smoothing(tSZ, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
+
+    #Convert units if necessary
+    if unit == "mjy":
+        tSZ = convert_units(freq, tSZ, cmb2mjy=True)
+    elif unit == "cmb":
+        None
+    elif unit == "rj":
+        tSZ = convert_units(freq, tSZ, cmb2rj=True)
     else:
-            
-        tSZ_map = tSZ
-            
-    if unit_out == 'mK':
-            
-        tSZ_map = tSZ_map
-            
-    if unit_out == 'K':
-            
-        tSZ_map = tSZ_map*10**-6
+        print("Waring: Unknown unit! Output will be in K_CMB")
 
-    if unit_out == 'MJysr':  
-                
-        tSZ_map = tSZ_map*10**-6
-            
-        tSZ_map = convert_units(freq=freq, values=tSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-    if unit_out == 'Jysr': 
-                
-        tSZ_map = tSZ_map*10**-6
-            
-        tSZ_map = convert_units(freq=freq, values=tSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-        tSZ_map = tSZ_map*10**6
-            
-    if unit_out == 'RJ': 
-        
-        tSZ_map = tSZ_map*10**-6
-            
-        tSZ_map = convert_units(freq=freq, values=tSZ_map, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=True, rj2cmb=False) 
-            
-    if nside_out < nside or nside_out > nside: 
-          
-        tSZ_map = hp.pixelfunc.ud_grade(map_in=tSZ_map, nside_out=nside_out)
-        
-    else: 
-            
-        tSZ_map = tSZ_map
-
-    return(tSZ_map)
-
-
-def DT_kSZ(x,y):
-
-    """
-    Function which compute the kSZ spectral shape.
-
-    Parameters
-    ----------
-    
-    x : str
-        Path were the data of the maps are stored and we the cutout are going to be stored. 
-    y : str
-        Name of the data file. 
-        
-    Returns
-    -------
-    str
-        Tell us where the function stored the datas and images.
-
-    """
-    
-    I_0 = 2*(k_B*T_CMB)**3/(h*c)**2*1e26
-    x_nu = (h*x)/(k_B*T_CMB)
-    Delta_T = ((np.exp(x_nu)-1)**2)/(I_0*x_nu**4*np.exp(x_nu))
-
-    return(Delta_T)
-
-
-def conv_vector(frequency): 
-	
-    """
-    Function which compute the conversion from kSZ to ykSZ.
-
-    Parameters
-    ----------
-    
-    frequency : float
-        Frequency of the original kSZ map.
-        
-    Returns
-    -------
-    array
-        Contanining the conversion factor.
-
-    """
-    
-    freq = np.arange(0,1000)*10**9  
-    Delta_T = DT_kSZ(freq,1)
-    conv_vect = []
-    
-    conv_vect.append(1/Delta_T[int(frequency)])
-
-    return(conv_vect)
+    return(tSZ)
   
 
-def simulate_kSZ(simu,freq,unit_out,nside,nside_out):
+def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"):
 
     """
-    Function which compute kSZ maps at different frequencies and different nside. 
+    Function which computes kSZ maps at different frequencies and different nside. 
     
     Parameters
     ----------
-    
-    simu : str
-        Name of the simulation we want a kSZ map of. Possibles choices : 'SO','CITA','Sehgal'
-    freq : float 
-        frequency in which you want to produce a kSZ map. Has to be given on Hz.
-    unit_out : str 
-        Unit in which you want to get your kSZ map in. Can be : 'K', 'mK', 'Jysr', 'MJysr', 'RJ'
-    nside : int
-        Original nside of the simulations, SO:4096, CITA:4096, Sehgal:8192
-    nside_out : int 
-        If you wish to change the nside of the kSZ map, this is avalaible for 'CITA', 'Sehgal' and 'SO'.
+    freq: float or float array
+        Frequency of the output map in Hz.
+    nside_out: float
+        Healpix nside parameter of the output map. Must be a valid value for nside.
+        Default: 4096
+    lmax: float
+        Maximum value of the multipolemoment at which the atmospheric power spectrum
+        wil be computed. Default: 3*nside_out-1            
+    beam_FWHM: bool, optional
+        If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
+        in units of arcmin is given by the provided value. Default: None
+    template: bool, optional
+        Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
+        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
+        by CITA. Default: 'SO'
+    unit: bool, optional
+        Determines the units of the output map. The available units are 'mjy' --> MJy/sr
+        (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
+        'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
         
     Returns
     -------
-    array
-        Contaning the kSZ map at a given frequency. 
+    kSZ: float array
+        Healpy all-sky map contaning the kSZ map at a given frequency. 
     """
         
     if simu == 'SO':
         
-        #Fixed datas : 
         data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
-        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/SO/'
-        pictures_path = '/vol/arc3/data1/sz/SO_sky_model/pictures/'
         file_in = '148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
-        
-        ykSZ_map = hp.read_map(data_path +file_in)
+    	kSZ = hp.read_map(data_path + file_in)
         
     if simu == 'CITA':
         
-        #Fixed datas : 
         data_path = '/vol/arc3/data1/sz/CITA/'
         file_in = 'ksz.fits'
-        
-        ykSZ_map = hp.read_map(data_path +file_in)
+	kSZ = hp.read_map(data_path + file_in)
         
     if simu == 'Sehgal' : 
-        
-        #Fixed datas :         
+              
         data_path='/vol/arc3/data1/sz/Sehgal/'
-        data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/Sehgal/'
-        pictures_path = '/vol/arc3/data1/sz/Sehgal/pictures/'
-        file_in = '030_ksz_healpix.fits'    
-        
-        kSZ_map = hp.read_map(data_path + file_in)
-        
-        #Create y_kSZ map : 
-        conv = conv_vector(30)
-        ykSZ_map = (kSZ_map / conv)*T_CMB*10**6
-        
-    
-    if unit_out == 'mK': 
-        
-        ykSZ_map = ykSZ_map 
-    
-    if unit_out == 'K':
-            
-        ykSZ_map = ykSZ_map*10**-6
+        file_in = '030_ksz_healpix.fits'  
 
+        #Create compton-y map : 
+        kSZ = hp.read_map(data_path + file_in) * convert_units(freq, 1e-6, mjy2cmb=True)
+ 
+    #Re-bin map if necessary
+    if hp.get_nside(kSZ) != nside_out:
+        kSZ = hp.pixelfunc.ud_grade(kSZ, nside_out = nside_out)
 
-    if unit_out == 'MJysr':  
-                
-        ykSZ_map = ykSZ_map*10**-6
-            
-        ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-    if unit_out == 'Jysr': 
-                
-        ykSZ_map = ykSZ_map*10**-6
-            
-        ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-        ykSZ_map = ykSZ_map*10**6
-            
-    if unit_out == 'RJ': 
-        
-        ykSZ_map = ykSZ_map*10**-6
-            
-        ykSZ_map = convert_units(freq=freq, values=ykSZ_map, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=True, rj2cmb=False) 
-            
-    if nside_out < nside or nside_out > nside: 
-	
-        ykSZ_map = hp.pixelfunc.ud_grade(map_in=ykSZ_map, nside_out=nside_out)          
-            
+    #Smooth map if necessary
+    if beam_FWHM is not None:
+        print("begin smoothing")
+        kSZ = hp.sphtfunc.smoothing(kSZ, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
+
+    #Convert units if necessary
+    if unit == "mjy":
+        kSZ = convert_units(freq, kSZ, cmb2mjy=True)
+    elif unit == "cmb":
+        None
+    elif unit == "rj":
+        kSZ = convert_units(freq, kSZ, cmb2rj=True)
     else:
-            
-        ykSZ_map =ykSZ_map
-                 
-    return(ykSZ_map)
+        print("Waring: Unknown unit! Output will be in K_CMB")
+
+    return(kSZ)
 
 
 def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, unit = "cmb"):
@@ -849,7 +631,7 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
         elif unit == "rj":
             noise_map = sz.convert_units(freq, noise_map, cmb2rj=True)
         else:
-            print("Waring: Unknown unit! Output will be in MJy/sr")
+            print("Waring: Unknown unit! Output will be in K_CMB")
 
         #Return output
         return(np.float32(noise_map))
@@ -936,7 +718,7 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
     elif unit == "rj":
         foregrounds = sz.convert_units(freq, foregrounds, mjy2rj=True)
     else:
-        print("Waring: Unknown unit! Output will be in MJy/sr")
+        print("Waring: Unknown unit! Output will be in K_CMB")
         
     return(foregrounds)
 
@@ -1025,7 +807,7 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     elif unit == "rj":
         radio_ps = convert_units(freq, radio_ps, mjy2rj=True)
     else:
-        print("Waring: Unknown unit! Output will be in MJy/sr")
+        print("Waring: Unknown unit! Output will be in K_CMB")
 
     #Return output
     return(np.float32(radio_ps))
@@ -1108,19 +890,19 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
         all_sky_map += simulate_cmb(freq, cl_file = cl_file, lensed = lensed, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
 
     if "tsz" in components:
-        all_sky_map += 
+        all_sky_map += simulate_tSZ(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
 
     if "ksz" in components:
-        all_sky_map += 
+        all_sky_map += simulate_kSZ(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
 
-    if red_noise is not False:
-        if sensitivity is not None:
+    if red_noise is True:
+        if sensitivity is True:
             print("Warning! You request to apply both red noise + white noise and white noise. The White noise sensitivity parameter will be overwritten to None. If this is not what you want than check the settings and re-run.")
             sensitivity = None
         all_sky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit):
 
     if sensitivity is not None and red_noise is False:
-        all_sky_map += 
+        all_sky_map += WN_map(freq, sensitivity, nside_out = nside_out, unit = unit)
 
     #Smooth map if necessary
     if beam_FWHM is not None:

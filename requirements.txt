@@ -1,0 +1,6 @@
+numpy
+numpydoc
+healpy
+astropy
+pysm
+

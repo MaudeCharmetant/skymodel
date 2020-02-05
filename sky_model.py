@@ -10,92 +10,62 @@ h = cst.h.si.value
 c = cst.c.si.value
 T_CMB = 2.7255
 
-def pix_reso(nside,arcmin=True):   
-            
-    """
-    Compute the size of Healpy pixels in function of the nside of the map.  
 
-    Parameters
-    ----------
+def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False, mjy2rj = False, cmb2rj = False, rj2cmb = False):
+
+	'''Convert observed signal at given frequencies to different units. 
+	Parameters
+	----------
+	freq: float or float array
+		Frequency in Hz.
+	values: float or float array
+		Measured signal.
+	cmb2mjy: bool, optional
+		If True, the input is assumed to be K_CMB, the output will be MJy/sr.
+		Default: False
+	mjy2cmb: bool, optional
+		If True, the input is assumed to be MJy/sr, the output will be K_CMB.
+		Default: False
+	rj2mjy: bool, optional
+		If True, the input is assumed to be K_RJ, the output will be MJy/sr.
+		Default: False
+	mjy2rj: bool, optional
+		If True, the input is assumed to be MJy/sr, the output will be K_RJ.
+		Default: False
+	cmb2rj: bool, optional
+		If True, the input is assumed to be K_CMB, the output will be K_RJ.
+		Default: False
+	rj2cmb: bool, optional
+		If True, the input is assumed to be K_RJ, the output will be K_CMB.
+		Default: False
+	Returns
+	-------
+	converted_signal: float or float array
+		Converted signal
+	'''
+	
+	x = h * freq / k_B / T_CMB
     
-    nside : int
-        Nside, number of separation of the healpy blocks. 
-    arcmin : bool
-        if True return the size in arcmin, otherwise in radians. 
-        
-    Returns
-    -------
-    float
-        The size of one healpy pixel. 
+	if cmb2mjy is True:
+		conversion = 1e20 * 2*k_B**3.*T_CMB**2. / (h * c)**2. * x**4. * np.exp(x) / (np.exp(x)-1)**2.
+	elif mjy2cmb is True:
+		conversion = 1/(1e20 * 2*k_B**3.*T_CMB**2. / (h * c)**2. * x**4. * np.exp(x) / (np.exp(x)-1)**2.)
+	elif rj2mjy is True:
+		conversion = 1e20 * 2*freq**2.*k_B/c**2.
+	elif mjy2rj is True:
+		conversion = 1/(1e20 * 2*freq**2.*k_B/c**2.)
+	elif cmb2rj is True:
+		conversion = (k_B*T_CMB/h)**2. * x**4. * np.exp(x) / (np.exp(x)-1)**2. / freq**2.
+	elif rj2cmb is True:
+		conversion = 1/((k_B*T_CMB/h)**2. * x**4. * np.exp(x) / (np.exp(x)-1)**2. / freq**2.)        
+	else:
+		print("Not sure which units are given and what should be returned.")
 
-    """
-    
-    #Number of pixels : 
-    N_pix = hp.pixelfunc.nside2npix(nside)
-    
-    #Compute the unit : 
-    if arcmin == True :        
-        multi=(180*60/np.pi)        
-    else:        
-        multi=1
-        
-    #Compute the resolution :     
-    reso = np.sqrt(((4*np.pi)/N_pix)*multi**2)
+	converted_signal = conversion * values
 
-    return(reso)
-  
-  
-def WN_map(freq, noise, nside_out = 4096, unit_noise = 1, arcmin = True, unit = 'cmb'): 
-        
-    """
-    Function which create a White noise map for a given noise/arcmin or noise/radians. 
-    By default the code expect the noise to be given in microK/arcmin
+	return(converted_signal)
 
-    Parameters
-    ----------
 
-    freq: float or float array
-        Frequency of the output map in Hz.
-    noise : float 
-        noise value desired in any units by radians or arcmin.
-    nside_out : int
-        Nside, number of separation of the healpy blocks. 
-    unit_noise : float 
-        resolution of the noise, for exemple 1' or 1 radians. 
-    arcmin : bool 
-        if true mean that the noise is given in /arcmin. 
-    unit: bool, optional
-        Determines the units of the output map. The available units are 'mjy' --> MJy/sr
-        (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
-        'rj' --> K_RJ (brightness temperature). Default: 'mjy'.
-        
-    Returns
-    -------
-    array
-        Array contaning the Variarion of intensity produced by tSZ over the fequencies. 
-
-    """
-    
-    #Compute the average noise in each pixel : 
-    noise = (noise * unit_noise)/pix_reso(nside_out,arcmin)
-        
-    #Create White-noise map :
-    Npix = hp.pixelfunc.nside2npix(nside_out) #Compute the number of pixels
-    m =  np.random.normal(0,noise,Npix)*1e-6 #Random normal distribution centered over the desired noise
-
-    #Convert units if necessary
-    if unit == "cmb":
-        None
-    elif unit == "mjy":
-        radio_ps = convert_units(freq, m, cmb2mjy=True)
-    elif unit == "rj":
-        radio_ps = convert_units(freq, m, cmb2rj=True)
-    else:
-        print("Waring: Unknown unit! Output will be in MJy/sr")
-    
-    return(WN_map) 
-  
-  
 def sample_sphere_uniform(n, mask = None, radec = True):
 
 	'''Draws uniformly sampled tuples of coordinates on the sphere. 
@@ -150,62 +120,93 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 		print("output will be galactic coordinates (glon, glat)")
 
 	return(phi, theta)
+
+
+def px_size(nside,arcmin=True):   
+            
+    """
+    Compute the size of Healpy pixels in function of the nside of the map.  
+
+    Parameters
+    ----------
+    
+    nside : int
+        Nside, number of separation of the healpy blocks. 
+    arcmin : bool
+        if True return the size in arcmin, otherwise in radians. 
+        
+    Returns
+    -------
+    float
+        The size of one healpy pixel. 
+
+    """
+    
+    #Number of pixels : 
+    N_pix = hp.pixelfunc.nside2npix(nside)
+    
+    #Compute the unit : 
+    if arcmin == True :        
+        multi=(180*60/np.pi)        
+    else:        
+        multi=1
+        
+    #Compute the resolution :     
+    size = np.sqrt(((4*np.pi)/N_pix)*multi**2)
+
+    return(size)
   
+  
+def WN_map(freq, noise, nside_out = 4096, unit_noise = 1, arcmin = True, unit = 'cmb'): 
+        
+    """
+    Function which create a White noise map for a given noise/arcmin or noise/radians. 
+    By default the code expect the noise to be given in microK/arcmin
+
+    Parameters
+    ----------
+
+    freq: float or float array
+        Frequency of the output map in Hz.
+    noise : float 
+        noise value desired in any units by radians or arcmin.
+    nside_out : int
+        Nside, number of separation of the healpy blocks. 
+    unit_noise : float 
+        resolution of the noise, for exemple 1' or 1 radians. 
+    arcmin : bool 
+        if true mean that the noise is given in /arcmin. 
+    unit: bool, optional
+        Determines the units of the output map. The available units are 'mjy' --> MJy/sr
+        (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
+        'rj' --> K_RJ (brightness temperature). Default: 'mjy'.
+        
+    Returns
+    -------
+    array
+        Array contaning the Variarion of intensity produced by tSZ over the fequencies. 
+
+    """
     
-    def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False, mjy2rj = False, cmb2rj = False, rj2cmb = False):
+    #Compute the average noise in each pixel : 
+    noise = (noise * unit_noise)/px_size(nside_out,arcmin)
+        
+    #Create White-noise map :
+    Npix = hp.pixelfunc.nside2npix(nside_out) #Compute the number of pixels
+    m =  np.random.normal(0,noise,Npix)*1e-6 #Random normal distribution centered over the desired noise
 
-	'''Convert observed signal at given frequencies to different units. 
-	Parameters
-	----------
-	freq: float or float array
-		Frequency in Hz.
-	values: float or float array
-		Measured signal.
-	cmb2mjy: bool, optional
-		If True, the input is assumed to be K_CMB, the output will be MJy/sr.
-		Default: False
-	mjy2cmb: bool, optional
-		If True, the input is assumed to be MJy/sr, the output will be K_CMB.
-		Default: False
-	rj2mjy: bool, optional
-		If True, the input is assumed to be K_RJ, the output will be MJy/sr.
-		Default: False
-	mjy2rj: bool, optional
-		If True, the input is assumed to be MJy/sr, the output will be K_RJ.
-		Default: False
-	cmb2rj: bool, optional
-		If True, the input is assumed to be K_CMB, the output will be K_RJ.
-		Default: False
-	rj2cmb: bool, optional
-		If True, the input is assumed to be K_RJ, the output will be K_CMB.
-		Default: False
-	Returns
-	-------
-	converted_signal: float or float array
-		Converted signal
-	'''
-	
-	x = h * freq / k_B / T_CMB
+    #Convert units if necessary
+    if unit == "cmb":
+        None
+    elif unit == "mjy":
+        radio_ps = convert_units(freq, m, cmb2mjy=True)
+    elif unit == "rj":
+        radio_ps = convert_units(freq, m, cmb2rj=True)
+    else:
+        print("Waring: Unknown unit! Output will be in MJy/sr")
     
-	if cmb2mjy is True:
-		conversion = 1e20 * 2*k_B**3.*T_CMB**2. / (h * c)**2. * x**4. * np.exp(x) / (np.exp(x)-1)**2.
-	elif mjy2cmb is True:
-		conversion = 1/(1e20 * 2*k_B**3.*T_CMB**2. / (h * c)**2. * x**4. * np.exp(x) / (np.exp(x)-1)**2.)
-	elif rj2mjy is True:
-		conversion = 1e20 * 2*freq**2.*k_B/c**2.
-	elif mjy2rj is True:
-		conversion = 1/(1e20 * 2*freq**2.*k_B/c**2.)
-	elif cmb2rj is True:
-		conversion = (k_B*T_CMB/h)**2. * x**4. * np.exp(x) / (np.exp(x)-1)**2. / freq**2.
-	elif rj2cmb is True:
-		conversion = 1/((k_B*T_CMB/h)**2. * x**4. * np.exp(x) / (np.exp(x)-1)**2. / freq**2.)        
-	else:
-		print("Not sure which units are given and what should be returned.")
-
-	converted_signal = conversion * values
-
-	return(converted_signal)
-
+    return(WN_map) 
+  
 
 def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit = "cmb"):
 
@@ -339,38 +340,45 @@ def alm2map_CITA(data_path,file_name, nside,lmax):
     return(map_T)
 
 
-def Simulate_CMB(data_path,data_save,file_in,nside,maps_unit,lmax,types,unit_out,freq,lensed,nside_out): 
-    
-        
+def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"): 
+         
     """
-    Function which compute a CMB map from a power spectrum.
+    Function that computes a CMB map from a power spectrum.
 
     Parameters
     ----------
+
+    freq: float or float array
+        Frequency of the output map in Hz.
+    cl_file : str or array 
+        Name of the .dat contaning the values of the power spectrum given by CAMB.
+        Or array containing the power spectrum to generate random maps in Kelvin.
+    lensed : bool 
+    	if True select the lensed CMB map when possible. This is only possible for 'CITA' and 'Sehgal.'
+    nside_out: float
+        Healpix nside parameter of the output map. Must be a valid value for nside.
+        Default: 4096
+    lmax: float
+        Maximum value of the multipolemoment at which the atmospheric power spectrum
+        wil be computed. Default: 3*nside_out-1            
+    beam_FWHM: bool, optional
+        If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
+        in units of arcmin is given by the provided value. Default: None
+    template: bool, optional
+        Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
+        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
+        by CITA. Default: 'SO'
+    unit: bool, optional
+        Determines the units of the output map. The available units are 'mjy' --> MJy/sr
+        (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
+        'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
     
     data_path : str
         Path were the data of the maps are stored and we the cutout are going to be stored. 
     data_save : str 
-    	Path were the datas will be saved. 
-    file_in : str or array 
-        Name of the .dat contaning the values of the power spectrum given by CAMB.
-        Or array containing the power spectrum to generate random maps in Kelvin. 
-    nside : int
-        Resolution of the map. The power spectrum will go until l = 3 * nside -1.
-    maps_unit : str 
-        Unit in which the original map or power spectrum is coming in.       
-    lmax : int 
-        Maximum Multipole desired or that can be reach by the data, in which case lmax = 3*nside-1
-    types : str 
-    	type of CMB map you want to produce. 1. random 2. from CAMB 3. from CITA 4. from SO 5. from Sehgal.
-    unit_out : str 
-    	Unit in which you want to get your CMB map in. Can be : 'K', 'mK', 'Jysr', 'MJysr', 'RJ'
-    freq : float 
-    	frequency in which you want to produce a CMB map. Has to be given on Hz. 
-    lensed : bool 
-    	if True select the lensed CMB map when possible. This is only possible for 'CITA' and 'Sehgal.'
-    nside_out : int 
-    	If you wish to change the nside of the CMB map, this is avalaible for 'CITA', 'Sehgal' and 'SO'.
+    	Path were the datas will be saved.
         
     Returns
     -------
@@ -378,170 +386,71 @@ def Simulate_CMB(data_path,data_save,file_in,nside,maps_unit,lmax,types,unit_out
         Contaning the CMB map. 
 
     """
-    
-    if types == 'random':
-               
-        #Compute and convert the random map : 	
-	CMB = hp.sphtfunc.synfast(PS=file_in, nside=nside, lmax=lmax, mmax=lmax) 
-            
-        if unit_out == 'K':
-            
-            CMB = CMB
-            
-        if unit_out =='mK':
                 
-            CMB=CMB*10**6
-
-        if unit_out == 'MJysr':  
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-        if unit_out == 'Jysr': 
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-            CMB = CMB*10**6
-            
-        if unit_out == 'RJ': 
-            
-             CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=True, rj2cmb=False)
-                
-    if types == 'CAMB':
+    if cl_file is not None:
     
         #Load the datas : 
-        data = np.loadtxt(data_path + file_name)
-        TT_data = data[:,1] # Take only the first column, which is the temperature T
+        data = np.loadtxt(cl_file)
+		ell = data[:,0]
+        TT = data[:,1] * 2 * np.pi / ell / (ell+1)  # Take only the first column, which is the temperature T
 
-        #Vairables : 
-        ell = np.arange(2,lmax) #Array going from 2 to lmax
-        ellfactor = ell*(ell+1)/(2.*np.pi) #Array containing all the values of the factor used in CMB science 
-
-        TT = TT_data[ell] / ellfactor #The file given by CAMB is the power spectrum multiplied by this factor 
         #Because the monopole and dipole are not in the data of the power spectrum given by CAMB we need to add them back
         #They need to be 0 because we usually remove them no to influence our studies. 
-        TT_1 = np.insert(TT,0,0)
-        TT_final = np.insert(TT_1,0,0)
-
-        fb.file2FITS(data=TT_final,dtype=np.float32,data_path=data_save,name_save='TT_CMB_CAMB_'+str(nside), overwrite=True)
+        TT_final = np.insert(TT,[0],[0,0])
 
         #Compute the CMB map from the power spectrum :
-        CMB = hp.sphtfunc.synfast(TT_final, nside, lmax=lmax, mmax=lmax, alm=False, pol=False, pixwin=False)
+        CMB = hp.sphtfunc.synfast(TT_final, nside_out, lmax = lmax)
+ 
+    else: 
         
-        #Convert the map from micro to ... : 
-        if unit_out == 'K':
-            
-            CMB = CMB*10**-6
-            
-        if unit_out =='mK':
-                
-            CMB=CMB
-
-        if unit_out == 'MJysr':  
-                
-            CMB = CMB*10**-6
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-        if unit_out == 'Jysr': 
-                
-            CMB = CMB*10**-6
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=False, rj2cmb=False)
-                
-            CMB = CMB*10**6
-            
-        if unit_out == 'RJ': 
-        
-            CMB = CMB*10**-6
-            
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                          cmb2rj=True, rj2cmb=False) 
-        
-    if types == 'CITA' or types == 'Sehgal' or types =='SO' : 
-        
-        if types == 'CITA':
+        if template == 'CITA':
         
             if lensed == True: 
         
-                CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='lensed_alm.fits', nside=4096,
-                               lmax=4096*3-1)
+                CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='lensed_alm.fits', nside=4096, lmax=4096*3-1)
 
             else: 
             
-                CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='unlensed_alm.fits', nside=4096,
-                               lmax=4096*3-1)      
+                CMB = alm2map_CITA(data_path='/vol/arc3/data1/sz/CITA/',file_name='unlensed_alm.fits', nside=4096, lmax=4096*3-1)      
     
-        if types == 'SO': 
+        if template == 'SO': 
 
             data_path = '/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
             file_name = 'Sehgalsimparams_healpix_4096_KappaeffLSStoCMBfullsky_phi_SimLens_Tsynfastnopell_fast_lmax8000_nside4096_interp2.5_method1_1_lensed_map.fits'
-            CMB = hp.read_map(data_path + file_name)
 
-
-        if types == 'Sehgal':
+        if template == 'Sehgal':
 
             data_path = '/vol/arc3/data1/sz/Sehgal/'
-            data_save = '/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/Sehgal/'
 
             if lensed == True:
 
                 file_name = '030_lensedcmb_healpix.fits'
-                CMB = hp.read_map(data_path + file_name)
 
             else: 
 
                 file_name = '030_unlensedcmb_healpix.fits'
-                CMB = hp.read_map(data_path + file_name)
 
+        CMB = hp.read_map(data_path + file_name)
 
-            #Create y_kSZ map : 
-            conv = conv_vector(30)
-            CMB = (CMB / conv)*T_CMB*10**6
+    #Re-bin map if necessary
+    if hp.get_nside(CMB) != nside_out:
+        radio_ps = hp.pixelfunc.ud_grade(CMB, nside_out = nside_out)
 
-        if unit_out == 'K':
+    #Smooth map if necessary
+    if beam_FWHM is not None:
+        print("begin smoothing")
+        CMB = hp.sphtfunc.smoothing(CMB, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
-            CMB = CMB*10**-6
+    #Convert units if necessary
+    if unit == "mjy":
+        CMB = convert_units(freq, CMB/1e6, cmb2mjy=True)
+    elif unit == "cmb":
+        CMB /= 1e6
+    elif unit == "rj":
+        CMB = convert_units(freq, CMB/1e6, cmb2rj=True)
+    else:
+        print("Waring: Unknown unit! Output will be in MJy/sr")   
 
-        if unit_out =='mK':
-
-            CMB=CMB
-
-        if unit_out == 'MJysr':  
-
-            CMB = CMB*10**-6
-
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                              cmb2rj=False, rj2cmb=False)
-
-        if unit_out == 'Jysr': 
-
-            CMB = CMB*10**-6
-
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=True, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                              cmb2rj=False, rj2cmb=False)
-
-            CMB = CMB*10**6
-
-        if unit_out == 'RJ': 
-
-            CMB = CMB*10**-6
-
-            CMB = convert_units(freq=freq, values=CMB, cmb2mjy=False, mjy2cmb=False, rj2mjy=False, mjy2rj=False, 
-                              cmb2rj=True, rj2cmb=False) 
-
-        if nside_out < nside or nside_out > nside:
-		
-	    CMB = hp.pixelfunc.ud_grade(map_in=CMB, nside_out=nside_out)
-
-        else: 
-
-            CMB = CMB    
-   
     return(CMB)
 
 
@@ -998,16 +907,16 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
     foregrounds = np.zeros(hp.nside2npix(512))
     rj2mjy_factor = sz.convert_units(freq, 1e-6, rj2mjy = True)
     
-    if np.sum("gal_synchrotron" == components) == 1:
+    if "gal_synchrotron" in components:
         foregrounds += sky.synchrotron(freq/1e9)[0,:] * rj2mjy_factor
 
-    if np.sum("gal_dust" == components) == 1:
+    if "gal_dust" in components:
         foregrounds += sky.dust(freq/1e9)[0,:] * rj2mjy_factor
           
-    if np.sum("gal_freefree" == components) == 1:
+    if "gal_freefree" in components:
         foregrounds += sky.freefree(freq/1e9)[0,:] * rj2mjy_factor
         
-    if np.sum("gal_ame" == components) == 1:
+    if "gal_ame" in components:
         foregrounds += sky.ame(freq/1e9)[0,:] * rj2mjy_factor
 
     #Define smoothing kernal, upgrade, and smooth map
@@ -1074,7 +983,7 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
         lmax = int(3*nside_out-1)
     
     #Define path to data and frequencies
-    path = "/media/jens/SSD/stuff/so/"    
+    path = "/vol/arc3/data1/sz/SO_sky_model/sky_maps/"    
     nu = np.array([27,30,39,44,70,93,100,143,145,217,225,280,353])*1e9
     nu_names = ['027','030','039','044','070','093','100','143','145','217','225','280','353']
 
@@ -1122,23 +1031,42 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     return(np.float32(radio_ps))
 
 
-def ccat_sky_model(freq, sensitivity = None, components = "all", red_noise = False, beam_FWHM = None, nside_out = 4096, lmax = None, template = "SO", unit = "cmb"):
-    '''Computes an all-sky radio point source map at a given frequency and nside based on 
-    the simulations provided by Sehgal et al. (2010), which have been recalibrated by the
-    SO collaboration. Du to the complex SEDs of the radio sources, bilinear interpolation
-    is applied for input frequencies between 27 and 353 GHz. For higher frequencies, a null
-    map is returned.
+def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = False, cl_file = None, lensed = True, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"):
+
+    '''Computes an all-sky map of the simulated microwave sky at the specified frequency. 
+    The CCAT-prime sky model uses all-sky templates in the healpix format and includes the
+    most important galactic foregrounds, extragalactic backgrounds, the tSZ and kSZ effects 
+    of galaxy clusters, and instrumental white/red noise. The individual components can be
+    selectively switched on and of.
 
     Parameters
     ----------
     freq: float or float array
         Frequency of the output map in Hz.
+    sensitivity: float
+        sensitivity of the instrument in units of micro K_CMB - arcmin. Default: None
+    components: string or list of stings
+        List containing the names of the components to be included in the sky model.
+	Any combination of the following individual components is possible: "gal_synchrotron", 
+	"gal_dust", "gal_freefree", "gal_ame", "cib", "radio_ps", "cmb", "tsz", "ksz". All 
+	components are used if components is set to "all". Default: "all"
+    red_noise: bool
+        If True, a realistic white noise + red noise atmospheric model is added to the
+	sky model in case the imput frequency is a valid SO or CCAT-prime central
+        band frequency, i.e. 27, 29, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz.
+	Default: False
+    cl_file: string
+        name of a file containing a CMB power spectrum computed e.g. with CAMP. The
+	first column of the file has to correspond to ell, the second column to 
+	Cl ell(ell+1)/2pi. If set, a random realization of the CMB based on the provided
+	powerspectrum will be added to the data.
+    lensed: bool
+        If True, lensed SO, Sehgal and CITA CMB maps will be used. Default: True 
     nside_out: float
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
     lmax: float
-        Maximum value of the multipolemoment at which the atmospheric power spectrum
-        wil be computed. Default: 3*nside_out-1            
+        Maximum value of the multipolemoment. Default: 3*nside_out-1            
     beam_FWHM: bool, optional
         If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
         in units of arcmin is given by the provided value. Default: None
@@ -1155,8 +1083,8 @@ def ccat_sky_model(freq, sensitivity = None, components = "all", red_noise = Fal
 
     Returns
     -------
-    radio_ps: float array
-        Healpix all-sky map of the radio point source emission at the specified frequency.
+    all_sky_map: float array
+        Healpix all-sky map of the microwave sky at the specified frequency and nside.
     '''
 
     if lmax is None:
@@ -1167,31 +1095,36 @@ def ccat_sky_model(freq, sensitivity = None, components = "all", red_noise = Fal
 
     all_sky_map = np.zeros(hp.nside2npix(4096))
 
-    if np.sum("gal_synchrotron" == components) == 1:
+    if ("gal_synchrotron" in components) or ("gal_dust" in components) or ("gal_freefree" in components) or ("gal_ame" in components):
         all_sky_map += simulate_gal_foregrounds(freq, components, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit)
 
-    if np.sum("cib" == components) == 1:
+    if "cib" in components:
         all_sky_map += simulate_cib(freq, nside_out = nside_out, beam_FWHM = None, template = template, unit = unit):
 
-    if np.sum("radio_ps" == components) == 1:
+    if "radio_ps" in components:
         all_sky_map += simulate_radio_ps(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
 
-    if np.sum("cmb" == components) == 1:
+    if "cmb" in components:
+        all_sky_map += simulate_cmb(freq, cl_file = cl_file, lensed = lensed, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
+
+    if "tsz" in components:
         all_sky_map += 
 
-    if np.sum("tsz" == components) == 1:
-        all_sky_map += 
-
-    if np.sum("ksz" == components) == 1:
+    if "ksz" in components:
         all_sky_map += 
 
     if red_noise is not False:
+        if sensitivity is not None:
+            print("Warning! You request to apply both red noise + white noise and white noise. The White noise sensitivity parameter will be overwritten to None. If this is not what you want than check the settings and re-run.")
+            sensitivity = None
         all_sky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit):
 
-	if sensitivity is not None and red_noise is False:
+    if sensitivity is not None and red_noise is False:
         all_sky_map += 
 
     #Smooth map if necessary
     if beam_FWHM is not None:
         print("begin smoothing")
         all_sky_map = hp.sphtfunc.smoothing(all_sky_map, iter = 1, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
+
+    return(all_sky_map)

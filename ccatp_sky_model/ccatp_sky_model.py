@@ -555,7 +555,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
 
     #Re-bin map if necessary
     if hp.get_nside(CMB) != nside_out:
-        radio_ps = hp.pixelfunc.ud_grade(CMB, nside_out = nside_out)
+        CMB = hp.pixelfunc.ud_grade(CMB, nside_out = nside_out)
 
     #Smooth map if necessary
     if beam_FWHM is not None:

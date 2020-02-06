@@ -325,6 +325,7 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
         T = hp.fitsfunc.read_map(path + "SO_CIB_T_DUST_4096.fits", dtype = np.float32)
         beta = hp.fitsfunc.read_map(path + "SO_CIB_beta_DUST_4096.fits", dtype = np.float32)
         f_0 = 353e9
+	
     elif template == "CITA":
         path = "/vol/arc3/data1/sz/CCATp_sky_model/workspace_jens/cita_components/"
         A = hp.fitsfunc.read_map(path + "CITA_CIB_A_DUST_4096.fits", dtype = np.float32)    
@@ -415,6 +416,11 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
 
     #Interpolate data points
     radio_ps = np.zeros(hp.nside2npix(4096))
+
+    if template != "SO" and template != "CITA":
+        print("Waring: Unknown template requested! Output will be based on SO sky model")
+        template = "SO"	
+	
     if template == "SO":
         
         if freq > 353e9:
@@ -511,7 +517,11 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         CMB = hp.sphtfunc.synfast(TT_final, nside_out, lmax = lmax)
  
     else: 
-        
+
+        if template != "SO" and template != "CITA" and template != "Sehgal":
+            print("Waring: Unknown template requested! Output will be based on SO sky model")
+            template = "SO"			
+		
         if template == 'CITA':
         
             if lensed == True: 
@@ -599,6 +609,10 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     """
 
     #Read data
+    if template != "SO" and template != "CITA" and template != "Sehgal":
+        print("Waring: Unknown template requested! Output will be based on SO sky model")
+        template = "SO"
+
     if template == 'SO':
         
         data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
@@ -688,7 +702,12 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     kSZ: float array
         Healpy all-sky map contaning the kSZ map at a given frequency. 
     """
-        
+
+    #Read data
+    if template != "SO" and template != "CITA" and template != "Sehgal":
+        print("Waring: Unknown template requested! Output will be based on SO sky model")
+        template = "SO"
+
     if template == 'SO':
         
         data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
@@ -780,7 +799,7 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     else:
         print("Waring: Unknown unit! Output will be in K_CMB")
     
-    return(noise_map)
+    return(np.float32(noise_map))
 
 
 def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, unit = "cmb"):

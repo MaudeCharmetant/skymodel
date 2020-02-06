@@ -992,7 +992,7 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
 
     if out_file is not None:
         print("The result will be written to " + out_file)
-        hp.fitsfunc.write_map(out_file, allsky_map, dtype=np.float32)
+        hp.fitsfunc.write_map(out_file, allsky_map, overwrite = True, dtype = np.float32)
         allsky_map = None
 
     print("Done!")

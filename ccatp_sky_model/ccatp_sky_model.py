@@ -526,11 +526,11 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         
             if lensed == True: 
         
-                CMB = hp.read_map('/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude'+' CMB_lensed_CITA_mK', dtype = np.float32)
+                CMB = hp.read_map('/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/'+' CMB_lensed_CITA_mK', dtype = np.float32)
 
             else: 
             
-                CMB = hp.read_map('/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude'+' CMB_unlensed_CITA_mK', dtype = np.float32)     
+                CMB = hp.read_map('/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/'+' CMB_unlensed_CITA_mK', dtype = np.float32)     
     
         if template == 'SO': 
 

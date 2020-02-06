@@ -537,6 +537,8 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
             data_path = '/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
             file_name = 'Sehgalsimparams_healpix_4096_KappaeffLSStoCMBfullsky_phi_SimLens_Tsynfastnopell_fast_lmax8000_nside4096_interp2.5_method1_1_lensed_map.fits'
 
+            CMB = hp.read_map(data_path + file_name, dtype = np.float32)		
+		
         if template == 'Sehgal':
 
             data_path = '/vol/arc3/data1/sz/Sehgal/'
@@ -549,7 +551,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
 
                 file_name = '030_unlensedcmb_healpix.fits'
 
-        CMB = hp.read_map(data_path + file_name, dtype = np.float32)
+            CMB = hp.read_map(data_path + file_name, dtype = np.float32) * convert_units(30e9, 1, mjy2cmb=True)
 
     #Re-bin map if necessary
     if hp.get_nside(CMB) != nside_out:
@@ -633,7 +635,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         file_in='030_tsz_healpix.fits'
         
         #Create Compton y-map : 
-        tSZ_30GHz = hp.read_map(data_path + file_in, dtype = np.float32) * convert_units(freq, 1e-6, mjy2cmb=True)
+        tSZ_30GHz = hp.read_map(data_path + file_in, dtype = np.float32) * convert_units(30e9, 1e-6, mjy2cmb=True)
            
         x_nu = np.array((h*30e9)/(k_B*T_CMB))    
         tSZ_SED = ((x_nu*(np.exp(x_nu)+1)/(np.exp(x_nu)-1))-4)
@@ -726,7 +728,7 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         file_in = '030_ksz_healpix.fits'  
 
         #Create compton-y map : 
-        kSZ = hp.read_map(data_path + file_in, dtype = np.float32) * convert_units(freq, 1e-6, mjy2cmb=True)
+        kSZ = hp.read_map(data_path + file_in, dtype = np.float32) * convert_units(30e9, 1e-6, mjy2cmb=True)
  
     #Re-bin map if necessary
     if hp.get_nside(kSZ) != nside_out:

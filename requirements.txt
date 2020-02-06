@@ -3,4 +3,4 @@ numpydoc
 healpy
 astropy
 pysm
-
+tqdm 

@@ -689,19 +689,19 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         Healpy all-sky map contaning the kSZ map at a given frequency. 
     """
         
-    if simu == 'SO':
+    if template == 'SO':
         
         data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
         file_in = '148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
         kSZ = hp.read_map(data_path + file_in)
         
-    if simu == 'CITA':
+    if template == 'CITA':
         
         data_path = '/vol/arc3/data1/sz/CITA/'
         file_in = 'ksz.fits'
         kSZ = hp.read_map(data_path + file_in)
         
-    if simu == 'Sehgal' : 
+    if template == 'Sehgal' : 
               
         data_path='/vol/arc3/data1/sz/Sehgal/'
         file_in = '030_ksz_healpix.fits'  

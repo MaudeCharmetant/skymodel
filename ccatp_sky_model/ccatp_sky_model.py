@@ -246,7 +246,7 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
 
     #Compute component maps
     foregrounds = np.zeros(hp.nside2npix(512))
-    rj2mjy_factor = sz.convert_units(freq, 1e-6, rj2mjy = True)
+    rj2mjy_factor = convert_units(freq, 1e-6, rj2mjy = True)
     
     if "gal_synchrotron" in components:
         foregrounds += sky.synchrotron(freq/1e9)[0,:] * rj2mjy_factor
@@ -273,9 +273,9 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
     if unit == "mjy":
         None
     elif unit == "cmb":
-        foregrounds = sz.convert_units(freq, foregrounds, mjy2cmb=True)
+        foregrounds = convert_units(freq, foregrounds, mjy2cmb=True)
     elif unit == "rj":
-        foregrounds = sz.convert_units(freq, foregrounds, mjy2rj=True)
+        foregrounds = convert_units(freq, foregrounds, mjy2rj=True)
     else:
         print("Waring: Unknown unit! Output will be in K_CMB")
         
@@ -410,7 +410,7 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
 
     for i in np.arange(len(nu)):
         file_name = path + nu_names[i] + "_rad_pts_healpix_nopell_Nside4096_DeltaT_uK_fluxcut148_7mJy_lininterp.fits"
-        data[i,:] = hp.fitsfunc.read_map(file_name, dtype = np.float32) * sz.convert_units(nu[i], 1e-6, cmb2mjy=True)
+        data[i,:] = hp.fitsfunc.read_map(file_name, dtype = np.float32) * convert_units(nu[i], 1e-6, cmb2mjy=True)
 
     #Interpolate data points
     radio_ps = np.zeros(hp.nside2npix(4096))
@@ -841,11 +841,11 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
 
         #Convert units if necessary
         if unit == "mjy":
-            noise_map = sz.convert_units(freq, noise_map, cmb2mjy=True)
+            noise_map = convert_units(freq, noise_map, cmb2mjy=True)
         elif unit == "cmb":
             None
         elif unit == "rj":
-            noise_map = sz.convert_units(freq, noise_map, cmb2rj=True)
+            noise_map = convert_units(freq, noise_map, cmb2rj=True)
         else:
             print("Waring: Unknown unit! Output will be in K_CMB")
 

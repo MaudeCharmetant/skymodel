@@ -940,7 +940,7 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
         components = ["gal_synchrotron", "gal_dust", "gal_freefree", "gal_ame", "cib", "radio_ps", "cmb", "tsz", "ksz"]
 
     #build sky model from the individual components
-    allsky_map = np.zeros(hp.nside2npix(4096))
+    allsky_map = np.zeros(hp.nside2npix(nside_out))
 
     if ("gal_synchrotron" in components) or ("gal_dust" in components) or ("gal_freefree" in components) or ("gal_ame" in components):
         print("Computing Galactic foregounds...")

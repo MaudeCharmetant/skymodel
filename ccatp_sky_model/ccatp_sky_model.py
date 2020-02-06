@@ -712,13 +712,13 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         
         data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
         file_in = '148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
-        kSZ = hp.read_map(data_path + file_in, dtype = np.float32)
+        kSZ = hp.read_map(data_path + file_in, dtype = np.float32)*1e-6
         
     if template == 'CITA':
         
         data_path = '/vol/arc3/data1/sz/CITA/'
         file_in = 'ksz.fits'
-        kSZ = hp.read_map(data_path + file_in, dtype = np.float32)
+        kSZ = hp.read_map(data_path + file_in, dtype = np.float32)*1e-6
         
     if template == 'Sehgal' : 
               

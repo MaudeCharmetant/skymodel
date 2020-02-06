@@ -3,6 +3,7 @@ import healpy as hp
 from astropy.io import fits
 from astropy import constants as cst
 import pysm
+from tqdm import tqdm 
 from pysm.nominal import models
 
 k_B = cst.k_B.si.value

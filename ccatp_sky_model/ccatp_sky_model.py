@@ -555,7 +555,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
 
     #Re-bin map if necessary
     if hp.get_nside(CMB) != nside_out:
-        radio_ps = hp.pixelfunc.ud_grade(CMB, nside_out = nside_out)
+        CMB = hp.pixelfunc.ud_grade(CMB, nside_out = nside_out)
 
     #Smooth map if necessary
     if beam_FWHM is not None:
@@ -814,7 +814,7 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
     ----------
     freq: float or float array
         Frequency of the output map in Hz. Must be a valid SO or CCAT-prime central
-        band frequency, i.e. 27, 29, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz.
+        band frequency, i.e. 27, 39, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz.
     nside_out: float
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
@@ -839,7 +839,7 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
         lmax = 3*nside_out-1
 
     #Define frequencies and noise characteristics of the SO and CCAT-prime
-    nu = np.array([27, 29, 93, 145, 225, 279, 220, 280, 350, 405, 860])*1e9
+    nu = np.array([27, 39, 93, 145, 225, 279, 220, 280, 350, 405, 860])*1e9
     N_white = np.array([2.351167E-04, 6.414462E-05, 2.975014E-06, 3.458125E-06, 2.011171E-05, 1.272230E-04, 1.8e-5, 6.4e-5, 9.3e-4, 1.2e-2, 2.8e4])
     N_red = np.array([9.248376E-06, 2.236786E-06, 2.622661E-05, 3.298953E-04, 1.462620E-02, 8.579506E-02, 1.6e-2, 1.1e-1, 2.7e0, 1.7e1, 6.1e6])
     ell_knee = 1000 
@@ -849,7 +849,7 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
     index = freq == nu
     if np.sum(index) == 0:
 
-        print("Warning: Input frequency is not a valid SO or CCAT-prime band. Try 27, 29, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz")
+        print("Warning: Input frequency is not a valid SO or CCAT-prime band. Try 27, 39, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz")
         return(None)
 
     else:
@@ -897,7 +897,7 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
     red_noise: bool
         If True, a realistic white noise + red noise atmospheric model is added to the
 	sky model in case the imput frequency is a valid SO or CCAT-prime central
-        band frequency, i.e. 27, 29, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz.
+        band frequency, i.e. 27, 39, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz.
 	    Default: False
     cl_file: string
         name of a file containing a CMB power spectrum computed e.g. with CAMP. The
@@ -940,7 +940,7 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
         components = ["gal_synchrotron", "gal_dust", "gal_freefree", "gal_ame", "cib", "radio_ps", "cmb", "tsz", "ksz"]
 
     #build sky model from the individual components
-    allsky_map = np.zeros(hp.nside2npix(4096))
+    allsky_map = np.zeros(hp.nside2npix(nside_out))
 
     if ("gal_synchrotron" in components) or ("gal_dust" in components) or ("gal_freefree" in components) or ("gal_ame" in components):
         print("Computing Galactic foregounds...")

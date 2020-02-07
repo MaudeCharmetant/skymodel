@@ -1,10 +1,11 @@
 ccatp_sky_model
 ===============
 
-**ccatp_sky_model** provides a model of the microwave sky that will be used for 
-   science forecasts for the CCAT-prime survey. The sky model combines maps from
-   numerical simulations of extragalactic sources with the most recent Galactic
-   foregrounds maps based on Planck data.
+**ccatp_sky_model** 
+provides a model of the microwave sky that will be used for 
+science forecasts for the CCAT-prime survey. The sky model combines maps from
+numerical simulations of extragalactic sources with the most recent Galactic
+foregrounds maps based on Planck data.
 
 
 Install the CCATp sky model

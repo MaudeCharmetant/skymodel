@@ -7,6 +7,35 @@ ccatp_sky_model
    foregrounds maps based on Planck data.
 
 
+Install the CCATp sky model
+===========================
+
+ccatp_sky_model is a pure Python module and should therefore be pretty easy to install.
+All you'll need is numpy, astropy, PySM, tqdm, and healpy.
+
+.. _source:
+
+From source
+-----------
+
+ccatp_sky_model is developed on `GitHub <https://github.com/MaudeCharmetant/CCATp_sky_model>`_ and can be 
+installed by cloning the source repository and install from there
+
+.. code-block:: bash
+
+    git clone https://github.com/MaudeCharmetant/CCATp_sky_model.git
+    cd CCATp_sky_model
+    python setup.py install
+
+
+Test the installation
+=====================
+
+To make sure that the installation went alright and to familiarise yourself with 
+ccatp_sky_model, we recommend running the provided jupyter notebooks that can be found in
+the /examples directory. 
+
+
 Copyright 2020 Maude Charmetant, Jens Erler, and contributors.
 
 The ccatp_sky_model is free software made available under the MIT License. For details see

@@ -2,6 +2,7 @@ import numpy as np
 import healpy as hp
 from astropy.io import fits
 from astropy import constants as cst
+from astropy.coordinates import SkyCoord
 import pysm
 from tqdm import tqdm 
 from pysm.nominal import models
@@ -278,6 +279,7 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
     elif unit == "rj":
         foregrounds = convert_units(freq, foregrounds, mjy2rj=True)
     else:
+        foregrounds = convert_units(freq, foregrounds, mjy2cmb=True)
         print("Waring: Unknown unit! Output will be in K_CMB")
         
     return(foregrounds)
@@ -354,6 +356,7 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     elif unit == "rj":
         cib = convert_units(freq, cib, mjy2rj=True)
     else:
+        foregrounds = convert_units(freq, foregrounds, mjy2cmb=True)
         print("Waring: Unknown unit! Output will be in K_CMB")
 
     #Return output
@@ -449,6 +452,7 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     elif unit == "rj":
         radio_ps = convert_units(freq, radio_ps, mjy2rj=True)
     else:
+        foregrounds = convert_units(freq, foregrounds, mjy2cmb=True)
         print("Waring: Unknown unit! Output will be in K_CMB")
 
     #Return output
@@ -524,23 +528,29 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
 		
         if template == 'CITA':
         
-            if lensed == True: 
-        
-                CMB = hp.read_map('/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/'+'CMB_lensed_CITA_mK', dtype = np.float32)
+            data_path = ' /vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/'	
+	
+            if lensed == True:
+			
+                file_name = 'CMB_lensed_CITA_mK'
 
-            else: 
+            else:
+		
+                file_name = 'CMB_unlensed_CITA_mK'
             
-                CMB = hp.read_map('/vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/'+'CMB_unlensed_CITA_mK', dtype = np.float32)     
+            CMB = hp.read_map(data_path + file_name, dtype = np.float32)     
     
-        if template == 'SO': 
+        elif template == 'SO': 
 
             data_path = '/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
             file_name = 'Sehgalsimparams_healpix_4096_KappaeffLSStoCMBfullsky_phi_SimLens_Tsynfastnopell_fast_lmax8000_nside4096_interp2.5_method1_1_lensed_map.fits'
 
             CMB = hp.read_map(data_path + file_name, dtype = np.float32)		
 		
-        if template == 'Sehgal':
-
+        elif template == 'Sehgal':
+		
+            data_path = '/vol/arc3/data1/sz/Sehgal/'
+	
             if lensed == True:
 
                 file_name = '030_lensedcmb_healpix.fits'
@@ -549,7 +559,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
 
                 file_name = '030_unlensedcmb_healpix.fits'
 
-            CMB = hp.read_map('/vol/arc3/data1/sz/Sehgal/' + file_name, dtype = np.float32) * convert_units(30e9, 1, mjy2cmb=True)
+            CMB = hp.read_map(data_path + file_name, dtype = np.float32) * convert_units(30e9, 1, mjy2cmb=True)
 
     #Re-bin map if necessary
     if hp.get_nside(CMB) != nside_out:
@@ -568,6 +578,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     elif unit == "rj":
         CMB = convert_units(freq, CMB/1e6, cmb2rj=True)
     else:
+        CMB /= 1e6	
         print("Waring: Unknown unit! Output will be in K_CMB")   
 
     return(CMB)
@@ -620,14 +631,14 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         y_map = hp.read_map(data_path + file_in, dtype = np.float32)
 
         
-    if template == 'CITA': 
+    elif template == 'CITA': 
         
         data_path='/vol/arc3/data1/sz/CITA/'
         file_in = 'tsz.fits'
         y_map = hp.read_map(data_path + file_in, dtype = np.float32)        
 
         
-    if template == 'Sehgal': 
+    elif template == 'Sehgal': 
         
         data_path='/vol/arc3/data1/sz/Sehgal/'
         file_in='030_tsz_healpix.fits'
@@ -714,13 +725,13 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         file_in = '148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
         kSZ = hp.read_map(data_path + file_in, dtype = np.float32)*1e-6
         
-    if template == 'CITA':
+    elif template == 'CITA':
         
         data_path = '/vol/arc3/data1/sz/CITA/'
         file_in = 'ksz.fits'
         kSZ = hp.read_map(data_path + file_in, dtype = np.float32)*1e-6
         
-    if template == 'Sehgal' : 
+    elif template == 'Sehgal' : 
               
         data_path='/vol/arc3/data1/sz/Sehgal/'
         file_in = '030_ksz_healpix.fits'  

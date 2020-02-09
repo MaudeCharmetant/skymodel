@@ -8,7 +8,7 @@ from tqdm import tqdm
 from pysm.nominal import models
 import os.path
 
-os_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "masks")
+os_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "masks/")
 
 k_B = cst.k_B.si.value
 h = cst.h.si.value

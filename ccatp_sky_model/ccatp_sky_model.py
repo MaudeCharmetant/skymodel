@@ -230,7 +230,7 @@ def sigmoid_filter(l_0, d_l, lmax):
     '''    
     
     ell = np.arange(lmax)
-    window = 1/(1+np.exp((-l_0+200)/d_l))
+    window = 1/(1+np.exp((-ell+l_0)/d_l))
     
     return(window)
 

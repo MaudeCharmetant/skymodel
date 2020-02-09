@@ -206,7 +206,32 @@ def project_maps(allsky_map, RA, DEC, map_size = 10, pixel_size = 0.4):
 			maps[i,:,:] = hp.visufunc.gnomview(allsky_map, coord = ['G', 'C'], rot=[RA[i],DEC[i]], reso = pixel_size, xsize = npix, return_projected_map = True, no_plot=True) 
 
 	return(maps)
+
+
+def sigmoid_filter(l_0, d_l, lmax):
     
+    '''Computes a sigmoid-shaped filer high-pass window in spherical harmonic space. 
+    
+    Parameters
+    ----------
+    l_0: float
+        Determines the spatial scale above which the sky signal will be filtered.
+    d_l: float
+        Determines the slope of the widow.
+    lmax: float
+        Maximum value of ell to be used
+        
+    Returns
+    -------
+    window: float array
+        Computed window in spherical harmonic space
+    '''    
+    
+    ell = np.arange(lmax)
+    window = 1/(1+np.exp((-l_0+200)/d_l))
+    
+    return(window)
+
 
 def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = None, beam_FWHM = None, unit = "cmb"):
 

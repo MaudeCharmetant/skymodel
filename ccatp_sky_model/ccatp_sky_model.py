@@ -117,8 +117,8 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 	mask: float array, optional
 		All-sky healpix mask. If a mask is used data points will 
 		only be drawn in areas that are not masked. If mask is set
-		to "CCAT-p" or "SPT", the respective survey masks will be used.
-		Default: None
+		to "CCAT-p", "SPT", or "Dust", the respective survey masks 
+		will be used. Default: None
 	radec: bool
 		Determines the coordinate system of the output. If True, 
 		equatorial coordinates will be returned, i.e. RA, DEC (fk5). 
@@ -138,6 +138,8 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 			mask = hp.read_map(os_path + "CCATp_wide_survey_mask.fits")  
 		elif mask == "SPT":
 			mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
+		elif mask == "Dust":
+			mask = hp.read_map(os_path + "galactic_dust_mask.fits")			
 	
 		nside = hp.get_nside(mask)
 

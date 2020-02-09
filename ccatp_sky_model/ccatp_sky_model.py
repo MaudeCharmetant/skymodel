@@ -6,6 +6,9 @@ from astropy.coordinates import SkyCoord
 import pysm
 from tqdm import tqdm 
 from pysm.nominal import models
+import os.path
+
+os_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "masks")
 
 k_B = cst.k_B.si.value
 h = cst.h.si.value
@@ -113,7 +116,9 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 		Number of data points to be drawn
 	mask: float array, optional
 		All-sky healpix mask. If a mask is used data points will 
-		only be drawn in areas that are not masked. Default: None
+		only be drawn in areas that are not masked. If mask is set
+		to "CCAT-p" or "SPT", the respective survey masks will be used.
+		Default: None
 	radec: bool
 		Determines the coordinate system of the output. If True, 
 		equatorial coordinates will be returned, i.e. RA, DEC (fk5). 
@@ -129,6 +134,11 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 		phi = 360 * np.random.random(n)
 		theta = np.arccos(2*np.random.random(n) - 1)*180/np.pi - 90
 	else:
+		if mask == "CCATp":
+			mask = hp.read_map(os_path + "CCATp_wide_survey_mask.fits")  
+		elif mask == "SPT":
+			mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
+	
 		nside = hp.get_nside(mask)
 
 		phi = np.zeros(n)

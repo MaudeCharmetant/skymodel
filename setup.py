@@ -19,7 +19,7 @@ setup(
     license="MIT License",
     description=("A template-based model of the microwave sky for CCAT-p science forecasts"),
     long_description=open("README.rst").read(),
-    package_data={"": ["LICENSE", "AUTHORS.rst"]},
+    package_data={"ccatp_sky_model": ["LICENSE", "masks/*.fits"]}},
     include_package_data=True,
     install_requires=["numpy", "healpy", "astropy", "pysm", "tqdm"],
     classifiers=[

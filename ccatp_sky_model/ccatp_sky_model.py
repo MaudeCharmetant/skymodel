@@ -596,7 +596,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
 
                 file_name = '030_unlensedcmb_healpix.fits'
 
-            CMB = hp.read_map(data_path + file_name, dtype = np.float32) * convert_units(30e9, 1, mjy2cmb=True)
+            CMB = hp.read_map(data_path + file_name, dtype = np.float32) * convert_units(30e9, 1e-6, mjy2cmb=True)
 
     #Re-bin map if necessary
     if hp.get_nside(CMB) != nside_out:
@@ -810,7 +810,7 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     freq: float or float array
         Frequency of the output map in Hz.
     noise_level : float 
-        noise level desired in any units by radians or arcmin.
+        noise level desired in any units of micro K by radians or arcmin.
     nside_out: float
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096

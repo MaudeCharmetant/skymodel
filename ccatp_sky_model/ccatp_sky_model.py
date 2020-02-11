@@ -19,6 +19,7 @@ T_CMB = 2.7255
 def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False, mjy2rj = False, cmb2rj = False, rj2cmb = False):
 
 	'''Convert observed signal at given frequencies to different units. 
+	
 	Parameters
 	----------
 	freq: float or float array
@@ -43,6 +44,7 @@ def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False
 	rj2cmb: bool, optional
 		If True, the input is assumed to be K_RJ, the output will be K_CMB.
 		Default: False
+		
 	Returns
 	-------
 	converted_signal: float or float array
@@ -110,6 +112,7 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 	'''Draws uniformly sampled tuples of coordinates on the sphere. 
 	All-sky masks in the healpix format can be applied, in which case 
 	masked areas will be excluded.
+	
 	Parameters
 	----------
 	n: int
@@ -117,12 +120,13 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 	mask: float array, optional
 		All-sky healpix mask. If a mask is used data points will 
 		only be drawn in areas that are not masked. If mask is set
-		to "CCAT-p", "SPT", or "Dust", the respective survey masks 
-		will be used. Default: None
+		to "CCAT-p", "SPT", "Dust", or "NVSS", the respective 
+		survey masks will be used. Default: None
 	radec: bool
 		Determines the coordinate system of the output. If True, 
 		equatorial coordinates will be returned, i.e. RA, DEC (fk5). 
 		If False, galactic coordinates are returned. Default: True
+		
 	Returns
 	-------
 	phi, theta
@@ -139,7 +143,9 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 		elif mask == "SPT":
 			mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
 		elif mask == "Dust":
-			mask = hp.read_map(os_path + "galactic_dust_mask.fits")			
+			mask = hp.read_map(os_path + "galactic_dust_mask.fits")
+		elif mask == "NVSS":
+			mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits")
 	
 		nside = hp.get_nside(mask)
 
@@ -233,6 +239,53 @@ def sigmoid_filter(l_0, d_l, lmax):
     window = 1/(1+np.exp((-ell+l_0)/d_l))
     
     return(window)
+
+
+def return_mask(survey, nside_out = 256, coord = "G"):
+
+    '''Returns the specified all-sky survey map. 
+    
+    Parameters
+    ----------
+    survey: sting
+        Defines which survey mask will be returned. The options are "CCATp", "SPT",
+        "Dust", and "NVSS". 
+    nside_out: float
+        Healpix nside parameter of the output map. Must be a valid value for nside.
+        Default: 256
+    coord: sting
+        Defines the coordinate system of the output mask. "G" --> Galactic, 
+        "E" --> Ecliptic, "C" --> Equatorial. Default: "G"
+    
+    Returns
+    -------
+    mask: float array
+        Healpix all-sky mask.
+    '''    
+    
+    #read mask
+    if mask == "CCATp":
+        mask = hp.read_map(os_path + "CCATp_wide_survey_mask.fits")  
+    elif mask == "SPT":
+        mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
+    elif mask == "Dust":
+        mask = hp.read_map(os_path + "galactic_dust_mask.fits")
+    elif mask == "NVSS":
+        mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits")
+
+    #change coordinate system if necessary
+    if (coord == "E") or (coord == "C"):
+        mask = hp.ud_grade(mask, nside_out = 2048)
+        r = hp.Rotator(coord = ("G", coord))
+        mask = hp.Rotator.rotate_map_pixel(r, mask)
+        mask = hp.ud_grade(mask, nside_out = 256)
+        mask[mask != 0] = 1
+
+    #Re-bin map if necessary
+    if nside_out != hp.get_nside(mask):
+        mask = hp.ud_grade(mask, nside_out = nside_out)
+        
+    return(mask)
 
 
 def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = None, beam_FWHM = None, unit = "cmb"):

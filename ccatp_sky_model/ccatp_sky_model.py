@@ -392,6 +392,7 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
         in units of arcmin is given by the provided value. Default: None
     template: bool, optional
         Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
@@ -475,6 +476,7 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
         in units of arcmin is given by the provided value. Default: None
     template: bool, optional
         Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
@@ -493,30 +495,54 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     if lmax is None:
         lmax = int(3*nside_out-1)
     
-    #Define path to data and frequencies
-    path = "/vol/arc3/data1/sz/SO_sky_model/sky_maps/"    
-    nu = np.array([27,30,39,44,70,93,100,143,145,217,225,280,353])*1e9
-    nu_names = ['027','030','039','044','070','093','100','143','145','217','225','280','353']
-
-    #Interpolate data points
-    if template != "SO" and template != "CITA":
+    if template != "SO" and template != "CITA" and template != "Sehgal":
         print("Waring: Unknown template requested! Output will be based on SO sky model")
         template = "SO"	
 	
     if template == "SO":
+
+        npix = hp.pixelfunc.nside2npix(4096)
+        radio_ps = np.zeros(npix)
         
-        if freq > 353e9:
+        #Define frequencies
+        nu = np.array([27,30,39,44,70,93,100,143,145,217,225,280,353])*1e9
+        nu_names = ['027','030','039','044','070','093','100','143','145','217','225','280','353']
+
+        #Interpolate data points
+        if freq > np.max(nu):
             print("Warning: Input frequency lies beyoned the 353 GHz. Since higher frequencies are not constraint by simulations, the data will be 0.")
         else:
 		
             #Read data files
-            npix = hp.pixelfunc.nside2npix(nside_out)
             data = np.zeros((len(nu), npix), dtype = np.float32)
-            radio_ps = np.zeros(npix)
 
             for i in np.arange(len(nu)):
                 file_name = data_path + "radio_ps/" + nu_names[i] + "_rad_pts_healpix_nopell_Nside4096_DeltaT_uK_fluxcut148_7mJy_lininterp.fits"
                 data[i,:] = hp.fitsfunc.read_map(file_name, dtype = np.float32) * convert_units(nu[i], 1e-6, cmb2mjy=True)		
+		
+            for i in tqdm(np.arange(npix)):
+                radio_ps[i] = np.interp(freq, nu, data[:,i])
+
+    elif template == "Sehgal":
+
+        npix = hp.pixelfunc.nside2npix(8192)        
+        radio_ps = np.zeros(npix)
+
+        #Define frequencies
+        nu = np.array([30,90,148,219,277,350])*1e9
+        nu_names = ['30','90','148','219','277','350']
+
+        #Interpolate data points
+        if freq > np.max(nu):
+            print("Warning: Input frequency lies beyoned the 350 GHz. Since higher frequencies are not constraint by simulations, the data will be 0.")
+        else:
+		
+            #Read data files
+            data = np.zeros((len(nu), npix), dtype = np.float32)
+
+            for i in np.arange(len(nu)):
+                file_name = data_path + "radio_ps/" + nu_names[i] + "_rad_pts_healpix.fits"
+                data[i,:] = hp.fitsfunc.read_map(file_name, dtype = np.float32)/1e6		
 		
             for i in tqdm(np.arange(npix)):
                 radio_ps[i] = np.interp(freq, nu, data[:,i])
@@ -574,6 +600,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         in units of arcmin is given by the provided value. Default: None
     template: bool, optional
         Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
@@ -682,6 +709,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         in units of arcmin is given by the provided value. Default: None
     template: bool, optional
         Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
@@ -773,6 +801,7 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         in units of arcmin is given by the provided value. Default: None
     template: bool, optional
         Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 

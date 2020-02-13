@@ -121,7 +121,7 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 	mask: float array, optional
 		All-sky healpix mask. If a mask is used data points will 
 		only be drawn in areas that are not masked. If mask is set
-		to "CCAT-p", "SPT", "Dust", or "NVSS", the respective 
+		to "advACT", "SPT", "Dust", or "NVSS", the respective 
 		survey masks will be used. Default: None
 	radec: bool
 		Determines the coordinate system of the output. If True, 
@@ -139,8 +139,8 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 		phi = 360 * np.random.random(n)
 		theta = np.arccos(2*np.random.random(n) - 1)*180/np.pi - 90
 	else:
-		if mask == "CCATp":
-			mask = hp.read_map(os_path + "CCATp_wide_survey_mask.fits")  
+		if mask == "advACT":
+			mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits")  
 		elif mask == "SPT":
 			mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
 		elif mask == "Dust":
@@ -249,7 +249,7 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     Parameters
     ----------
     survey: sting
-        Defines which survey mask will be returned. The options are "CCATp", "SPT",
+        Defines which survey mask will be returned. The options are "advACT", "SPT",
         "Dust", and "NVSS". 
     nside_out: float
         Healpix nside parameter of the output map. Must be a valid value for nside.
@@ -265,8 +265,8 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     '''    
     
     #read mask
-    if mask == "CCATp":
-        mask = hp.read_map(os_path + "CCATp_wide_survey_mask.fits")  
+    if mask == "advACT":
+        mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits")  
     elif mask == "SPT":
         mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
     elif mask == "Dust":
@@ -392,6 +392,7 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
         in units of arcmin is given by the provided value. Default: None
     template: bool, optional
         Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
@@ -408,7 +409,7 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     '''
 
     #Load all-sky parameter value maps
-    if template != "SO" and template != "CITA":
+    if template != "SO" and template != "CITA" and template != "Sehgal":
         print("Waring: Unknown template requested! Output will be based on SO sky model")
         template = "SO"
 
@@ -417,6 +418,12 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
         T = hp.fitsfunc.read_map(data_path + "CIB/SO_CIB_T_DUST_4096.fits", dtype = np.float32)
         beta = hp.fitsfunc.read_map(data_path + "CIB/SO_CIB_beta_DUST_4096.fits", dtype = np.float32)
         f_0 = 353e9
+
+    elif template == "Sehgal":
+        A = hp.fitsfunc.read_map(data_path + "CIB/Sehgal_CIB_A_DUST_8192.fits", dtype = np.float32)    
+        T = hp.fitsfunc.read_map(data_path + "CIB/Sehgal_CIB_T_DUST_8192.fits", dtype = np.float32)
+        beta = hp.fitsfunc.read_map(data_path + "CIB/Sehgal_CIB_beta_DUST_8192.fits", dtype = np.float32)
+        f_0 = 350e9	
 	
     elif template == "CITA":
         A = hp.fitsfunc.read_map(data_path + "CIB/CITA_CIB_A_DUST_4096.fits", dtype = np.float32)    
@@ -475,6 +482,7 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
         in units of arcmin is given by the provided value. Default: None
     template: bool, optional
         Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
@@ -493,30 +501,54 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     if lmax is None:
         lmax = int(3*nside_out-1)
     
-    #Define path to data and frequencies
-    path = "/vol/arc3/data1/sz/SO_sky_model/sky_maps/"    
-    nu = np.array([27,30,39,44,70,93,100,143,145,217,225,280,353])*1e9
-    nu_names = ['027','030','039','044','070','093','100','143','145','217','225','280','353']
-
-    #Interpolate data points
-    if template != "SO" and template != "CITA":
+    if template != "SO" and template != "CITA" and template != "Sehgal":
         print("Waring: Unknown template requested! Output will be based on SO sky model")
         template = "SO"	
 	
     if template == "SO":
+
+        npix = hp.pixelfunc.nside2npix(4096)
+        radio_ps = np.zeros(npix)
         
-        if freq > 353e9:
+        #Define frequencies
+        nu = np.array([27,30,39,44,70,93,100,143,145,217,225,280,353])*1e9
+        nu_names = ['027','030','039','044','070','093','100','143','145','217','225','280','353']
+
+        #Interpolate data points
+        if freq > np.max(nu):
             print("Warning: Input frequency lies beyoned the 353 GHz. Since higher frequencies are not constraint by simulations, the data will be 0.")
         else:
 		
             #Read data files
-            npix = hp.pixelfunc.nside2npix(nside_out)
             data = np.zeros((len(nu), npix), dtype = np.float32)
-            radio_ps = np.zeros(npix)
 
             for i in np.arange(len(nu)):
                 file_name = data_path + "radio_ps/" + nu_names[i] + "_rad_pts_healpix_nopell_Nside4096_DeltaT_uK_fluxcut148_7mJy_lininterp.fits"
                 data[i,:] = hp.fitsfunc.read_map(file_name, dtype = np.float32) * convert_units(nu[i], 1e-6, cmb2mjy=True)		
+		
+            for i in tqdm(np.arange(npix)):
+                radio_ps[i] = np.interp(freq, nu, data[:,i])
+
+    elif template == "Sehgal":
+
+        npix = hp.pixelfunc.nside2npix(8192)        
+        radio_ps = np.zeros(npix)
+
+        #Define frequencies
+        nu = np.array([30,90,148,219,277,350])*1e9
+        nu_names = ['30','90','148','219','277','350']
+
+        #Interpolate data points
+        if freq > np.max(nu):
+            print("Warning: Input frequency lies beyoned the 350 GHz. Since higher frequencies are not constraint by simulations, the data will be 0.")
+        else:
+		
+            #Read data files
+            data = np.zeros((len(nu), npix), dtype = np.float32)
+
+            for i in np.arange(len(nu)):
+                file_name = data_path + "radio_ps/" + nu_names[i] + "_rad_pts_healpix.fits"
+                data[i,:] = hp.fitsfunc.read_map(file_name, dtype = np.float32)/1e6		
 		
             for i in tqdm(np.arange(npix)):
                 radio_ps[i] = np.interp(freq, nu, data[:,i])
@@ -574,6 +606,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         in units of arcmin is given by the provided value. Default: None
     template: bool, optional
         Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
@@ -682,6 +715,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         in units of arcmin is given by the provided value. Default: None
     template: bool, optional
         Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
@@ -773,6 +807,7 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         in units of arcmin is given by the provided value. Default: None
     template: bool, optional
         Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 

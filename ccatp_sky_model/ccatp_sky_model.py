@@ -418,6 +418,12 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
         T = hp.fitsfunc.read_map(data_path + "CIB/SO_CIB_T_DUST_4096.fits", dtype = np.float32)
         beta = hp.fitsfunc.read_map(data_path + "CIB/SO_CIB_beta_DUST_4096.fits", dtype = np.float32)
         f_0 = 353e9
+
+    elif template == "Sehgal":
+        A = hp.fitsfunc.read_map(data_path + "CIB/Sehgal_CIB_A_DUST_8192.fits", dtype = np.float32)    
+        T = hp.fitsfunc.read_map(data_path + "CIB/Sehgal_CIB_T_DUST_8192.fits", dtype = np.float32)
+        beta = hp.fitsfunc.read_map(data_path + "CIB/Sehgal_CIB_beta_DUST_8192.fits", dtype = np.float32)
+        f_0 = 350e9	
 	
     elif template == "CITA":
         A = hp.fitsfunc.read_map(data_path + "CIB/CITA_CIB_A_DUST_4096.fits", dtype = np.float32)    

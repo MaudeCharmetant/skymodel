@@ -121,7 +121,7 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 	mask: float array, optional
 		All-sky healpix mask. If a mask is used data points will 
 		only be drawn in areas that are not masked. If mask is set
-		to "CCAT-p", "SPT", "Dust", or "NVSS", the respective 
+		to "advACT", "SPT", "Dust", or "NVSS", the respective 
 		survey masks will be used. Default: None
 	radec: bool
 		Determines the coordinate system of the output. If True, 
@@ -139,8 +139,8 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 		phi = 360 * np.random.random(n)
 		theta = np.arccos(2*np.random.random(n) - 1)*180/np.pi - 90
 	else:
-		if mask == "CCATp":
-			mask = hp.read_map(os_path + "CCATp_wide_survey_mask.fits")  
+		if mask == "advACT":
+			mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits")  
 		elif mask == "SPT":
 			mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
 		elif mask == "Dust":
@@ -249,7 +249,7 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     Parameters
     ----------
     survey: sting
-        Defines which survey mask will be returned. The options are "CCATp", "SPT",
+        Defines which survey mask will be returned. The options are "advACT", "SPT",
         "Dust", and "NVSS". 
     nside_out: float
         Healpix nside parameter of the output map. Must be a valid value for nside.
@@ -265,8 +265,8 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     '''    
     
     #read mask
-    if mask == "CCATp":
-        mask = hp.read_map(os_path + "CCATp_wide_survey_mask.fits")  
+    if mask == "advACT":
+        mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits")  
     elif mask == "SPT":
         mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
     elif mask == "Dust":

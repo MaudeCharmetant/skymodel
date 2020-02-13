@@ -9,6 +9,7 @@ from pysm.nominal import models
 import os.path
 
 os_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "masks/")
+data_path = "/vol/arc3/data1/sz/CCATp_sky_model/templates/"
 
 k_B = cst.k_B.si.value
 h = cst.h.si.value
@@ -412,17 +413,15 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
         template = "SO"
 
     if template == "SO":
-        path = "/vol/arc3/data1/sz/CCATp_sky_model/workspace_jens/so_components/"
-        A = hp.fitsfunc.read_map(path + "SO_CIB_A_DUST_4096.fits", dtype = np.float32)    
-        T = hp.fitsfunc.read_map(path + "SO_CIB_T_DUST_4096.fits", dtype = np.float32)
-        beta = hp.fitsfunc.read_map(path + "SO_CIB_beta_DUST_4096.fits", dtype = np.float32)
+        A = hp.fitsfunc.read_map(data_path + "CIB/SO_CIB_A_DUST_4096.fits", dtype = np.float32)    
+        T = hp.fitsfunc.read_map(data_path + "CIB/SO_CIB_T_DUST_4096.fits", dtype = np.float32)
+        beta = hp.fitsfunc.read_map(data_path + "CIB/SO_CIB_beta_DUST_4096.fits", dtype = np.float32)
         f_0 = 353e9
 	
     elif template == "CITA":
-        path = "/vol/arc3/data1/sz/CCATp_sky_model/workspace_jens/cita_components/"
-        A = hp.fitsfunc.read_map(path + "CITA_CIB_A_DUST_4096.fits", dtype = np.float32)    
-        T = hp.fitsfunc.read_map(path + "CITA_CIB_T_DUST_4096.fits", dtype = np.float32)
-        beta = hp.fitsfunc.read_map(path + "CITA_CIB_beta_DUST_4096.fits", dtype = np.float32)
+        A = hp.fitsfunc.read_map(data_path + "CIB/CITA_CIB_A_DUST_4096.fits", dtype = np.float32)    
+        T = hp.fitsfunc.read_map(data_path + "CIB/CITA_CIB_T_DUST_4096.fits", dtype = np.float32)
+        beta = hp.fitsfunc.read_map(data_path + "CIB/CITA_CIB_beta_DUST_4096.fits", dtype = np.float32)
         f_0 = 353e9
 
     #Compute CIB brightness at given frequency
@@ -499,17 +498,7 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     nu = np.array([27,30,39,44,70,93,100,143,145,217,225,280,353])*1e9
     nu_names = ['027','030','039','044','070','093','100','143','145','217','225','280','353']
 
-    #Read data files
-    npix = hp.pixelfunc.nside2npix(4096)
-    data = np.zeros((len(nu), npix), dtype = np.float32)    
-
-    for i in np.arange(len(nu)):
-        file_name = path + nu_names[i] + "_rad_pts_healpix_nopell_Nside4096_DeltaT_uK_fluxcut148_7mJy_lininterp.fits"
-        data[i,:] = hp.fitsfunc.read_map(file_name, dtype = np.float32) * convert_units(nu[i], 1e-6, cmb2mjy=True)
-
     #Interpolate data points
-    radio_ps = np.zeros(hp.nside2npix(4096))
-
     if template != "SO" and template != "CITA":
         print("Waring: Unknown template requested! Output will be based on SO sky model")
         template = "SO"	
@@ -519,7 +508,17 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
         if freq > 353e9:
             print("Warning: Input frequency lies beyoned the 353 GHz. Since higher frequencies are not constraint by simulations, the data will be 0.")
         else:
-            for i in tqdm(np.arange(hp.nside2npix(4096))):
+		
+            #Read data files
+            npix = hp.pixelfunc.nside2npix(nside_out)
+            data = np.zeros((len(nu), npix), dtype = np.float32)
+            radio_ps = np.zeros(npix)
+
+            for i in np.arange(len(nu)):
+                file_name = data_path + "radio_ps/" + nu_names[i] + "_rad_pts_healpix_nopell_Nside4096_DeltaT_uK_fluxcut148_7mJy_lininterp.fits"
+                data[i,:] = hp.fitsfunc.read_map(file_name, dtype = np.float32) * convert_units(nu[i], 1e-6, cmb2mjy=True)		
+		
+            for i in tqdm(np.arange(npix)):
                 radio_ps[i] = np.interp(freq, nu, data[:,i])
                 
     elif template == "CITA":
@@ -583,16 +582,11 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
         'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
-    
-    data_path : str
-        Path were the data of the maps are stored and we the cutout are going to be stored. 
-    data_save : str 
-    	Path were the datas will be saved.
         
     Returns
     -------
-    array
-        Contaning the CMB map. 
+    float array
+        Healpix allsky map contaning the CMB map at a given frequency. 
 
     """
                 
@@ -617,39 +611,34 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
             template = "SO"			
 		
         if template == 'CITA':
-        
-            data_path = ' /vol/arc3/data1/sz/CCATp_sky_model/workspace_maude/'	
-	
+        	
             if lensed == True:
 			
-                file_name = 'CMB_lensed_CITA_mK'
+                file_name = 'CMB/CMB_lensed_CITA_mK'
 
             else:
 		
-                file_name = 'CMB_unlensed_CITA_mK'
+                file_name = 'CMB/CMB_unlensed_CITA_mK'
             
-            CMB = hp.read_map(data_path + file_name, dtype = np.float32)     
+            CMB = hp.read_map(data_path + file_name, dtype = np.float32)/1e6     
     
         elif template == 'SO': 
 
-            data_path = '/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
-            file_name = 'Sehgalsimparams_healpix_4096_KappaeffLSStoCMBfullsky_phi_SimLens_Tsynfastnopell_fast_lmax8000_nside4096_interp2.5_method1_1_lensed_map.fits'
+            file_name = 'CMB/Sehgalsimparams_healpix_4096_KappaeffLSStoCMBfullsky_phi_SimLens_Tsynfastnopell_fast_lmax8000_nside4096_interp2.5_method1_1_lensed_map.fits'
 
-            CMB = hp.read_map(data_path + file_name, dtype = np.float32)		
+            CMB = hp.read_map(data_path + file_name, dtype = np.float32)/1e6 		
 		
         elif template == 'Sehgal':
-		
-            data_path = '/vol/arc3/data1/sz/Sehgal/'
-	
+			
             if lensed == True:
 
-                file_name = '030_lensedcmb_healpix.fits'
+                file_name = 'CMB/030_lensedcmb_healpix.fits'
 
             else: 
 
-                file_name = '030_unlensedcmb_healpix.fits'
+                file_name = 'CMB/030_unlensedcmb_healpix.fits'
 
-            CMB = hp.read_map(data_path + file_name, dtype = np.float32) * convert_units(30e9, 1, mjy2cmb=True)
+            CMB = hp.read_map(data_path + file_name, dtype = np.float32) * convert_units(30e9, 1e-6, mjy2cmb=True)
 
     #Re-bin map if necessary
     if hp.get_nside(CMB) != nside_out:
@@ -662,13 +651,12 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
 
     #Convert units if necessary
     if unit == "mjy":
-        CMB = convert_units(freq, CMB/1e6, cmb2mjy=True)
+        CMB = convert_units(freq, CMB, cmb2mjy=True)
     elif unit == "cmb":
-        CMB /= 1e6
+        None
     elif unit == "rj":
-        CMB = convert_units(freq, CMB/1e6, cmb2rj=True)
-    else:
-        CMB /= 1e6	
+        CMB = convert_units(freq, CMB, cmb2rj=True)
+    else:	
         print("Waring: Unknown unit! Output will be in K_CMB")   
 
     return(CMB)
@@ -716,22 +704,18 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     if template == 'SO':
         
-        data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
-        file_in ='tSZ_skymap_healpix_nopell_Nside4096_y_tSZrescale0p75.fits'
+        file_in ='tSZ/tSZ_skymap_healpix_nopell_Nside4096_y_tSZrescale0p75.fits'
         y_map = hp.read_map(data_path + file_in, dtype = np.float32)
 
         
     elif template == 'CITA': 
         
-        data_path='/vol/arc3/data1/sz/CITA/'
-        file_in = 'tsz.fits'
+        file_in = 'tSZ/tsz.fits'
         y_map = hp.read_map(data_path + file_in, dtype = np.float32)        
-
         
     elif template == 'Sehgal': 
         
-        data_path='/vol/arc3/data1/sz/Sehgal/'
-        file_in='030_tsz_healpix.fits'
+        file_in='tSZ/030_tsz_healpix.fits'
         
         #Create Compton y-map : 
         tSZ_30GHz = hp.read_map(data_path + file_in, dtype = np.float32) * convert_units(30e9, 1e-6, mjy2cmb=True)
@@ -811,22 +795,17 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     if template == 'SO':
         
-        data_path='/vol/arc3/data1/sz/SO_sky_model/CMB_SZ_maps/'
-        file_in = '148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
-        kSZ = hp.read_map(data_path + file_in, dtype = np.float32)*1e-6
+        file_in = 'tSZ/148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
+        kSZ = hp.read_map(data_path + file_in, dtype = np.float32)/1e6
         
     elif template == 'CITA':
         
-        data_path = '/vol/arc3/data1/sz/CITA/'
-        file_in = 'ksz.fits'
-        kSZ = hp.read_map(data_path + file_in, dtype = np.float32)*1e-6
+        file_in = 'tSZ/ksz.fits'
+        kSZ = hp.read_map(data_path + file_in, dtype = np.float32)/1e6
         
     elif template == 'Sehgal' : 
               
-        data_path='/vol/arc3/data1/sz/Sehgal/'
-        file_in = '030_ksz_healpix.fits'  
-
-        #Create compton-y map : 
+        file_in = 'tSZ/030_ksz_healpix.fits'  
         kSZ = hp.read_map(data_path + file_in, dtype = np.float32) * convert_units(30e9, 1e-6, mjy2cmb=True)
  
     #Re-bin map if necessary
@@ -1008,7 +987,7 @@ def simulate_iras_ps(freq, nside_out = 4096, beam_FWHM = None, unit = "cmb"):
         beam_FWHM = 1
 
     #read data
-    data = ascii.read(path + "IRAS_PSC_fit_results.txt")
+    data = ascii.read(data_path + "catalogs/IRAS_PSC_fit_results.txt")
     RA = np.array(data["RA"])
     DEC = np.array(data["DEC"])
     A = np.array(data["A"])
@@ -1089,7 +1068,7 @@ def simulate_nvss_ps(freq, nside_out = 4096, beam_FWHM = None, unit = "cmb"):
         beam_FWHM = 1
 
     #read data
-    data = ascii.read(path + "NVSS_ps_results.txt")
+    data = ascii.read(data_path + "catalogs/NVSS_ps_results.txt")
     RA = np.array(data["RA"])
     DEC = np.array(data["DEC"])
     flux = np.array(data["flux@1.4GHz"])

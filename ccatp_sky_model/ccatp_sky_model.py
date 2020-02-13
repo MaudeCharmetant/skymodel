@@ -409,7 +409,7 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     '''
 
     #Load all-sky parameter value maps
-    if template != "SO" and template != "CITA":
+    if template != "SO" and template != "CITA" and template != "Sehgal":
         print("Waring: Unknown template requested! Output will be based on SO sky model")
         template = "SO"
 

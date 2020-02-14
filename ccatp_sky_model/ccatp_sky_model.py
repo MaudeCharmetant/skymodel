@@ -830,17 +830,17 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     if template == 'SO':
         
-        file_in = 'tSZ/148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
+        file_in = 'kSZ/148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
         kSZ = hp.read_map(data_path + file_in, dtype = np.float32)/1e6
         
     elif template == 'CITA':
         
-        file_in = 'tSZ/ksz.fits'
+        file_in = 'kSZ/ksz.fits'
         kSZ = hp.read_map(data_path + file_in, dtype = np.float32)/1e6
         
     elif template == 'Sehgal' : 
               
-        file_in = 'tSZ/030_ksz_healpix.fits'  
+        file_in = 'kSZ/030_ksz_healpix.fits'  
         kSZ = hp.read_map(data_path + file_in, dtype = np.float32) * convert_units(30e9, 1e-6, mjy2cmb=True)
  
     #Re-bin map if necessary

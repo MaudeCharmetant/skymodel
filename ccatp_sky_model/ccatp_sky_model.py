@@ -77,19 +77,19 @@ def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False
 def px_size(nside,arcmin=True):   
             
     """
-    Compute the size of Healpy pixels in function of the nside of the map.  
+    Computes the size of Healpy pixels in function of the nside of the map.  
 
     Parameters
     ----------
     
-    nside : int
+    nside: int
         Nside, number of separation of the healpy blocks. 
-    arcmin : bool
+    arcmin: bool, optional
         if True return the size in arcmin, otherwise in radians. 
         
     Returns
     -------
-    float
+    size: float
         The size of one healpy pixel. 
     """
     
@@ -123,7 +123,7 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 		only be drawn in areas that are not masked. If mask is set
 		to "advACT", "SPT", "Dust", or "NVSS", the respective 
 		survey masks will be used. Default: None
-	radec: bool
+	radec: bool, optional
 		Determines the coordinate system of the output. If True, 
 		equatorial coordinates will be returned, i.e. RA, DEC (fk5). 
 		If False, galactic coordinates are returned. Default: True
@@ -251,10 +251,10 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     survey: sting
         Defines which survey mask will be returned. The options are "advACT", "SPT",
         "Dust", and "NVSS". 
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 256
-    coord: sting
+    coord: sting, optional
         Defines the coordinate system of the output mask. "G" --> Galactic, 
         "E" --> Ecliptic, "C" --> Equatorial. Default: "G"
     
@@ -289,7 +289,7 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     return(mask)
 
 
-def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = None, beam_FWHM = None, unit = "cmb"):
+def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = None, beam_FWHM = None, intrinsic_FWHM = 10, unit = "cmb"):
 
     '''Computes an all-sky galactic foregrounds noise map at a given frequency and nside using 
     the Python Sky model (PySM, Thorne et al. 2017), which is build from Planck data. 
@@ -298,20 +298,23 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
     ----------
     freq: float or float array
         Frequency of the output map in Hz. 
-    components: list of stings
+    components: list of stings, optional
         List of components to be included in the galactic foreground model. Possible 
         components are "gal_synchrotron", "gal_dust", "gal_freefree", and "gal_ame".
         Alternatively, all components are included if the variable is set to "all".
         Default: "all"	
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
-    lmax: float
+    lmax: float, optional
         Maximum value of the multipolemoment at which the atmospheric power spectrum
         wil be computed. Default: 3*nside_out-1    
     beam_FWHM: bool, optional
         If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
         in units of arcmin is given by the provided value. Default: None
+    intrinsic_FWHM: float, optional
+        Determines the with of a gaussian that is always applied to the Galactic foreground
+        maps after they have been upgraded to a higher nside. Default: 5
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -354,11 +357,11 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
         foregrounds += sky.ame(freq/1e9)[0,:] * rj2mjy_factor
 
     #Define smoothing kernal, upgrade, and smooth map
-    fwhm = 10
+    fwhm = intrinsic_FWHM
     if beam_FWHM is not None:
-        if beam_FWHM > fwhm:
-            fwhm = np.sqrt(fwhm*2 + beam_FWHM**2)
-            
+        if beam_FWHM > intrinsic_FWHM:
+            fwhm = np.sqrt(intrinsic_FWHM**2 + beam_FWHM**2)
+	    
     foregrounds = hp.pixelfunc.ud_grade(foregrounds, nside_out = nside_out)
     foregrounds = hp.sphtfunc.smoothing(foregrounds, iter = 0, fwhm = fwhm/60*np.pi/180, lmax = lmax)
     
@@ -384,7 +387,7 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     ----------
     freq: float or float array
         Frequency of the output map in Hz.
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
     beam_FWHM: bool, optional
@@ -471,10 +474,10 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     ----------
     freq: float or float array
         Frequency of the output map in Hz.
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
-    lmax: float
+    lmax: float, optional
         Maximum value of the multipolemoment at which the atmospheric power spectrum
         wil be computed. Default: 3*nside_out-1            
     beam_FWHM: bool, optional
@@ -590,15 +593,15 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
 
     freq: float or float array
         Frequency of the output map in Hz.
-    cl_file : str or array 
+    cl_file: str or array, optional 
         Name of the .dat contaning the values of the power spectrum given by CAMB.
         Or array containing the power spectrum to generate random maps in Kelvin.
-    lensed : bool 
+    lensed: bool, optional
     	if True select the lensed CMB map when possible. This is only possible for 'CITA' and 'Sehgal.'
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
-    lmax: float
+    lmax: float, optional
         Maximum value of the multipolemoment at which the atmospheric power spectrum
         wil be computed. Default: 3*nside_out-1            
     beam_FWHM: bool, optional
@@ -704,10 +707,10 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     ----------
     freq: float or float array
         Frequency of the output map in Hz.
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
-    lmax: float
+    lmax: float, optional
         Maximum value of the multipolemoment at which the atmospheric power spectrum
         wil be computed. Default: 3*nside_out-1            
     beam_FWHM: bool, optional
@@ -796,10 +799,10 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     ----------
     freq: float or float array
         Frequency of the output map in Hz.
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
-    lmax: float
+    lmax: float, optional
         Maximum value of the multipolemoment at which the atmospheric power spectrum
         wil be computed. Default: 3*nside_out-1            
     beam_FWHM: bool, optional
@@ -876,14 +879,14 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
 
     freq: float or float array
         Frequency of the output map in Hz.
-    noise_level : float 
+    noise_level: float, optional 
         noise level desired in any units of micro K by radians or arcmin.
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
-    unit_noise : float 
+    unit_noise: float, optional 
         resolution of the noise, for exemple 1' or 1 radians. 
-    arcmin : bool 
+    arcmin: bool, optional 
         if true mean that the noise is given in /arcmin. 
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
@@ -928,10 +931,10 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
     freq: float or float array
         Frequency of the output map in Hz. Must be a valid SO or CCAT-prime central
         band frequency, i.e. 27, 39, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz.
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
-    lmax: float
+    lmax: float, optional
         Maximum value of the multipolemoment at which the atmospheric power spectrum
         wil be computed. Default: 3*nside_out-1    
     beam_FWHM: bool, optional
@@ -1000,9 +1003,9 @@ def simulate_iras_ps(freq, nside_out = 4096, beam_FWHM = None, unit = "cmb"):
     freq: float or float array
         Frequency of the output map in Hz. Must be a valid SO or CCAT-prime central
         band frequency, i.e. 27, 39, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz.
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
-        Default: 4096    
+        Default: 4096   
     beam_FWHM: bool, optional
         If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
         in units of arcmin is given by the provided value. Default: None
@@ -1081,7 +1084,7 @@ def simulate_nvss_ps(freq, nside_out = 4096, beam_FWHM = None, unit = "cmb"):
     freq: float or float array
         Frequency of the output map in Hz. Must be a valid SO or CCAT-prime central
         band frequency, i.e. 27, 39, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz.
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096    
     beam_FWHM: bool, optional
@@ -1161,31 +1164,31 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
     ----------
     freq: float or float array
         Frequency of the output map in Hz.
-    sensitivity: float
+    sensitivity: float, optional
         sensitivity of the instrument in units of micro K_CMB - arcmin. Default: None
-    components: string or list of stings
+    components: string or list of stings, optional
         List containing the names of the components to be included in the sky model.
         Any combination of the following individual components is possible: "gal_synchrotron", 
         "gal_dust", "gal_freefree", "gal_ame", "cib", "radio_ps", "cmb", "tsz", "ksz". All 
         components are used if components is set to "all". Default: "all"
-    red_noise: bool
+    red_noise: bool, optional
         If True, a realistic white noise + red noise atmospheric model is added to the
 	sky model in case the imput frequency is a valid SO or CCAT-prime central
         band frequency, i.e. 27, 39, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz.
         Default: False
-    cl_file: string
+    cl_file: string, optional
         name of a file containing a CMB power spectrum computed e.g. with CAMP. The
         first column of the file has to correspond to ell, the second column to 
         Cl ell(ell+1)/2pi. If set, a random realization of the CMB based on the provided
         powerspectrum will be added to the data.
-    lensed: bool
+    lensed: bool, optional
         If True, lensed SO, Sehgal and CITA CMB maps will be used. Default: True 
-    out_file: string
+    out_file: string, optional
         If set, the results will be written as a healpy .fits file of the given name. 
-    nside_out: float
+    nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
-    lmax: float
+    lmax: float, optional
         Maximum value of the multipolemoment. Default: 3*nside_out-1            
     beam_FWHM: bool, optional
         If set, the output will be convolved with a gaussian. The FWHM of the Gaussian

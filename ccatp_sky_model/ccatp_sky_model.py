@@ -140,13 +140,13 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 		theta = np.arccos(2*np.random.random(n) - 1)*180/np.pi - 90
 	else:
 		if mask == "advACT":
-			mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits")  
+			mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits", dtype = np.int16)  
 		elif mask == "SPT":
-			mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
+			mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits", dtype = np.int16)
 		elif mask == "Dust":
-			mask = hp.read_map(os_path + "galactic_dust_mask.fits")
+			mask = hp.read_map(os_path + "galactic_dust_mask.fits", dtype = np.int16)
 		elif mask == "NVSS":
-			mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits")
+			mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits", dtype = np.int16)
 	
 		nside = hp.get_nside(mask)
 
@@ -266,13 +266,13 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     
     #read mask
     if survey == "advACT":
-        mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits")  
+        mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits", dtype = np.int16)  
     elif survey == "SPT":
-        mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
+        mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits", dtype = np.int16)
     elif survey == "Dust":
-        mask = hp.read_map(os_path + "galactic_dust_mask.fits")
+        mask = hp.read_map(os_path + "galactic_dust_mask.fits", dtype = np.int16)
     elif survey == "NVSS":
-        mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits")
+        mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits", dtype = np.int16)
 
     #change coordinate system if necessary
     if (coord == "E") or (coord == "C"):

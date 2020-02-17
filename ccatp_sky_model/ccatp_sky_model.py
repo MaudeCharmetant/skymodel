@@ -662,11 +662,11 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         	
             if lensed == True:
 			
-                file_name = 'CMB/CMB_lensed_CITA_mK'
+                file_name = 'CMB/CMB_lensed_CITA_mK.fits'
 
             else:
 		
-                file_name = 'CMB/CMB_unlensed_CITA_mK'
+                file_name = 'CMB/CMB_unlensed_CITA_mK.fits'
             
             CMB = hp.read_map(data_path + file_name, dtype = np.float32)/1e6     
     

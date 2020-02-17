@@ -567,6 +567,8 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
                 
     elif template == "CITA":
         print("Warning: No radio PS template provided by the CITA simulations")
+        npix = hp.pixelfunc.nside2npix(4096)
+        radio_ps = np.zeros(npix)
 
     #Re-bin map if necessary
     if hp.get_nside(radio_ps) != nside_out:

@@ -314,7 +314,7 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
         in units of arcmin is given by the provided value. Default: None
     intrinsic_FWHM: float, optional
         Determines the with of a gaussian that is always applied to the Galactic foreground
-        maps after they have been upgraded to a higher nside. Default: 5
+        maps after they have been upgraded to a higher nside. Default: 10
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 

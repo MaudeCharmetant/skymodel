@@ -1235,7 +1235,7 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
 
     if "cib" in components:
         print("Computing CIB...")
-        allsky_map += simulate_cib(freq, nside_out = nside_out, beam_FWHM = None, template = template, unit = unit)
+        allsky_map += simulate_cib(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
         print("CIB complete.")
 
     if "radio_ps" in components:

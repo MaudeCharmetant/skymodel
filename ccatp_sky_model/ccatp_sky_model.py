@@ -326,6 +326,9 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
         Healpix all-sky map of the galactic foregrounds at the specified frequency.
     '''
 
+    if lmax is None:
+        lmax = int(3*nside_out-1)
+
     if components == "all":
         components = ["gal_synchrotron", "gal_dust", "gal_freefree", "gal_ame"]	
 
@@ -379,7 +382,7 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
     return(foregrounds)
 
 
-def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit = "cmb"):
+def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"):
 
     '''Computes an all-sky CIB map at a given frequency and nside based on . 
 
@@ -390,6 +393,9 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
+    lmax: float, optional
+        Maximum value of the multipolemoment at which the atmospheric power spectrum
+        wil be computed. Default: 3*nside_out-1  	
     beam_FWHM: bool, optional
         If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
         in units of arcmin is given by the provided value. Default: None
@@ -410,6 +416,9 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     cib: float array
         Healpix all-sky map of the CIB mission that the specified frequency.
     '''
+
+    if lmax is None:
+        lmax = int(3*nside_out-1)
 
     #Load all-sky parameter value maps
     if template != "SO" and template != "CITA" and template != "Sehgal":
@@ -445,7 +454,7 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     #Smooth map if necessary
     if beam_FWHM is not None:
         print("begin smoothing")
-        cib = hp.sphtfunc.smoothing(cib, iter = 0, lmax = 2*nside-1, fwhm = beam_FWHM/60*np.pi/180)
+        cib = hp.sphtfunc.smoothing(cib, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
     #Convert units if necessary
     if unit == "mjy":

@@ -265,13 +265,13 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     '''    
     
     #read mask
-    if mask == "advACT":
+    if survey == "advACT":
         mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits")  
-    elif mask == "SPT":
+    elif survey == "SPT":
         mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
-    elif mask == "Dust":
+    elif survey == "Dust":
         mask = hp.read_map(os_path + "galactic_dust_mask.fits")
-    elif mask == "NVSS":
+    elif survey == "NVSS":
         mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits")
 
     #change coordinate system if necessary

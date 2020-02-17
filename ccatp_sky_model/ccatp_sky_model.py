@@ -607,8 +607,10 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     cl_file: str or array, optional 
         Name of the .dat contaning the values of the power spectrum given by CAMB.
         Or array containing the power spectrum to generate random maps in Kelvin.
+        Default: None	
     lensed: bool, optional
-    	if True select the lensed CMB map when possible. This is only possible for 'CITA' and 'Sehgal.'
+    	If True select the lensed CMB map when possible. This is only possible for 'CITA' and 'Sehgal.'
+        Default: True
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
@@ -891,14 +893,14 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     freq: float or float array
         Frequency of the output map in Hz.
     noise_level: float, optional 
-        noise level desired in any units of micro K by radians or arcmin.
+        noise level desired in any units of micro K_CMB by radians or arcmin.
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
     unit_noise: float, optional 
-        resolution of the noise, for exemple 1' or 1 radians. 
+        resolution of the noise, for exemple 1' or 1 radians. Default: 1
     arcmin: bool, optional 
-        if true mean that the noise is given in /arcmin. 
+        if true mean that the noise is given in /arcmin. Default: True
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -1191,11 +1193,12 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
         name of a file containing a CMB power spectrum computed e.g. with CAMP. The
         first column of the file has to correspond to ell, the second column to 
         Cl ell(ell+1)/2pi. If set, a random realization of the CMB based on the provided
-        powerspectrum will be added to the data.
+        powerspectrum will be added to the data. Default: None
     lensed: bool, optional
         If True, lensed SO, Sehgal and CITA CMB maps will be used. Default: True 
     out_file: string, optional
         If set, the results will be written as a healpy .fits file of the given name. 
+        Default: None	
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096

@@ -286,7 +286,7 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     if nside_out != hp.get_nside(mask):
         mask = hp.ud_grade(mask, nside_out = nside_out)
         
-    return(mask)
+    return(np.int16(mask))
 
 
 def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = None, beam_FWHM = None, intrinsic_FWHM = 10, unit = "cmb"):

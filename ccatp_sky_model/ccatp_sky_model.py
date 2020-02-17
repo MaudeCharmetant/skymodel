@@ -211,7 +211,6 @@ def project_maps(allsky_map, RA, DEC, map_size = 10, pixel_size = 0.4):
 	maps = np.zeros((n, npix, npix), dtype=np.float32)
 
 	for i in np.arange(n):
-			progress(i,n, percentage=True)
 			maps[i,:,:] = hp.visufunc.gnomview(allsky_map, coord = ['G', 'C'], rot=[RA[i],DEC[i]], reso = pixel_size, xsize = npix, return_projected_map = True, no_plot=True) 
 
 	return(maps)

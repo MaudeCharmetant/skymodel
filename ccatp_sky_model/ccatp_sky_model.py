@@ -877,7 +877,7 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 	
     #Get the frquency independent kSZ : 
     if freq == 0: 
-	kSZ = kSZ
+        kSZ = kSZ
 	
     #Convert units if necessary
     elif unit == "mjy":
@@ -933,7 +933,7 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
 
     #Get the frquency independent WN : 
     if freq == 0: 
-	noise_map = noise_map 
+        noise_map = noise_map 
 	
     #Convert units if necessary
     elif unit == "cmb":

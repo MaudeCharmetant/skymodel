@@ -602,7 +602,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     ----------
 
     freq: float or float array
-        Frequency of the output map in Hz.
+        Frequency of the output map in Hz.If freq=0 we get a frequency independent map. 
     cl_file: str or array, optional 
         Name of the .dat contaning the values of the power spectrum given by CAMB.
         Or array containing the power spectrum to generate random maps in Kelvin.
@@ -696,9 +696,13 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     if beam_FWHM is not None:
         print("begin smoothing")
         CMB = hp.sphtfunc.smoothing(CMB, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
-
-    #Convert units if necessary
-    if unit == "mjy":
+	
+    #Get the frquency independent CMB : 
+    if freq == 0: 
+	CMB = CMB 
+	
+    #Convert units if necessary : 
+    elif unit == "mjy":
         CMB = convert_units(freq, CMB, cmb2mjy=True)
     elif unit == "cmb":
         None
@@ -718,7 +722,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     Parameters
     ----------
     freq: float or float array
-        Frequency of the output map in Hz.
+        Frequency of the output map in Hz. If freq=0 we get a frequency independent map. 
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
@@ -789,8 +793,12 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         print("begin smoothing")
         tSZ = hp.sphtfunc.smoothing(tSZ, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
+    #Get the frquency independent tSZ : 
+    if freq == 0: 
+	tSZ = tSZ
+	
     #Convert units if necessary
-    if unit == "mjy":
+    elif unit == "mjy":
         tSZ = convert_units(freq, tSZ, cmb2mjy=True)
     elif unit == "cmb":
         None
@@ -810,7 +818,7 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     Parameters
     ----------
     freq: float or float array
-        Frequency of the output map in Hz.
+        Frequency of the output map in Hz. If freq=0 we get a frequency independent map. 
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
@@ -866,9 +874,13 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     if beam_FWHM is not None:
         print("begin smoothing")
         kSZ = hp.sphtfunc.smoothing(kSZ, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
-
+	
+    #Get the frquency independent kSZ : 
+    if freq == 0: 
+	kSZ = kSZ
+	
     #Convert units if necessary
-    if unit == "mjy":
+    elif unit == "mjy":
         kSZ = convert_units(freq, kSZ, cmb2mjy=True)
     elif unit == "cmb":
         None
@@ -890,7 +902,7 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     ----------
 
     freq: float or float array
-        Frequency of the output map in Hz.
+        Frequency of the output map in Hz.If freq=0 we get a frequency independent map. 
     noise_level: float, optional 
         noise level desired in any units of micro K_CMB by radians or arcmin.
     nside_out: float, optional
@@ -919,8 +931,12 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     npix = hp.pixelfunc.nside2npix(nside_out) #Compute the number of pixels
     noise_map =  np.random.normal(0, sigma_noise, npix)*1e-6 #Random normal distribution centered over the desired noise
 
+    #Get the frquency independent WN : 
+    if freq == 0: 
+	noise_map = noise_map 
+	
     #Convert units if necessary
-    if unit == "cmb":
+    elif unit == "cmb":
         None
     elif unit == "mjy":
         noise_map = convert_units(freq, noise_map, cmb2mjy=True)
@@ -1175,7 +1191,7 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
     Parameters
     ----------
     freq: float or float array
-        Frequency of the output map in Hz.
+        Frequency of the output map in Hz. If freq =0 mean that we get frequency independent maps. 
     sensitivity: float, optional
         sensitivity of the instrument in units of micro K_CMB - arcmin. Default: None
     components: string or list of stings, optional

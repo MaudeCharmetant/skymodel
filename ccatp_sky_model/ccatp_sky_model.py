@@ -795,7 +795,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     #Get the frquency independent tSZ : 
     if freq == 0: 
-        tSZ = tSZ
+        tSZ = y_map
 	
     #Convert units if necessary
     elif unit == "mjy":

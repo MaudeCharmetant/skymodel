@@ -140,13 +140,13 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 		theta = np.arccos(2*np.random.random(n) - 1)*180/np.pi - 90
 	else:
 		if mask == "advACT":
-			mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits")  
+			mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits", dtype = np.int16)  
 		elif mask == "SPT":
-			mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
+			mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits", dtype = np.int16)
 		elif mask == "Dust":
-			mask = hp.read_map(os_path + "galactic_dust_mask.fits")
+			mask = hp.read_map(os_path + "galactic_dust_mask.fits", dtype = np.int16)
 		elif mask == "NVSS":
-			mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits")
+			mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits", dtype = np.int16)
 	
 		nside = hp.get_nside(mask)
 
@@ -211,7 +211,6 @@ def project_maps(allsky_map, RA, DEC, map_size = 10, pixel_size = 0.4):
 	maps = np.zeros((n, npix, npix), dtype=np.float32)
 
 	for i in np.arange(n):
-			progress(i,n, percentage=True)
 			maps[i,:,:] = hp.visufunc.gnomview(allsky_map, coord = ['G', 'C'], rot=[RA[i],DEC[i]], reso = pixel_size, xsize = npix, return_projected_map = True, no_plot=True) 
 
 	return(maps)
@@ -265,14 +264,14 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     '''    
     
     #read mask
-    if mask == "advACT":
-        mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits")  
-    elif mask == "SPT":
-        mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits")
-    elif mask == "Dust":
-        mask = hp.read_map(os_path + "galactic_dust_mask.fits")
-    elif mask == "NVSS":
-        mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits")
+    if survey == "advACT":
+        mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits", dtype = np.int16)  
+    elif survey == "SPT":
+        mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits", dtype = np.int16)
+    elif survey == "Dust":
+        mask = hp.read_map(os_path + "galactic_dust_mask.fits", dtype = np.int16)
+    elif survey == "NVSS":
+        mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits", dtype = np.int16)
 
     #change coordinate system if necessary
     if (coord == "E") or (coord == "C"):
@@ -286,7 +285,7 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     if nside_out != hp.get_nside(mask):
         mask = hp.ud_grade(mask, nside_out = nside_out)
         
-    return(mask)
+    return(np.int16(mask))
 
 
 def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = None, beam_FWHM = None, intrinsic_FWHM = 10, unit = "cmb"):
@@ -314,7 +313,7 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
         in units of arcmin is given by the provided value. Default: None
     intrinsic_FWHM: float, optional
         Determines the with of a gaussian that is always applied to the Galactic foreground
-        maps after they have been upgraded to a higher nside. Default: 5
+        maps after they have been upgraded to a higher nside. Default: 10
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -325,6 +324,9 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
     foregrounds: float array
         Healpix all-sky map of the galactic foregrounds at the specified frequency.
     '''
+
+    if lmax is None:
+        lmax = int(3*nside_out-1)
 
     if components == "all":
         components = ["gal_synchrotron", "gal_dust", "gal_freefree", "gal_ame"]	
@@ -379,7 +381,7 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
     return(foregrounds)
 
 
-def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit = "cmb"):
+def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"):
 
     '''Computes an all-sky CIB map at a given frequency and nside based on . 
 
@@ -390,6 +392,9 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
+    lmax: float, optional
+        Maximum value of the multipolemoment at which the atmospheric power spectrum
+        wil be computed. Default: 3*nside_out-1  	
     beam_FWHM: bool, optional
         If set, the output will be convolved with a gaussian. The FWHM of the Gaussian
         in units of arcmin is given by the provided value. Default: None
@@ -410,6 +415,9 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     cib: float array
         Healpix all-sky map of the CIB mission that the specified frequency.
     '''
+
+    if lmax is None:
+        lmax = int(3*nside_out-1)
 
     #Load all-sky parameter value maps
     if template != "SO" and template != "CITA" and template != "Sehgal":
@@ -445,7 +453,7 @@ def simulate_cib(freq, nside_out = 4096, beam_FWHM = None, template = "SO", unit
     #Smooth map if necessary
     if beam_FWHM is not None:
         print("begin smoothing")
-        cib = hp.sphtfunc.smoothing(cib, iter = 0, lmax = 2*nside-1, fwhm = beam_FWHM/60*np.pi/180)
+        cib = hp.sphtfunc.smoothing(cib, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
     #Convert units if necessary
     if unit == "mjy":
@@ -558,6 +566,8 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
                 
     elif template == "CITA":
         print("Warning: No radio PS template provided by the CITA simulations")
+        npix = hp.pixelfunc.nside2npix(4096)
+        radio_ps = np.zeros(npix)
 
     #Re-bin map if necessary
     if hp.get_nside(radio_ps) != nside_out:
@@ -596,8 +606,10 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     cl_file: str or array, optional 
         Name of the .dat contaning the values of the power spectrum given by CAMB.
         Or array containing the power spectrum to generate random maps in Kelvin.
+        Default: None	
     lensed: bool, optional
-    	if True select the lensed CMB map when possible. This is only possible for 'CITA' and 'Sehgal.'
+    	If True select the lensed CMB map when possible. This is only possible for 'CITA' and 'Sehgal.'
+        Default: True
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
@@ -650,11 +662,11 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         	
             if lensed == True:
 			
-                file_name = 'CMB/CMB_lensed_CITA_mK'
+                file_name = 'CMB/CMB_lensed_CITA_mK.fits'
 
             else:
 		
-                file_name = 'CMB/CMB_unlensed_CITA_mK'
+                file_name = 'CMB/CMB_unlensed_CITA_mK.fits'
             
             CMB = hp.read_map(data_path + file_name, dtype = np.float32)/1e6     
     
@@ -880,14 +892,14 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     freq: float or float array
         Frequency of the output map in Hz.
     noise_level: float, optional 
-        noise level desired in any units of micro K by radians or arcmin.
+        noise level desired in any units of micro K_CMB by radians or arcmin.
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
     unit_noise: float, optional 
-        resolution of the noise, for exemple 1' or 1 radians. 
+        resolution of the noise, for exemple 1' or 1 radians. Default: 1
     arcmin: bool, optional 
-        if true mean that the noise is given in /arcmin. 
+        if true mean that the noise is given in /arcmin. Default: True
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -1180,11 +1192,12 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
         name of a file containing a CMB power spectrum computed e.g. with CAMP. The
         first column of the file has to correspond to ell, the second column to 
         Cl ell(ell+1)/2pi. If set, a random realization of the CMB based on the provided
-        powerspectrum will be added to the data.
+        powerspectrum will be added to the data. Default: None
     lensed: bool, optional
         If True, lensed SO, Sehgal and CITA CMB maps will be used. Default: True 
     out_file: string, optional
         If set, the results will be written as a healpy .fits file of the given name. 
+        Default: None	
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
@@ -1226,7 +1239,7 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
 
     if "cib" in components:
         print("Computing CIB...")
-        allsky_map += simulate_cib(freq, nside_out = nside_out, beam_FWHM = None, template = template, unit = unit)
+        allsky_map += simulate_cib(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
         print("CIB complete.")
 
     if "radio_ps" in components:

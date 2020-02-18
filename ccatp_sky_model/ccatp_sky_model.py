@@ -699,7 +699,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
 	
     #Get the frquency independent CMB : 
     if freq == 0: 
-	CMB = CMB 
+	CMB = CMB 	
 	
     #Convert units if necessary : 
     elif unit == "mjy":

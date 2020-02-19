@@ -695,14 +695,10 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     #Smooth map if necessary
     if beam_FWHM is not None:
         print("begin smoothing")
-        CMB = hp.sphtfunc.smoothing(CMB, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
-	
-    #Get the frquency independent CMB : 
-    if freq == 0: 
-        CMB = CMB 	
+        CMB = hp.sphtfunc.smoothing(CMB, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)	
 	
     #Convert units if necessary : 
-    elif unit == "mjy":
+    if unit == "mjy":
         CMB = convert_units(freq, CMB, cmb2mjy=True)
     elif unit == "cmb":
         None
@@ -875,12 +871,8 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         print("begin smoothing")
         kSZ = hp.sphtfunc.smoothing(kSZ, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 	
-    #Get the frquency independent kSZ : 
-    if freq == 0: 
-        kSZ = kSZ 
-	
     #Convert units if necessary
-    elif unit == "mjy":
+    if unit == "mjy":
         kSZ = convert_units(freq, kSZ, cmb2mjy=True)
     elif unit == "cmb":
         None

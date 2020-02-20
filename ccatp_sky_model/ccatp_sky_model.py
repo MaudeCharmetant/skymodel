@@ -463,7 +463,7 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     elif unit == "rj":
         cib = convert_units(freq, cib, mjy2rj=True)
     else:
-        foregrounds = convert_units(freq, foregrounds, mjy2cmb=True)
+        cib = convert_units(freq, cib, mjy2cmb=True)
         print("Waring: Unknown unit! Output will be in K_CMB")
 
     #Return output
@@ -586,7 +586,7 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     elif unit == "rj":
         radio_ps = convert_units(freq, radio_ps, mjy2rj=True)
     else:
-        foregrounds = convert_units(freq, foregrounds, mjy2cmb=True)
+        radio_ps = convert_units(freq, radio_ps, mjy2cmb=True)
         print("Waring: Unknown unit! Output will be in K_CMB")
 
     #Return output
@@ -602,7 +602,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     ----------
 
     freq: float or float array
-        Frequency of the output map in Hz.If freq=0 we get a frequency independent map. 
+        Frequency of the output map in Hz. 
     cl_file: str or array, optional 
         Name of the .dat contaning the values of the power spectrum given by CAMB.
         Or array containing the power spectrum to generate random maps in Kelvin.
@@ -718,7 +718,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     Parameters
     ----------
     freq: float or float array
-        Frequency of the output map in Hz. If freq=0 we get a frequency independent map. 
+        Frequency of the output map in Hz. If freq = -1 a unitless y-map is returned. 
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
@@ -789,8 +789,8 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         print("begin smoothing")
         tSZ = hp.sphtfunc.smoothing(tSZ, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
-    #Get the frquency independent tSZ : 
-    if freq == 0: 
+    #Get the frequency independent y-map : 
+    if freq == -1: 
         tSZ = y_map
 	
     #Convert units if necessary
@@ -814,7 +814,7 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     Parameters
     ----------
     freq: float or float array
-        Frequency of the output map in Hz. If freq=0 we get a frequency independent map. 
+        Frequency of the output map in Hz. 
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096

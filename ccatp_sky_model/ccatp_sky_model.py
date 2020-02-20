@@ -778,7 +778,10 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     x_nu = np.array((h*freq)/(k_B*T_CMB))    
     t_SZ_SED = ((x_nu*(np.exp(x_nu)+1)/(np.exp(x_nu)-1))-4)
 
-    tSZ = (y_map * t_SZ_SED * T_CMB)
+    if freq != -1: 
+        tSZ = (y_map * t_SZ_SED * T_CMB)
+    else:
+        tSZ =  y_map
         
     #Re-bin map if necessary
     if hp.get_nside(tSZ) != nside_out:
@@ -790,18 +793,16 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         tSZ = hp.sphtfunc.smoothing(tSZ, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
     #Get the frequency independent y-map : 
-    if freq == -1: 
-        tSZ = y_map
-	
-    #Convert units if necessary
-    elif unit == "mjy":
-        tSZ = convert_units(freq, tSZ, cmb2mjy=True)
-    elif unit == "cmb":
-        None
-    elif unit == "rj":
-        tSZ = convert_units(freq, tSZ, cmb2rj=True)
-    else:
-        print("Waring: Unknown unit! Output will be in K_CMB")
+    if freq != -1: 	
+        #Convert units if necessary
+        if unit == "mjy":
+            tSZ = convert_units(freq, tSZ, cmb2mjy=True)
+        elif unit == "cmb":
+            None
+        elif unit == "rj":
+            tSZ = convert_units(freq, tSZ, cmb2rj=True)
+        else:
+            print("Waring: Unknown unit! Output will be in K_CMB")
 
     return(tSZ)
   

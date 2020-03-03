@@ -547,7 +547,7 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
 
         #Define frequencies
         nu = np.array([30,90,148,219,277,350])*1e9
-        nu_names = ['30','90','148','219','277','350']
+        nu_names = ['030','090','148','219','277','350']
 
         #Interpolate data points
         if freq > np.max(nu):

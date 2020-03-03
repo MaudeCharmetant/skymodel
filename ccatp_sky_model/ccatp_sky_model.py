@@ -539,6 +539,8 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
 		
             for i in tqdm(np.arange(npix)):
                 radio_ps[i] = np.interp(freq, nu, data[:,i])
+		
+            del data		
 
     elif template == "Sehgal":
 
@@ -563,7 +565,9 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
 		
             for i in tqdm(np.arange(npix)):
                 radio_ps[i] = np.interp(freq, nu, data[:,i])
-                
+
+            del data		
+				
     elif template == "CITA":
         print("Warning: No radio PS template provided by the CITA simulations")
         npix = hp.pixelfunc.nside2npix(4096)

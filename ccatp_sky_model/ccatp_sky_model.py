@@ -945,7 +945,7 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     return(np.float32(noise_map))
 
 
-def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, unit = "cmb"):
+def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, unit = "cmb", no_white = False):
 
     '''Computes an all-sky atmospheric noise map at a given frequency and nside based on 
     the SO noise model presented by the SO Collaboration (2019) and using the model parameters
@@ -969,6 +969,8 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
         'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
+    no_white: bool, optional
+        If True, only the red noise component is simulated. Default: False
 
     Returns
     -------
@@ -997,7 +999,10 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
 
         #Compute power spectrum
         ell = np.linspace(1,lmax,lmax)
-        Cl = N_red[index] * (ell/ell_knee)**alpha_knee + N_white[index]
+        Cl = N_red[index] * (ell/ell_knee)**alpha_knee 
+ 
+        if no_white is True:
+            Cl += N_white[index]
 
         #Create all-sky map
         noise_map = hp.sphtfunc.synfast(Cl, nside_out, lmax=lmax)/1e6

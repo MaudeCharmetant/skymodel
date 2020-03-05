@@ -774,7 +774,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     '''
 
     #Read data
-    if template != 'SO' and template != 'CITA' and template != 'Sehgal':
+    if template != 'SO' and template != 'CITA' and template != 'Sehgal' and template != 'SO_reproduced':
         print('Waring: Unknown template requested! Output will be based on SO sky model')
         template = 'CITA'
 

@@ -438,7 +438,7 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         f_0 = 350e9
 
         if template == 'SO_reproduced':
-            A *= 0.56
+            A *= 0.75
 	
     elif template == 'CITA':
         A = hp.fitsfunc.read_map(data_path + 'CIB/CITA_CIB_A_DUST_4096.fits', dtype = np.float32)    
@@ -802,7 +802,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         y_map = tSZ_30GHz / tSZ_SED / T_CMB
 
         if template == 'SO_reproduced':
-            y_map *= 0.56
+            y_map *= 0.75
 
     #Get tSZ at different frequencies : 
     x_nu = np.array((h*freq)/(k_B*T_CMB))    

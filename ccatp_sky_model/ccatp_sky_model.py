@@ -8,8 +8,8 @@ from tqdm import tqdm
 from pysm.nominal import models
 import os.path
 
-os_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "masks/")
-data_path = "/vol/arc3/data1/sz/CCATp_sky_model/templates/"
+os_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'masks/')
+data_path = '/vol/arc3/data1/sz/CCATp_sky_model/templates/'
 
 k_B = cst.k_B.si.value
 h = cst.h.si.value
@@ -67,7 +67,7 @@ def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False
 	elif rj2cmb is True:
 		conversion = 1/((k_B*T_CMB/h)**2. * x**4. * np.exp(x) / (np.exp(x)-1)**2. / freq**2.)        
 	else:
-		print("Not sure which units are given and what should be returned.")
+		print('Not sure which units are given and what should be returned.')
 
 	converted_signal = conversion * values
 
@@ -76,7 +76,7 @@ def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False
 
 def px_size(nside,arcmin=True):   
             
-    """
+    '''
     Computes the size of Healpy pixels in function of the nside of the map.  
 
     Parameters
@@ -91,7 +91,7 @@ def px_size(nside,arcmin=True):
     -------
     size: float
         The size of one healpy pixel. 
-    """
+    '''
     
     #Number of pixels : 
     N_pix = hp.pixelfunc.nside2npix(nside)
@@ -121,7 +121,7 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 	mask: float array, optional
 		All-sky healpix mask. If a mask is used data points will 
 		only be drawn in areas that are not masked. If mask is set
-		to "advACT", "SPT", "Dust", or "NVSS", the respective 
+		to 'advACT', 'SPT', 'Dust', or 'NVSS', the respective 
 		survey masks will be used. Default: None
 	radec: bool, optional
 		Determines the coordinate system of the output. If True, 
@@ -139,14 +139,14 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 		phi = 360 * np.random.random(n)
 		theta = np.arccos(2*np.random.random(n) - 1)*180/np.pi - 90
 	else:
-		if mask == "advACT":
-			mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits", dtype = np.int16)  
-		elif mask == "SPT":
-			mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits", dtype = np.int16)
-		elif mask == "Dust":
-			mask = hp.read_map(os_path + "galactic_dust_mask.fits", dtype = np.int16)
-		elif mask == "NVSS":
-			mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits", dtype = np.int16)
+		if mask == 'advACT':
+			mask = hp.read_map(os_path + 'Adv_ACT_survey_mask.fits', dtype = np.int16)  
+		elif mask == 'SPT':
+			mask = hp.read_map(os_path + 'SPT-SZ_survey_mask.fits', dtype = np.int16)
+		elif mask == 'Dust':
+			mask = hp.read_map(os_path + 'galactic_dust_mask.fits', dtype = np.int16)
+		elif mask == 'NVSS':
+			mask = hp.read_map(os_path + 'galactic_dust_nvss_mask.fits', dtype = np.int16)
 	
 		nside = hp.get_nside(mask)
 
@@ -166,13 +166,13 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 				i += 1
 
 	if radec is True:
-		print("output will be fk5 coordinates (RA, DEC) for the equinox J2000")
+		print('output will be fk5 coordinates (RA, DEC) for the equinox J2000')
 		c = SkyCoord(phi, theta, frame='galactic', unit='deg')
 		c_fk5 = c.transform_to('fk5')
 		phi = c_fk5.ra.degree
 		theta = c_fk5.dec.degree
 	else:
-		print("output will be galactic coordinates (glon, glat)")
+		print('output will be galactic coordinates (glon, glat)')
 
 	return(phi, theta)
 
@@ -241,21 +241,21 @@ def sigmoid_filter(l_0, d_l, lmax):
     return(window)
 
 
-def return_mask(survey, nside_out = 256, coord = "G"):
+def return_mask(survey, nside_out = 256, coord = 'G'):
 
     '''Returns the specified all-sky survey map. 
     
     Parameters
     ----------
     survey: sting
-        Defines which survey mask will be returned. The options are "advACT", "SPT",
-        "Dust", and "NVSS". 
+        Defines which survey mask will be returned. The options are 'advACT', 'SPT',
+        'Dust', and 'NVSS'. 
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 256
     coord: sting, optional
-        Defines the coordinate system of the output mask. "G" --> Galactic, 
-        "E" --> Ecliptic, "C" --> Equatorial. Default: "G"
+        Defines the coordinate system of the output mask. 'G' --> Galactic, 
+        'E' --> Ecliptic, 'C' --> Equatorial. Default: 'G'
     
     Returns
     -------
@@ -264,19 +264,19 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     '''    
     
     #read mask
-    if survey == "advACT":
-        mask = hp.read_map(os_path + "Adv_ACT_survey_mask.fits", dtype = np.int16)  
-    elif survey == "SPT":
-        mask = hp.read_map(os_path + "SPT-SZ_survey_mask.fits", dtype = np.int16)
-    elif survey == "Dust":
-        mask = hp.read_map(os_path + "galactic_dust_mask.fits", dtype = np.int16)
-    elif survey == "NVSS":
-        mask = hp.read_map(os_path + "galactic_dust_nvss_mask.fits", dtype = np.int16)
+    if survey == 'advACT':
+        mask = hp.read_map(os_path + 'Adv_ACT_survey_mask.fits', dtype = np.int16)  
+    elif survey == 'SPT':
+        mask = hp.read_map(os_path + 'SPT-SZ_survey_mask.fits', dtype = np.int16)
+    elif survey == 'Dust':
+        mask = hp.read_map(os_path + 'galactic_dust_mask.fits', dtype = np.int16)
+    elif survey == 'NVSS':
+        mask = hp.read_map(os_path + 'galactic_dust_nvss_mask.fits', dtype = np.int16)
 
     #change coordinate system if necessary
-    if (coord == "E") or (coord == "C"):
+    if (coord == 'E') or (coord == 'C'):
         mask = hp.ud_grade(mask, nside_out = 2048)
-        r = hp.Rotator(coord = ("G", coord))
+        r = hp.Rotator(coord = ('G', coord))
         mask = hp.Rotator.rotate_map_pixel(r, mask)
         mask = hp.ud_grade(mask, nside_out = 256)
         mask[mask != 0] = 1
@@ -288,7 +288,7 @@ def return_mask(survey, nside_out = 256, coord = "G"):
     return(np.int16(mask))
 
 
-def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = None, beam_FWHM = None, intrinsic_FWHM = 10, unit = "cmb"):
+def simulate_gal_foregrounds(freq, components = 'all', nside_out = 4096, lmax = None, beam_FWHM = None, intrinsic_FWHM = 10, unit = 'cmb'):
 
     '''Computes an all-sky galactic foregrounds noise map at a given frequency and nside using 
     the Python Sky model (PySM, Thorne et al. 2017), which is build from Planck data. 
@@ -299,9 +299,9 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
         Frequency of the output map in Hz. 
     components: list of stings, optional
         List of components to be included in the galactic foreground model. Possible 
-        components are "gal_synchrotron", "gal_dust", "gal_freefree", and "gal_ame".
-        Alternatively, all components are included if the variable is set to "all".
-        Default: "all"	
+        components are 'gal_synchrotron', 'gal_dust', 'gal_freefree', and 'gal_ame'.
+        Alternatively, all components are included if the variable is set to 'all'.
+        Default: 'all'	
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
         Default: 4096
@@ -328,15 +328,15 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
     if lmax is None:
         lmax = int(3*nside_out-1)
 
-    if components == "all":
-        components = ["gal_synchrotron", "gal_dust", "gal_freefree", "gal_ame"]	
+    if components == 'all':
+        components = ['gal_synchrotron', 'gal_dust', 'gal_freefree', 'gal_ame']	
 
     #Define foreground model
     sky_config = {
-        'synchrotron' : models("s1", 512),
-        'dust' : models("d1", 512),
-        'freefree' : models("f1", 512),
-        'ame' : models("a1", 512),
+        'synchrotron' : models('s1', 512),
+        'dust' : models('d1', 512),
+        'freefree' : models('f1', 512),
+        'ame' : models('a1', 512),
     }
 
     #Initialise Sky 
@@ -346,16 +346,16 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
     foregrounds = np.zeros(hp.nside2npix(512))
     rj2mjy_factor = convert_units(freq, 1e-6, rj2mjy = True)
     
-    if "gal_synchrotron" in components:
+    if 'gal_synchrotron' in components:
         foregrounds += sky.synchrotron(freq/1e9)[0,:] * rj2mjy_factor
 
-    if "gal_dust" in components:
+    if 'gal_dust' in components:
         foregrounds += sky.dust(freq/1e9)[0,:] * rj2mjy_factor
           
-    if "gal_freefree" in components:
+    if 'gal_freefree' in components:
         foregrounds += sky.freefree(freq/1e9)[0,:] * rj2mjy_factor
         
-    if "gal_ame" in components:
+    if 'gal_ame' in components:
         foregrounds += sky.ame(freq/1e9)[0,:] * rj2mjy_factor
 
     #Define smoothing kernal, upgrade, and smooth map
@@ -368,20 +368,20 @@ def simulate_gal_foregrounds(freq, components = "all", nside_out = 4096, lmax = 
     foregrounds = hp.sphtfunc.smoothing(foregrounds, iter = 0, fwhm = fwhm/60*np.pi/180, lmax = lmax)
     
     #Convert units if necessary
-    if unit == "mjy":
+    if unit == 'mjy':
         None
-    elif unit == "cmb":
+    elif unit == 'cmb':
         foregrounds = convert_units(freq, foregrounds, mjy2cmb=True)
-    elif unit == "rj":
+    elif unit == 'rj':
         foregrounds = convert_units(freq, foregrounds, mjy2rj=True)
     else:
         foregrounds = convert_units(freq, foregrounds, mjy2cmb=True)
-        print("Waring: Unknown unit! Output will be in K_CMB")
+        print('Waring: Unknown unit! Output will be in K_CMB')
         
     return(foregrounds)
 
 
-def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"):
+def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'):
 
     '''Computes an all-sky CIB map at a given frequency and nside based on . 
 
@@ -404,7 +404,8 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
-        by CITA. Default: 'SO'
+        by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
+        from the Sehgal et al. (2010) data. Default: 'CITA'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -420,26 +421,29 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         lmax = int(3*nside_out-1)
 
     #Load all-sky parameter value maps
-    if template != "SO" and template != "CITA" and template != "Sehgal":
-        print("Waring: Unknown template requested! Output will be based on SO sky model")
-        template = "SO"
+    if template != 'SO' and template != 'CITA' and template != 'Sehgal' and template != 'SO_reproduced':
+        print('Waring: Unknown template requested! Output will be based on SO sky model')
+        template = 'CITA'
 
-    if template == "SO":
-        A = hp.fitsfunc.read_map(data_path + "CIB/SO_CIB_A_DUST_4096.fits", dtype = np.float32)    
-        T = hp.fitsfunc.read_map(data_path + "CIB/SO_CIB_T_DUST_4096.fits", dtype = np.float32)
-        beta = hp.fitsfunc.read_map(data_path + "CIB/SO_CIB_beta_DUST_4096.fits", dtype = np.float32)
+    if template == 'SO':
+        A = hp.fitsfunc.read_map(data_path + 'CIB/SO_CIB_A_DUST_4096.fits', dtype = np.float32)    
+        T = hp.fitsfunc.read_map(data_path + 'CIB/SO_CIB_T_DUST_4096.fits', dtype = np.float32)
+        beta = hp.fitsfunc.read_map(data_path + 'CIB/SO_CIB_beta_DUST_4096.fits', dtype = np.float32)
         f_0 = 353e9
 
-    elif template == "Sehgal":
-        A = hp.fitsfunc.read_map(data_path + "CIB/Sehgal_CIB_A_DUST_8192.fits", dtype = np.float32)    
-        T = hp.fitsfunc.read_map(data_path + "CIB/Sehgal_CIB_T_DUST_8192.fits", dtype = np.float32)
-        beta = hp.fitsfunc.read_map(data_path + "CIB/Sehgal_CIB_beta_DUST_8192.fits", dtype = np.float32)
-        f_0 = 350e9	
+    elif (template == 'Sehgal') or (template == 'SO_reproduced'):
+        A = hp.fitsfunc.read_map(data_path + 'CIB/Sehgal_CIB_A_DUST_8192.fits', dtype = np.float32)
+        T = hp.fitsfunc.read_map(data_path + 'CIB/Sehgal_CIB_T_DUST_8192.fits', dtype = np.float32)
+        beta = hp.fitsfunc.read_map(data_path + 'CIB/Sehgal_CIB_beta_DUST_8192.fits', dtype = np.float32)
+        f_0 = 350e9
+
+        if template == 'SO_reproduced':
+            A *= 0.75
 	
-    elif template == "CITA":
-        A = hp.fitsfunc.read_map(data_path + "CIB/CITA_CIB_A_DUST_4096.fits", dtype = np.float32)    
-        T = hp.fitsfunc.read_map(data_path + "CIB/CITA_CIB_T_DUST_4096.fits", dtype = np.float32)
-        beta = hp.fitsfunc.read_map(data_path + "CIB/CITA_CIB_beta_DUST_4096.fits", dtype = np.float32)
+    elif template == 'CITA':
+        A = hp.fitsfunc.read_map(data_path + 'CIB/CITA_CIB_A_DUST_4096.fits', dtype = np.float32)    
+        T = hp.fitsfunc.read_map(data_path + 'CIB/CITA_CIB_T_DUST_4096.fits', dtype = np.float32)
+        beta = hp.fitsfunc.read_map(data_path + 'CIB/CITA_CIB_beta_DUST_4096.fits', dtype = np.float32)
         f_0 = 353e9
 
     #Compute CIB brightness at given frequency
@@ -452,25 +456,25 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     #Smooth map if necessary
     if beam_FWHM is not None:
-        print("begin smoothing")
+        print('begin smoothing')
         cib = hp.sphtfunc.smoothing(cib, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
     #Convert units if necessary
-    if unit == "mjy":
+    if unit == 'mjy':
         None
-    elif unit == "cmb":
+    elif unit == 'cmb':
         cib = convert_units(freq, cib, mjy2cmb=True)
-    elif unit == "rj":
+    elif unit == 'rj':
         cib = convert_units(freq, cib, mjy2rj=True)
     else:
         cib = convert_units(freq, cib, mjy2cmb=True)
-        print("Waring: Unknown unit! Output will be in K_CMB")
+        print('Waring: Unknown unit! Output will be in K_CMB')
 
     #Return output
     return(np.float32(cib))
 
 
-def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"):
+def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'):
 
     '''Computes an all-sky radio point source map at a given frequency and nside based on 
     the simulations provided by Sehgal et al. (2010), which have been recalibrated by the
@@ -497,7 +501,8 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
-        by CITA. Default: 'SO'
+        by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
+        from the Sehgal et al. (2010) data. Default: 'CITA'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -512,11 +517,11 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     if lmax is None:
         lmax = int(3*nside_out-1)
     
-    if template != "SO" and template != "CITA" and template != "Sehgal":
-        print("Waring: Unknown template requested! Output will be based on SO sky model")
-        template = "SO"	
+    if template != 'SO' and template != 'CITA' and template != 'Sehgal' and template != 'SO_reproduced':
+        print('Waring: Unknown template requested! Output will be based on SO sky model')
+        template = 'CITA'	
 	
-    if template == "SO":
+    if template == 'SO':
 
         npix = hp.pixelfunc.nside2npix(4096)
         radio_ps = np.zeros(npix)
@@ -527,45 +532,65 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
 
         #Interpolate data points
         if freq > np.max(nu):
-            print("Warning: Input frequency lies beyoned the 353 GHz. Since higher frequencies are not constraint by simulations, the data will be 0.")
+            print('Warning: Input frequency lies beyoned the 353 GHz. Since higher frequencies are not constraint by simulations, the data will be 0.')
         else:
 		
             #Read data files
             data = np.zeros((len(nu), npix), dtype = np.float32)
 
             for i in np.arange(len(nu)):
-                file_name = data_path + "radio_ps/" + nu_names[i] + "_rad_pts_healpix_nopell_Nside4096_DeltaT_uK_fluxcut148_7mJy_lininterp.fits"
+                file_name = data_path + 'radio_ps/' + nu_names[i] + '_rad_pts_healpix_nopell_Nside4096_DeltaT_uK_fluxcut148_7mJy_lininterp.fits'
                 data[i,:] = hp.fitsfunc.read_map(file_name, dtype = np.float32) * convert_units(nu[i], 1e-6, cmb2mjy=True)		
 		
             for i in tqdm(np.arange(npix)):
                 radio_ps[i] = np.interp(freq, nu, data[:,i])
+		
+            del data		
 
-    elif template == "Sehgal":
+    elif (template == 'Sehgal') or (template == 'SO_reproduced'):
 
         npix = hp.pixelfunc.nside2npix(8192)        
         radio_ps = np.zeros(npix)
 
         #Define frequencies
         nu = np.array([30,90,148,219,277,350])*1e9
-        nu_names = ['30','90','148','219','277','350']
+        nu_names = ['030','090','148','219','277','350']
+
+        if template == 'SO_reproduced':
+
+            file_name = data_path + 'radio_ps/148_rad_pts_healpix.fits'
+            map_148 = hp.fitsfunc.read_map(file_name, dtype = np.float32)/1e6
+            
+            solid_angle = 4*np.pi / hp.nside2npix(8192)        
+            threshold = 7e-3 / solid_angle / 1e6 #defines 7 mJy source cut at 148 GHz in units of MJy/sr for nside = 8192
+            flagged = map_148 > threshold
+            del map_148
+
 
         #Interpolate data points
         if freq > np.max(nu):
-            print("Warning: Input frequency lies beyoned the 350 GHz. Since higher frequencies are not constraint by simulations, the data will be 0.")
+            print('Warning: Input frequency lies beyoned the 350 GHz. Since higher frequencies are not constraint by simulations, the data will be 0.')
         else:
 		
             #Read data files
             data = np.zeros((len(nu), npix), dtype = np.float32)
 
             for i in np.arange(len(nu)):
-                file_name = data_path + "radio_ps/" + nu_names[i] + "_rad_pts_healpix.fits"
-                data[i,:] = hp.fitsfunc.read_map(file_name, dtype = np.float32)/1e6		
+                file_name = data_path + 'radio_ps/' + nu_names[i] + '_rad_pts_healpix.fits'
+                healpy_map = hp.fitsfunc.read_map(file_name, dtype = np.float32)/1e6
+
+                if template == 'SO_reproduced':
+                    healpy_map[flagged] = 0
+
+                data[i,:] = healpy_map		
 		
             for i in tqdm(np.arange(npix)):
                 radio_ps[i] = np.interp(freq, nu, data[:,i])
-                
-    elif template == "CITA":
-        print("Warning: No radio PS template provided by the CITA simulations")
+
+            del data		
+				
+    elif template == 'CITA':
+        print('Warning: No radio PS template provided by the CITA simulations')
         npix = hp.pixelfunc.nside2npix(4096)
         radio_ps = np.zeros(npix)
 
@@ -575,27 +600,27 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
 
     #Smooth map if necessary
     if beam_FWHM is not None:
-        print("begin smoothing")
+        print('begin smoothing')
         radio_ps = hp.sphtfunc.smoothing(radio_ps, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
     #Convert units if necessary
-    if unit == "mjy":
+    if unit == 'mjy':
         None
-    elif unit == "cmb":
+    elif unit == 'cmb':
         radio_ps = convert_units(freq, radio_ps, mjy2cmb=True)
-    elif unit == "rj":
+    elif unit == 'rj':
         radio_ps = convert_units(freq, radio_ps, mjy2rj=True)
     else:
         radio_ps = convert_units(freq, radio_ps, mjy2cmb=True)
-        print("Waring: Unknown unit! Output will be in K_CMB")
+        print('Waring: Unknown unit! Output will be in K_CMB')
 
     #Return output
     return(np.float32(radio_ps))
 
 
-def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"): 
+def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'): 
          
-    """
+    '''
     Function that computes a CMB map from a power spectrum.
 
     Parameters
@@ -625,7 +650,8 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
-        by CITA. Default: 'SO'
+        by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
+        from the Sehgal et al. (2010) data. Default: 'CITA'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -636,7 +662,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     float array
         Healpix allsky map contaning the CMB map at a given frequency. 
 
-    """
+    '''
                 
     if cl_file is not None:
     
@@ -654,9 +680,9 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
  
     else: 
 
-        if template != "SO" and template != "CITA" and template != "Sehgal":
-            print("Waring: Unknown template requested! Output will be based on SO sky model")
-            template = "SO"			
+        if template != 'SO' and template != 'CITA' and template != 'Sehgal' and template != 'SO_reproduced':
+            print('Waring: Unknown template requested! Output will be based on SO sky model')
+            template = 'CITA'			
 		
         if template == 'CITA':
         	
@@ -676,7 +702,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
 
             CMB = hp.read_map(data_path + file_name, dtype = np.float32)/1e6 		
 		
-        elif template == 'Sehgal':
+        elif (template == 'Sehgal') or (template == 'SO_reproduced'):
 			
             if lensed == True:
 
@@ -694,25 +720,25 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
 
     #Smooth map if necessary
     if beam_FWHM is not None:
-        print("begin smoothing")
+        print('begin smoothing')
         CMB = hp.sphtfunc.smoothing(CMB, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)	
 	
     #Convert units if necessary : 
-    if unit == "mjy":
+    if unit == 'mjy':
         CMB = convert_units(freq, CMB, cmb2mjy=True)
-    elif unit == "cmb":
+    elif unit == 'cmb':
         None
-    elif unit == "rj":
+    elif unit == 'rj':
         CMB = convert_units(freq, CMB, cmb2rj=True)
     else:	
-        print("Waring: Unknown unit! Output will be in K_CMB")   
+        print('Waring: Unknown unit! Output will be in K_CMB')   
 
     return(CMB)
 
 
-def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"):
+def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'):
     
-    """
+    '''
     Function which compute tSZ maps at different frequencies and different nside. 
     
     Parameters
@@ -734,7 +760,8 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
-        by CITA. Default: 'SO'
+        by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
+        from the Sehgal et al. (2010) data. Default: 'CITA'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -744,12 +771,12 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     -------
     tSZ: float array
         Healpix allsky map contaning the tSZ map at a given frequency. 
-    """
+    '''
 
     #Read data
-    if template != "SO" and template != "CITA" and template != "Sehgal":
-        print("Waring: Unknown template requested! Output will be based on SO sky model")
-        template = "SO"
+    if template != 'SO' and template != 'CITA' and template != 'Sehgal' and template != 'SO_reproduced':
+        print('Waring: Unknown template requested! Output will be based on SO sky model')
+        template = 'CITA'
 
     if template == 'SO':
         
@@ -762,7 +789,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         file_in = 'tSZ/tsz.fits'
         y_map = hp.read_map(data_path + file_in, dtype = np.float32)        
         
-    elif template == 'Sehgal': 
+    elif (template == 'Sehgal') or (template == 'SO_reproduced'): 
         
         file_in='tSZ/030_tsz_healpix.fits'
         
@@ -773,6 +800,9 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         tSZ_SED = ((x_nu*(np.exp(x_nu)+1)/(np.exp(x_nu)-1))-4)
 
         y_map = tSZ_30GHz / tSZ_SED / T_CMB
+
+        if template == 'SO_reproduced':
+            y_map *= 0.75
 
     #Get tSZ at different frequencies : 
     x_nu = np.array((h*freq)/(k_B*T_CMB))    
@@ -789,27 +819,27 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     #Smooth map if necessary
     if beam_FWHM is not None:
-        print("begin smoothing")
+        print('begin smoothing')
         tSZ = hp.sphtfunc.smoothing(tSZ, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
     #Get the frequency independent y-map : 
     if freq != -1: 	
         #Convert units if necessary
-        if unit == "mjy":
+        if unit == 'mjy':
             tSZ = convert_units(freq, tSZ, cmb2mjy=True)
-        elif unit == "cmb":
+        elif unit == 'cmb':
             None
-        elif unit == "rj":
+        elif unit == 'rj':
             tSZ = convert_units(freq, tSZ, cmb2rj=True)
         else:
-            print("Waring: Unknown unit! Output will be in K_CMB")
+            print('Waring: Unknown unit! Output will be in K_CMB')
 
     return(tSZ)
   
 
-def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"):
+def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'):
 
-    """
+    '''
     Function which computes kSZ maps at different frequencies and different nside. 
     
     Parameters
@@ -831,7 +861,8 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
-        by CITA. Default: 'SO'
+        by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
+        from the Sehgal et al. (2010) data. Default: 'CITA'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -841,12 +872,12 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     -------
     kSZ: float array
         Healpy all-sky map contaning the kSZ map at a given frequency. 
-    """
+    '''
 
     #Read data
-    if template != "SO" and template != "CITA" and template != "Sehgal":
-        print("Waring: Unknown template requested! Output will be based on SO sky model")
-        template = "SO"
+    if template != 'SO' and template != 'CITA' and template != 'Sehgal' and template != 'SO_reproduced':
+        print('Waring: Unknown template requested! Output will be based on SO sky model')
+        template = 'CITA'
 
     if template == 'SO':
         
@@ -858,7 +889,7 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         file_in = 'kSZ/ksz.fits'
         kSZ = hp.read_map(data_path + file_in, dtype = np.float32)/1e6
         
-    elif template == 'Sehgal' : 
+    elif (template == 'Sehgal') or (template == 'SO_reproduced'):
               
         file_in = 'kSZ/030_ksz_healpix.fits'  
         kSZ = hp.read_map(data_path + file_in, dtype = np.float32) * convert_units(30e9, 1e-6, mjy2cmb=True)
@@ -869,25 +900,25 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     #Smooth map if necessary
     if beam_FWHM is not None:
-        print("begin smoothing")
+        print('begin smoothing')
         kSZ = hp.sphtfunc.smoothing(kSZ, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 	
     #Convert units if necessary
-    if unit == "mjy":
+    if unit == 'mjy':
         kSZ = convert_units(freq, kSZ, cmb2mjy=True)
-    elif unit == "cmb":
+    elif unit == 'cmb':
         None
-    elif unit == "rj":
+    elif unit == 'rj':
         kSZ = convert_units(freq, kSZ, cmb2rj=True)
     else:
-        print("Waring: Unknown unit! Output will be in K_CMB")
+        print('Waring: Unknown unit! Output will be in K_CMB')
 
     return(kSZ)
 
 
 def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, arcmin = True, unit = 'cmb'): 
         
-    """
+    '''
     Function which create a White noise map for a given noise/arcmin or noise/radians. 
     By default the code expect the noise level to be given in microK_CMB/arcmin
 
@@ -915,7 +946,7 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     array
         Array contaning the Variarion of intensity produced by tSZ over the fequencies. 
 
-    """
+    '''
     
     #Compute the average noise in each pixel : 
     sigma_noise = (noise_level * unit_noise)/px_size(nside_out,arcmin)
@@ -929,19 +960,19 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
         noise_map = noise_map 
 	
     #Convert units if necessary
-    elif unit == "cmb":
+    elif unit == 'cmb':
         None
-    elif unit == "mjy":
+    elif unit == 'mjy':
         noise_map = convert_units(freq, noise_map, cmb2mjy=True)
-    elif unit == "rj":
+    elif unit == 'rj':
         noise_map = convert_units(freq, noise_map, cmb2rj=True)
     else:
-        print("Waring: Unknown unit! Output will be in K_CMB")
+        print('Waring: Unknown unit! Output will be in K_CMB')
     
     return(np.float32(noise_map))
 
 
-def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, unit = "cmb"):
+def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, unit = 'cmb', no_white = False):
 
     '''Computes an all-sky atmospheric noise map at a given frequency and nside based on 
     the SO noise model presented by the SO Collaboration (2019) and using the model parameters
@@ -965,6 +996,8 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
         'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
+    no_white: bool, optional
+        If True, only the red noise component is simulated. Default: False
 
     Returns
     -------
@@ -986,33 +1019,36 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
     index = freq == nu
     if np.sum(index) == 0:
 
-        print("Warning: Input frequency is not a valid SO or CCAT-prime band. Try 27, 39, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz")
+        print('Warning: Input frequency is not a valid SO or CCAT-prime band. Try 27, 39, 93, 145, 225, 279, 220, 280, 350, 405, or 860 GHz')
         return(None)
 
     else:
 
         #Compute power spectrum
         ell = np.linspace(1,lmax,lmax)
-        Cl = N_red[index] * (ell/ell_knee)**alpha_knee + N_white[index]
+        Cl = N_red[index] * (ell/ell_knee)**alpha_knee 
+ 
+        if no_white is True:
+            Cl += N_white[index]
 
         #Create all-sky map
         noise_map = hp.sphtfunc.synfast(Cl, nside_out, lmax=lmax)/1e6
 
         #Convert units if necessary
-        if unit == "mjy":
+        if unit == 'mjy':
             noise_map = convert_units(freq, noise_map, cmb2mjy=True)
-        elif unit == "cmb":
+        elif unit == 'cmb':
             None
-        elif unit == "rj":
+        elif unit == 'rj':
             noise_map = convert_units(freq, noise_map, cmb2rj=True)
         else:
-            print("Waring: Unknown unit! Output will be in K_CMB")
+            print('Waring: Unknown unit! Output will be in K_CMB')
 
         #Return output
         return(np.float32(noise_map))
 
 
-def simulate_iras_ps(freq, nside_out = 4096, beam_FWHM = None, unit = "cmb"):
+def simulate_iras_ps(freq, nside_out = 4096, beam_FWHM = None, unit = 'cmb'):
 
     '''Computes a map that contains all ~250,000 point sources from the IRAS PS catalog.
     The measured IRAS FIR spectra have been fit with modified blackbodies and are extrapolated
@@ -1042,15 +1078,15 @@ def simulate_iras_ps(freq, nside_out = 4096, beam_FWHM = None, unit = "cmb"):
     '''
 
     if beam_FWHM is None:
-        print("Warning: beam is not allowed to be None or 0. beam_FWHM will be set to 1 arcmin")
+        print('Warning: beam is not allowed to be None or 0. beam_FWHM will be set to 1 arcmin')
         beam_FWHM = 1
 
     #read data
-    data = ascii.read(data_path + "catalogs/IRAS_PSC_fit_results.txt")
-    RA = np.array(data["RA"])
-    DEC = np.array(data["DEC"])
-    A = np.array(data["A"])
-    T = np.array(data["T"])
+    data = ascii.read(data_path + 'catalogs/IRAS_PSC_fit_results.txt')
+    RA = np.array(data['RA'])
+    DEC = np.array(data['DEC'])
+    A = np.array(data['A'])
+    T = np.array(data['T'])
     n = len(RA)
 
     #compute spectra
@@ -1079,20 +1115,20 @@ def simulate_iras_ps(freq, nside_out = 4096, beam_FWHM = None, unit = "cmb"):
             ps_model[index] += amplitude_ps[i]*np.exp(-0.5*(distances**2/sigma**2))
 
     #Convert units if necessary
-    if unit == "cmb":
+    if unit == 'cmb':
         ps_model = convert_units(freq, ps_model, mjy2cmb=True)
-    elif unit == "mjy":
+    elif unit == 'mjy':
         None
-    elif unit == "rj":
+    elif unit == 'rj':
         ps_model = convert_units(freq, ps_model, mjy2rj=True)
     else:
         ps_model = convert_units(freq, ps_model, mjy2cmb=True)
-        print("Waring: Unknown unit! Output will be in K_CMB")
+        print('Waring: Unknown unit! Output will be in K_CMB')
 		   
     return(ps_model)
 
 
-def simulate_nvss_ps(freq, nside_out = 4096, beam_FWHM = None, unit = "cmb"):
+def simulate_nvss_ps(freq, nside_out = 4096, beam_FWHM = None, unit = 'cmb'):
 
     '''Computes a map that contains all ~1,800,000 point sources from the NVSS PS catalog 
     (Condon et al. 1998). The measured 1.4 GHz fluxes are extrapolated to the mm/sub-mm 
@@ -1123,15 +1159,15 @@ def simulate_nvss_ps(freq, nside_out = 4096, beam_FWHM = None, unit = "cmb"):
     '''
 
     if beam_FWHM is None:
-        print("Warning: beam is not allowed to be None or 0. beam_FWHM will be set to 1 arcmin")
+        print('Warning: beam is not allowed to be None or 0. beam_FWHM will be set to 1 arcmin')
         beam_FWHM = 1
 
     #read data
-    data = ascii.read(data_path + "catalogs/NVSS_ps_results.txt")
-    RA = np.array(data["RA"])
-    DEC = np.array(data["DEC"])
-    flux = np.array(data["flux@1.4GHz"])
-    alpha = np.array(data["alpha"])
+    data = ascii.read(data_path + 'catalogs/NVSS_ps_results.txt')
+    RA = np.array(data['RA'])
+    DEC = np.array(data['DEC'])
+    flux = np.array(data['flux@1.4GHz'])
+    alpha = np.array(data['alpha'])
     n = len(RA)
 
     #compute spectra
@@ -1160,20 +1196,20 @@ def simulate_nvss_ps(freq, nside_out = 4096, beam_FWHM = None, unit = "cmb"):
             ps_model[index] += amplitude_ps[i]*np.exp(-0.5*(distances**2/sigma**2))
 
     #Convert units if necessary
-    if unit == "cmb":
+    if unit == 'cmb':
         ps_model = convert_units(freq, ps_model, mjy2cmb=True)
-    elif unit == "mjy":
+    elif unit == 'mjy':
         None
-    elif unit == "rj":
+    elif unit == 'rj':
         ps_model = convert_units(freq, ps_model, mjy2rj=True)
     else:
         ps_model = convert_units(freq, ps_model, mjy2cmb=True)
-        print("Waring: Unknown unit! Output will be in K_CMB")
+        print('Waring: Unknown unit! Output will be in K_CMB')
 		   
     return(ps_model)
 
 
-def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = False, cl_file = None, lensed = True, out_file = None, nside_out = 4096, lmax = None, beam_FWHM = None, template = "SO", unit = "cmb"):
+def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = False, cl_file = None, lensed = True, out_file = None, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'):
 
     '''Computes an all-sky map of the simulated microwave sky at the specified frequency. 
     The CCAT-prime sky model uses all-sky templates in the healpix format and includes the
@@ -1189,9 +1225,9 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
         sensitivity of the instrument in units of micro K_CMB - arcmin. Default: None
     components: string or list of stings, optional
         List containing the names of the components to be included in the sky model.
-        Any combination of the following individual components is possible: "gal_synchrotron", 
-        "gal_dust", "gal_freefree", "gal_ame", "cib", "radio_ps", "cmb", "tsz", "ksz". All 
-        components are used if components is set to "all". Default: "all"
+        Any combination of the following individual components is possible: 'gal_synchrotron', 
+        'gal_dust', 'gal_freefree', 'gal_ame', 'cib', 'radio_ps', 'cmb', 'tsz', 'ksz'. All 
+        components are used if components is set to 'all'. Default: 'all'
     red_noise: bool, optional
         If True, a realistic white noise + red noise atmospheric model is added to the
 	sky model in case the imput frequency is a valid SO or CCAT-prime central
@@ -1217,10 +1253,12 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
         in units of arcmin is given by the provided value. Default: None
     template: bool, optional
         Determines the all-sky foregrounds templates to be used to build the sky model.
+        If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
         based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
-        by CITA. Default: 'SO'
+        by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
+        from the Sehgal et al. (2010) data. Default: 'CITA'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -1235,67 +1273,67 @@ def ccatp_sky_model(freq, sensitivity = None, components = "all", red_noise = Fa
     if lmax is None:
         lmax = int(3*nside_out-1)
 
-    if components == "all":
-        components = ["gal_synchrotron", "gal_dust", "gal_freefree", "gal_ame", "cib", "radio_ps", "cmb", "tsz", "ksz"]
+    if components == 'all':
+        components = ['gal_synchrotron', 'gal_dust', 'gal_freefree', 'gal_ame', 'cib', 'radio_ps', 'cmb', 'tsz', 'ksz']
 
     #build sky model from the individual components
     allsky_map = np.zeros(hp.nside2npix(nside_out))
 
-    if ("gal_synchrotron" in components) or ("gal_dust" in components) or ("gal_freefree" in components) or ("gal_ame" in components):
-        print("Computing Galactic foregounds...")
+    if ('gal_synchrotron' in components) or ('gal_dust' in components) or ('gal_freefree' in components) or ('gal_ame' in components):
+        print('Computing Galactic foregounds...')
         allsky_map += simulate_gal_foregrounds(freq, components, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit)
-        print("Galactic foregounds complete.")
+        print('Galactic foregounds complete.')
 
-    if "cib" in components:
-        print("Computing CIB...")
+    if 'cib' in components:
+        print('Computing CIB...')
         allsky_map += simulate_cib(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
-        print("CIB complete.")
+        print('CIB complete.')
 
-    if "radio_ps" in components:
-        print("Computing radio PS...")
+    if 'radio_ps' in components:
+        print('Computing radio PS...')
         allsky_map += simulate_radio_ps(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
-        print("Radio PS complete.")
+        print('Radio PS complete.')
 
-    if "cmb" in components:
-        print("Computing CMB...")
+    if 'cmb' in components:
+        print('Computing CMB...')
         allsky_map += simulate_cmb(freq, cl_file = cl_file, lensed = lensed, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
-        print("CMB complete.")
+        print('CMB complete.')
 
-    if "tsz" in components:
-        print("Computing tSZ...")
+    if 'tsz' in components:
+        print('Computing tSZ...')
         allsky_map += simulate_tSZ(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
-        print("tSZ complete.")
+        print('tSZ complete.')
 
-    if "ksz" in components:
-        print("Computing kSZ...")
+    if 'ksz' in components:
+        print('Computing kSZ...')
         allsky_map += simulate_kSZ(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, template = template, unit = unit)
-        print("kSZ complete.")
+        print('kSZ complete.')
 
     #Smooth map if necessary
     if beam_FWHM is not None:
-        print("Begin smoothing...")
+        print('Begin smoothing...')
         allsky_map = hp.sphtfunc.smoothing(allsky_map, iter = 1, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
-        print("Smoothing complete.")
+        print('Smoothing complete.')
 
     #Add noise if necessary
     if red_noise is True:
         if sensitivity is True:
-            print("Warning! You request to apply both red noise + white noise and white noise. The White noise sensitivity parameter will be overwritten to None. If this is not what you want than check the settings and re-run.")
+            print('Warning! You request to apply both red noise + white noise and white noise. The White noise sensitivity parameter will be overwritten to None. If this is not what you want than check the settings and re-run.')
             sensitivity = None
-        print("Computing red noise...")        
+        print('Computing red noise...')        
         allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit)
-        print("Red noise complete.")
+        print('Red noise complete.')
 
     if sensitivity is not None and red_noise is False:
-        print("Computing white noise...")        
+        print('Computing white noise...')        
         allsky_map += simulate_white_noise(freq, sensitivity, nside_out = nside_out, unit = unit)
-        print("White noise complete.")
+        print('White noise complete.')
 
     if out_file is not None:
-        print("The result will be written to " + out_file)
+        print('The result will be written to ' + out_file)
         hp.fitsfunc.write_map(out_file, allsky_map, overwrite = True, dtype = np.float32)
         allsky_map = None
 
-    print("Done!")
+    print('Done!')
 
     return(allsky_map)

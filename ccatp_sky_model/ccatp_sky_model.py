@@ -956,7 +956,7 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     noise_map =  np.random.normal(0, sigma_noise, npix)*1e-6 #Random normal distribution centered over the desired noise
 	
     #Convert units if necessary
-    elif unit == 'cmb':
+    if unit == 'cmb':
         None
     elif unit == 'mjy':
         noise_map = convert_units(freq, noise_map, cmb2mjy=True)

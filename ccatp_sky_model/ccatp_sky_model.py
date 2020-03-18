@@ -954,10 +954,6 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     #Create White-noise map :
     npix = hp.pixelfunc.nside2npix(nside_out) #Compute the number of pixels
     noise_map =  np.random.normal(0, sigma_noise, npix)*1e-6 #Random normal distribution centered over the desired noise
-
-    #Get the frquency independent CMB : 
-    if freq == 0: 
-        noise_map = noise_map 
 	
     #Convert units if necessary
     elif unit == 'cmb':

@@ -1216,7 +1216,7 @@ def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = Fa
     Parameters
     ----------
     freq: float or float array
-        Frequency of the output map in Hz. If freq =0 mean that we get frequency independent maps. 
+        Frequency of the output map in Hz. If freq =-1 mean that we get frequency independent maps. 
     sensitivity: float, optional
         sensitivity of the instrument in units of micro K_CMB - arcmin. Default: None
     components: string or list of stings, optional

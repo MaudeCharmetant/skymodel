@@ -12,7 +12,7 @@ Install the CCATp sky model
 ===========================
 
 ccatp_sky_model is a pure Python module and should therefore be pretty easy to install.
-All you'll need is numpy, astropy, PySM, tqdm, and healpy.
+All you'll need is numpy, astropy, `PySM <https://github.com/bthorne93/PySM_public>`_ , tqdm, and `healpy <https://github.com/healpy/healpy>`_ .
 
 .. _source:
 

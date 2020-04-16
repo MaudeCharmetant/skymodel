@@ -381,7 +381,7 @@ def simulate_gal_foregrounds(freq, components = 'all', nside_out = 4096, lmax = 
     return(foregrounds)
 
 
-def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'):
+def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
 
     '''Computes an all-sky CIB map at a given frequency and nside based on . 
 
@@ -402,10 +402,10 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         Determines the all-sky foregrounds templates to be used to build the sky model.
         If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
-        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        based on the simulations by Sehgal et al. (2010) is used. If 'WebSky' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
         by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
-        from the Sehgal et al. (2010) data. Default: 'CITA'
+        from the Sehgal et al. (2010) data. Default: 'WebSky'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -421,9 +421,9 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         lmax = int(3*nside_out-1)
 
     #Load all-sky parameter value maps
-    if template != 'SO' and template != 'CITA' and template != 'Sehgal' and template != 'SO_reproduced':
+    if template != 'SO' and template != 'WebSky' and template != 'Sehgal' and template != 'SO_reproduced':
         print('Waring: Unknown template requested! Output will be based on SO sky model')
-        template = 'CITA'
+        template = 'WebSky'
 
     if template == 'SO':
         A = hp.fitsfunc.read_map(data_path + 'CIB/SO_CIB_A_DUST_4096.fits', dtype = np.float32)    
@@ -440,7 +440,7 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         if template == 'SO_reproduced':
             A *= 0.75
 	
-    elif template == 'CITA':
+    elif template == 'WebSky':
         A = hp.fitsfunc.read_map(data_path + 'CIB/CITA_CIB_A_DUST_4096.fits', dtype = np.float32)    
         T = hp.fitsfunc.read_map(data_path + 'CIB/CITA_CIB_T_DUST_4096.fits', dtype = np.float32)
         beta = hp.fitsfunc.read_map(data_path + 'CIB/CITA_CIB_beta_DUST_4096.fits', dtype = np.float32)
@@ -474,7 +474,7 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     return(np.float32(cib))
 
 
-def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'):
+def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
 
     '''Computes an all-sky radio point source map at a given frequency and nside based on 
     the simulations provided by Sehgal et al. (2010), which have been recalibrated by the
@@ -499,10 +499,10 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
         Determines the all-sky foregrounds templates to be used to build the sky model.
         If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
-        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        based on the simulations by Sehgal et al. (2010) is used. If 'WebSky' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
         by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
-        from the Sehgal et al. (2010) data. Default: 'CITA'
+        from the Sehgal et al. (2010) data. Default: 'WebSky'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -517,9 +517,9 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     if lmax is None:
         lmax = int(3*nside_out-1)
     
-    if template != 'SO' and template != 'CITA' and template != 'Sehgal' and template != 'SO_reproduced':
+    if template != 'SO' and template != 'WebSky' and template != 'Sehgal' and template != 'SO_reproduced':
         print('Waring: Unknown template requested! Output will be based on SO sky model')
-        template = 'CITA'	
+        template = 'WebSky'	
 	
     if template == 'SO':
 
@@ -589,8 +589,8 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
 
             del data		
 				
-    elif template == 'CITA':
-        print('Warning: No radio PS template provided by the CITA simulations')
+    elif template == 'WebSky':
+        print('Warning: No radio PS template provided by the WebSky simulations')
         npix = hp.pixelfunc.nside2npix(4096)
         radio_ps = np.zeros(npix)
 
@@ -618,7 +618,7 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     return(np.float32(radio_ps))
 
 
-def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'): 
+def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'): 
          
     '''
     Function that computes a CMB map from a power spectrum.
@@ -633,7 +633,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         Or array containing the power spectrum to generate random maps in Kelvin.
         Default: None	
     lensed: bool, optional
-    	If True select the lensed CMB map when possible. This is only possible for 'CITA' and 'Sehgal.'
+    	If True select the lensed CMB map when possible. This is only possible for 'WebSky' and 'Sehgal.'
         Default: True
     nside_out: float, optional
         Healpix nside parameter of the output map. Must be a valid value for nside.
@@ -648,10 +648,10 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         Determines the all-sky foregrounds templates to be used to build the sky model.
         If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
-        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        based on the simulations by Sehgal et al. (2010) is used. If 'WebSky' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
         by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
-        from the Sehgal et al. (2010) data. Default: 'CITA'
+        from the Sehgal et al. (2010) data. Default: 'WebSky'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -680,11 +680,11 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
  
     else: 
 
-        if template != 'SO' and template != 'CITA' and template != 'Sehgal' and template != 'SO_reproduced':
+        if template != 'SO' and template != 'WebSky' and template != 'Sehgal' and template != 'SO_reproduced':
             print('Waring: Unknown template requested! Output will be based on SO sky model')
-            template = 'CITA'			
+            template = 'WebSky'			
 		
-        if template == 'CITA':
+        if template == 'WebSky':
         	
             if lensed == True:
 			
@@ -736,7 +736,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     return(CMB)
 
 
-def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'):
+def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
     
     '''
     Function which compute tSZ maps at different frequencies and different nside. 
@@ -758,10 +758,10 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         Determines the all-sky foregrounds templates to be used to build the sky model.
         If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
-        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        based on the simulations by Sehgal et al. (2010) is used. If 'WebSky' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
         by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
-        from the Sehgal et al. (2010) data. Default: 'CITA'
+        from the Sehgal et al. (2010) data. Default: 'WebSky'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -774,9 +774,10 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     '''
 
     #Read data
-    if template != 'SO' and template != 'CITA' and template != 'Sehgal' and template != 'SO_reproduced':
-        print('Waring: Unknown template requested! Output will be based on CITA sky model')
-        template = 'CITA'
+
+    if template != 'SO' and template != 'WebSky' and template != 'Sehgal' and template != 'SO_reproduced':
+        print('Waring: Unknown template requested! Output will be based on WebSky sky model')
+        template = 'WebSky'
 
     if template == 'SO':
         
@@ -784,7 +785,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         y_map = hp.read_map(data_path + file_in, dtype = np.float32)
 
         
-    elif template == 'CITA': 
+    elif template == 'WebSky': 
         
         file_in = 'tSZ/tsz.fits'
         y_map = hp.read_map(data_path + file_in, dtype = np.float32)        
@@ -837,7 +838,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     return(tSZ)
   
 
-def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'):
+def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
 
     '''
     Function which computes kSZ maps at different frequencies and different nside. 
@@ -859,10 +860,10 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         Determines the all-sky foregrounds templates to be used to build the sky model.
         If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
-        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        based on the simulations by Sehgal et al. (2010) is used. If 'WebSky' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
         by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
-        from the Sehgal et al. (2010) data. Default: 'CITA'
+        from the Sehgal et al. (2010) data. Default: 'WebSky'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 
@@ -875,16 +876,16 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     '''
 
     #Read data
-    if template != 'SO' and template != 'CITA' and template != 'Sehgal' and template != 'SO_reproduced':
+    if template != 'SO' and template != 'WebSky' and template != 'Sehgal' and template != 'SO_reproduced':
         print('Waring: Unknown template requested! Output will be based on SO sky model')
-        template = 'CITA'
+        template = 'WebSky'
 
     if template == 'SO':
         
         file_in = 'kSZ/148_ksz_healpix_nopell_Nside4096_DeltaT_uK.fits'
         kSZ = hp.read_map(data_path + file_in, dtype = np.float32)/1e6
         
-    elif template == 'CITA':
+    elif template == 'WebSky':
         
         file_in = 'kSZ/ksz.fits'
         kSZ = hp.read_map(data_path + file_in, dtype = np.float32)/1e6
@@ -1205,7 +1206,7 @@ def simulate_nvss_ps(freq, nside_out = 4096, beam_FWHM = None, unit = 'cmb'):
     return(ps_model)
 
 
-def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = False, cl_file = None, lensed = True, out_file = None, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'CITA', unit = 'cmb'):
+def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = False, cl_file = None, lensed = True, out_file = None, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
 
     '''Computes an all-sky map of the simulated microwave sky at the specified frequency. 
     The CCAT-prime sky model uses all-sky templates in the healpix format and includes the
@@ -1235,7 +1236,7 @@ def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = Fa
         Cl ell(ell+1)/2pi. If set, a random realization of the CMB based on the provided
         powerspectrum will be added to the data. Default: None
     lensed: bool, optional
-        If True, lensed SO, Sehgal and CITA CMB maps will be used. Default: True 
+        If True, lensed SO, Sehgal and WebSky CMB maps will be used. Default: True 
     out_file: string, optional
         If set, the results will be written as a healpy .fits file of the given name. 
         Default: None	
@@ -1251,10 +1252,10 @@ def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = Fa
         Determines the all-sky foregrounds templates to be used to build the sky model.
         If 'Sehgal' is chosen, simulations by Sehgal et al. (2010) are used.
         If 'SO' is chosen, the Simons Observatory sky model provided by Colin Hill and 
-        based on the simulations by Sehgal et al. (2010) is used. If 'CITA' is chosen,
+        based on the simulations by Sehgal et al. (2010) is used. If 'WebSky' is chosen,
         the used templates will be based on the WebSky Extragalactic CMB Mocks provided 
         by CITA. If 'SO_reproduced' is chosen, the SO sky model is reproduced directly 
-        from the Sehgal et al. (2010) data. Default: 'CITA'
+        from the Sehgal et al. (2010) data. Default: 'WebSky'
     unit: bool, optional
         Determines the units of the output map. The available units are 'mjy' --> MJy/sr
         (specific intensity), 'cmb' --> K_CMB (thermodynamic temperature), and 

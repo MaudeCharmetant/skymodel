@@ -478,7 +478,10 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
 
     '''Computes an all-sky radio point source map at a given frequency and nside based on 
     the simulations provided by Sehgal et al. (2010), which have been recalibrated by the
-    SO collaboration. Du to the complex SEDs of the radio sources, bilinear interpolation
+    SO collaboration. The original simulations by Sehgal et al. are modelled by a curved 
+    power law and can be extrapolated to frequencies beyoned 350 GHz, while the sources in 
+    the SO simulations show more complex spectra due to ringing artifacts caused by the 
+    processing of the maps with alter_alm(). Due to these complex SEDs, bilinear interpolation
     is applied for input frequencies between 27 and 353 GHz. For higher frequencies, a null
     map is returned.
 
@@ -549,13 +552,6 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
 
     elif (template == 'Sehgal') or (template == 'SO_reproduced'):
 
-        npix = hp.pixelfunc.nside2npix(8192)        
-        radio_ps = np.zeros(npix)
-
-        #Define frequencies
-        nu = np.array([30,90,148,219,277,350])*1e9
-        nu_names = ['030','090','148','219','277','350']
-
         if template == 'SO_reproduced':
 
             file_name = data_path + 'radio_ps/148_rad_pts_healpix.fits'
@@ -566,28 +562,23 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
             flagged = map_148 > threshold
             del map_148
 
+        #Read data files
+        file_name = data_path + 'radio_ps/030_rad_pts_healpix.fits'
+        map_30 = hp.fitsfunc.read_map(file_name, dtype = np.float32)/1e6
 
-        #Interpolate data points
-        if freq > np.max(nu):
-            print('Warning: Input frequency lies beyoned the 350 GHz. Since higher frequencies are not constraint by simulations, the data will be 0.')
-        else:
-		
-            #Read data files
-            data = np.zeros((len(nu), npix), dtype = np.float32)
+        file_name = data_path + 'radio_ps/Sehgal_radio_ps_spectral_index_8192.fits'
+        spectral_index = hp.fitsfunc.read_map(file_name, dtype = np.float32)
 
-            for i in np.arange(len(nu)):
-                file_name = data_path + 'radio_ps/' + nu_names[i] + '_rad_pts_healpix.fits'
-                healpy_map = hp.fitsfunc.read_map(file_name, dtype = np.float32)/1e6
+        file_name = data_path + 'radio_ps/Sehgal_radio_ps_f_crit_8192.fits'
+        crit_freq = hp.fitsfunc.read_map(file_name, dtype = np.float32)
 
-                if template == 'SO_reproduced':
-                    healpy_map[flagged] = 0
+        #Extrapolate fluxes
+        radio_ps = map_30*(freq/30e9)**spectral_index * np.exp(-freq/crit_freq)
 
-                data[i,:] = healpy_map		
-		
-            for i in tqdm(np.arange(npix)):
-                radio_ps[i] = np.interp(freq, nu, data[:,i])
+        if template == 'SO_reproduced':
+            radio_ps[flagged] = 0
 
-            del data		
+        del map_30, spectral_index, crit_freq	
 				
     elif template == 'WebSky':
         print('Warning: No radio PS template provided by the WebSky simulations')

@@ -936,7 +936,7 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     Returns
     -------
     array
-        Array contaning the Variarion of intensity produced by tSZ over the fequencies. 
+        Array contaning the white noise map at a given frequency and resolution. 
 
     '''
     

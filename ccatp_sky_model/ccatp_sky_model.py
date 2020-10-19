@@ -422,7 +422,7 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     #Load all-sky parameter value maps
     if template != 'SO' and template != 'WebSky' and template != 'Sehgal' and template != 'SO_reproduced':
-        print('Waring: Unknown template requested! Output will be based on SO sky model')
+        print('Waring: Unknown template requested! Output will be based on WebSky sky model')
         template = 'WebSky'
 
     if template == 'SO':
@@ -672,7 +672,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     else: 
 
         if template != 'SO' and template != 'WebSky' and template != 'Sehgal' and template != 'SO_reproduced':
-            print('Waring: Unknown template requested! Output will be based on SO sky model')
+            print('Waring: Unknown template requested! Output will be based on WebSky sky model')
             template = 'WebSky'			
 		
         if template == 'WebSky':

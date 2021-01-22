@@ -3,6 +3,7 @@ import healpy as hp
 from astropy.io import fits, ascii
 from astropy import constants as cst
 from astropy.coordinates import SkyCoord
+from astropy import units as u
 import pysm
 from tqdm import tqdm 
 from pysm.nominal import models

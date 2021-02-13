@@ -996,10 +996,11 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
     if lmax is None:
         lmax = 3*nside_out-1
 
-    #Define frequencies and noise characteristics of the SO and CCAT-prime
-    nu = np.array([27, 39, 93, 145, 225, 279, 220, 280, 350, 405, 860])*1e9
-    N_white = np.array([2.351167E-04, 6.414462E-05, 2.975014E-06, 3.458125E-06, 2.011171E-05, 1.272230E-04, 1.8e-5, 6.4e-5, 9.3e-4, 1.2e-2, 2.8e4])
-    N_red = np.array([9.248376E-06, 2.236786E-06, 2.622661E-05, 3.298953E-04, 1.462620E-02, 8.579506E-02, 1.6e-2, 1.1e-1, 2.7e0, 1.7e1, 6.1e6])
+    #Define frequencies and noise characteristics of the SO and CCAT-prime.
+    #The values of N_white and N_red for the SO correspond to the baseline sensitivities and are obtained using v. 3.1.1. of the SO noise model. 
+    nu = np.array([27, 39, 93, 145, 225, 279, 220, 280, 350, 405, 860])*1e9	
+    N_white = np.array([4.31747108e-04, 1.07936777e-04, 5.46429934e-06, 8.41194778e-06, 4.21628035e-05, 2.42857748e-04, 1.8e-5, 6.4e-5, 9.3e-4, 1.2e-2, 2.8e4])
+    N_red = np.array([7.88002445e-06, 1.90584033e-06, 2.23462248e-05, 2.81085357e-04, 1.24621704e-02, 7.31011726e-02, 1.6e-2, 1.1e-1, 2.7e0, 1.7e1, 6.1e6])
     ell_knee = 1000 
     alpha_knee = -3.5
     

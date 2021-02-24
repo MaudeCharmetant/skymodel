@@ -466,14 +466,16 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         cib = hp.sphtfunc.smoothing(cib, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
     #Convert units if necessary
-    if freq != -1: 
-    	if unit == 'mjy':
+    #Get the frequency independent y-map : 
+    if freq != -1: 	
+        #Convert units if necessary
+        if unit == 'mjy':
             None
-    	elif unit == 'cmb':
+        elif unit == 'cmb':
             cib = convert_units(freq, cib, mjy2cmb=True)
-    	elif unit == 'rj':
+        elif unit == 'rj':
             cib = convert_units(freq, cib, mjy2rj=True)
-    	else:
+        else:
             cib = convert_units(freq, cib, mjy2cmb=True)
             print('Waring: Unknown unit! Output will be in K_CMB')
 
@@ -821,7 +823,6 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         print('begin smoothing')
         tSZ = hp.sphtfunc.smoothing(tSZ, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
-    #Get the frequency independent y-map : 
     if freq != -1: 	
         #Convert units if necessary
         if unit == 'mjy':

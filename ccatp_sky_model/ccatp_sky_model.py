@@ -449,12 +449,13 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     #Compute CIB brightness at given frequency
     cib = A * (freq/f_0)**(3.+beta) * (np.exp(h*f_0/k_B/T)-1) / (np.exp(h*freq/k_B/T)-1)
-    del A, T, beta
 
     if freq != -1: 
         cib = cib
     else:
         cib =  cib / ((freq/f_0)**(3.+beta) * (np.exp(h*f_0/k_B/T)-1) / (np.exp(h*freq/k_B/T)-1))
+	
+    del A, T, beta
     
     #Re-bin map if necessary
     if hp.get_nside(cib) != nside_out:

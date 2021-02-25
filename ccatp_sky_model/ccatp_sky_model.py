@@ -423,7 +423,7 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     if freq == -1:
         freq = 353e9
-	y_CIB = True
+        y_CIB = True
 
     #Load all-sky parameter value maps
     if template != 'SO' and template != 'WebSky' and template != 'Sehgal' and template != 'SO_reproduced':

@@ -420,6 +420,10 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     if lmax is None:
         lmax = int(3*nside_out-1)
+	
+    if freq == -1: 
+	fred = 353e9
+	y_CIB = True
 
     #Load all-sky parameter value maps
     if template != 'SO' and template != 'WebSky' and template != 'Sehgal' and template != 'SO_reproduced':
@@ -450,7 +454,7 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     #Compute CIB brightness at given frequency
     cib = A * (freq/f_0)**(3.+beta) * (np.exp(h*f_0/k_B/T)-1) / (np.exp(h*freq/k_B/T)-1)
 
-    if freq != -1: 
+    if y_CIB != True: 
         cib = cib
     else:
         cib =  cib / ((freq/f_0)**(3.+beta) * (np.exp(h*f_0/k_B/T)-1) / (np.exp(h*freq/k_B/T)-1))
@@ -468,7 +472,7 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     #Convert units if necessary
     #Get the frequency independent y-map : 
-    if freq != -1: 	
+    if y_CIB != True: 	
         #Convert units if necessary
         if unit == 'mjy':
             None

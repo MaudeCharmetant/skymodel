@@ -420,9 +420,9 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     if lmax is None:
         lmax = int(3*nside_out-1)
-	
-    if freq == -1: 
-	fred = 353e9
+
+    if freq == -1:
+        freq = 353e9
 	y_CIB = True
 
     #Load all-sky parameter value maps

@@ -474,7 +474,7 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     #Convert units if necessary
     #Get the frequency independent y-map : 
-    if y_CIB != True: 	  
+    if freq != -1: 	  
         #Convert units if necessary
         if unit == 'mjy':
             None

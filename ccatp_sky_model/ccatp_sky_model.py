@@ -424,7 +424,9 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     if freq == -1:
         freq = 353e9
         y_CIB = True
-
+    else :	
+        y_CIB = False
+	
     #Load all-sky parameter value maps
     if template != 'SO' and template != 'WebSky' and template != 'Sehgal' and template != 'SO_reproduced':
         print('Waring: Unknown template requested! Output will be based on WebSky sky model')
@@ -474,7 +476,7 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     #Convert units if necessary
     #Get the frequency independent y-map : 
-    if freq != -1: 	  
+    if y_CIB != True:	  
         #Convert units if necessary
         if unit == 'mjy':
             None

@@ -461,7 +461,7 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     if y_CIB != True: 
         cib = cib
     else:
-        cib =  cib #/ tSZ_SED 
+        cib =  cib / tSZ_SED 
 	
     del A, T, beta
     

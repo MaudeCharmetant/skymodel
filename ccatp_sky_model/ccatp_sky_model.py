@@ -455,14 +455,6 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
     #Compute CIB brightness at given frequency
     cib = A * (freq/f_0)**(3.+beta) * (np.exp(h*f_0/k_B/T)-1) / (np.exp(h*freq/k_B/T)-1)
-    x_nu = np.array((h*freq)/(k_B*T_CMB))   
-    tSZ_SED = ((x_nu*(np.exp(x_nu)+1)/(np.exp(x_nu)-1))-4)
-	
-    if y_CIB != True: 
-        cib = cib
-    else:
-        cib =  cib * (2*k_B**3.*T_CMB**3. / (h * c)**2.) / tSZ_SED 
-	
     del A, T, beta
     
     #Re-bin map if necessary
@@ -474,21 +466,17 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
         print('begin smoothing')
         cib = hp.sphtfunc.smoothing(cib, iter = 0, lmax = lmax, fwhm = beam_FWHM/60*np.pi/180)
 
+    #Convert units if necessary  
     #Convert units if necessary
-    #Get the frequency independent y-map : 
-    if y_CIB != True:	  
-        #Convert units if necessary
-        if unit == 'mjy':
-            None
-        elif unit == 'cmb':
-            cib = convert_units(freq, cib, mjy2cmb=True)
-        elif unit == 'rj':
-            cib = convert_units(freq, cib, mjy2rj=True)
-        else:
-            cib = convert_units(freq, cib, mjy2cmb=True)
-            print('Waring: Unknown unit! Output will be in K_CMB')
-    else: 
-            cib = convert_units(freq, cib, mjy2cmb=True)	
+    if unit == 'mjy':
+        None
+    elif unit == 'cmb':
+        cib = convert_units(freq, cib, mjy2cmb=True)
+    elif unit == 'rj':
+        cib = convert_units(freq, cib, mjy2rj=True)
+    else:
+        cib = convert_units(freq, cib, mjy2cmb=True)
+        print('Waring: Unknown unit! Output will be in K_CMB')	
 
     #Return output
     return(np.float32(cib))

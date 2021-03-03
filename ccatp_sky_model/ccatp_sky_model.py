@@ -457,11 +457,11 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     cib = A * (freq/f_0)**(3.+beta) * (np.exp(h*f_0/k_B/T)-1) / (np.exp(h*freq/k_B/T)-1)
     x_nu = np.array((h*freq)/(k_B*T_CMB))   
     tSZ_SED = ((x_nu*(np.exp(x_nu)+1)/(np.exp(x_nu)-1))-4)
-
+	
     if y_CIB != True: 
         cib = cib
     else:
-        cib =  cib / tSZ_SED 
+        cib =  cib * (2*k_B**3.*T_CMB**3. / (h * c)**2.) / tSZ_SED 
 	
     del A, T, beta
     

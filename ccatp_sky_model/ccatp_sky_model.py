@@ -675,7 +675,7 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
         TT_final = np.insert(TT,[0],[0,0])
 
         #Compute the CMB map from the power spectrum :
-        CMB = hp.sphtfunc.synfast(TT_final, nside_out, lmax = lmax)
+        CMB = hp.sphtfunc.synfast(TT_final, nside_out, lmax = lmax)/1e6
  
     else: 
 

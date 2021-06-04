@@ -138,7 +138,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, 'ccatpskymodel', 'CCATp sky model Documentation',
-     [author], 1)
+     [Maude Charmetant], 1)
 ]
 
 

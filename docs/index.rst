@@ -28,7 +28,7 @@ Reference
 .. toctree::
    :maxdepth: 2	
 
-   simulate
+   ccatp_sky_model
 
 
 

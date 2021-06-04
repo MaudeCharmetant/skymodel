@@ -1,6 +1,6 @@
 .. currentmodule:: ccatp_sky_model.ccatp_sky_model
 
-:mod:`simulate` -- simulation microwave components 
+:mod:`ccatp_sky_model` -- simulation microwave components 
 ==================================================
 
 Extragalactic components

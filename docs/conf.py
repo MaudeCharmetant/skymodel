@@ -30,6 +30,8 @@ import os
 # ones.
 extensions = []
 
+author = 'Maude CHarmetant'
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -138,7 +140,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, 'ccatpskymodel', 'CCATp sky model Documentation',
-     [Maude Charmetant], 1)
+     [author], 1)
 ]
 
 

@@ -1223,7 +1223,8 @@ def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = Fa
         List containing the names of the components to be included in the sky model.
         Any combination of the following individual components is possible: 'gal_synchrotron', 
         'gal_dust', 'gal_freefree', 'gal_ame', 'cib', 'radio_ps', 'cmb', 'tsz', 'ksz'. All 
-        components are used if components is set to 'all'. Default: 'all'
+        components are used if components is set to 'all'. If not, the specified components 
+	have to be named within brackets, as  ['ksz','tsz']. Default: 'all'
     red_noise: bool, optional
         If True, a realistic white noise + red noise atmospheric model is added to the
 	sky model in case the imput frequency is a valid SO or CCAT-prime central

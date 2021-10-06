@@ -1319,9 +1319,9 @@ def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = Fa
             sensitivity = None
             allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True)
         else:
-        print('Computing red noise...')        
-        allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit,white=False)
-        print('Red noise complete.')
+            print('Computing red noise...')   
+            allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit,white=False)    
+            print('Red noise complete.') 
 
     if sensitivity is not None and red_noise is False:
         print('Computing white noise...')        

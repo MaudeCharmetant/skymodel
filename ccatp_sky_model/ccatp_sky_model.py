@@ -1028,7 +1028,7 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
             Cl += N_white[index]
 
         #Create all-sky map
-	np.random.seed(1)
+        np.random.seed(1) 
         noise_map = hp.sphtfunc.synfast(Cl, nside_out, lmax=lmax)/1e6
 
         #Convert units if necessary

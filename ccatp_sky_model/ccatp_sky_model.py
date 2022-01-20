@@ -1320,13 +1320,13 @@ def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = Fa
             print('Warning! You request to apply both red noise + white noise and white noise. The White noise sensitivity parameter will be overwritten to None. If this is not what you want than check the settings and re-run.')
             sensitivity = None
             if s != 0: 
-                allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True,s=1)*0.7+simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True,s=100+s)*0.3
+                allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True,s=100)*0.7+simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True,s=s)*0.3
             else:		
                 allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True,s=1)	
         else:
             print('Computing red noise...')   
             if s != 0: 
-                allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=False,s=1)*0.7+simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True,s=100+s)*0.3
+                allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=False,s=100)*0.7+simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True,s=s)*0.3
             else:		
                 allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=False,s=1)   
             print('Red noise complete.') 

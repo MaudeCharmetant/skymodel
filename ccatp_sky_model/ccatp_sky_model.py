@@ -967,7 +967,7 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
     return(np.float32(noise_map))
 
 
-def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, unit = 'cmb', white = False):
+def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, unit = 'cmb', white = False,s):
 
     '''Computes an all-sky atmospheric noise map at a given frequency and nside based on 
     the SO noise model presented by the SO Collaboration (2019) and using the model parameters
@@ -993,7 +993,8 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
         'rj' --> K_RJ (brightness temperature). Default: 'cmb'.
     white: bool, optional
         If True, both the white and the red noise component are simulated. Default: False
-
+    s: integer
+        Is the seed, for each new see a new realization of the noise is made.
     Returns
     -------
     noise_map: float array
@@ -1028,7 +1029,7 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
             Cl += N_white[index]
 
         #Create all-sky map
-        np.random.seed(1) 
+        np.random.seed(s) 
         noise_map = hp.sphtfunc.synfast(Cl, nside_out, lmax=lmax)/1e6
 
         #Convert units if necessary
@@ -1318,10 +1319,16 @@ def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = Fa
         if sensitivity is not None:
             print('Warning! You request to apply both red noise + white noise and white noise. The White noise sensitivity parameter will be overwritten to None. If this is not what you want than check the settings and re-run.')
             sensitivity = None
-            allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True)
+            if corr is True: 
+		allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True,s=1)*0.7+simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True,s=100+s)*0.3
+            else:		
+		allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True,s=1)	
         else:
             print('Computing red noise...')   
-            allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit,white=False)    
+            if corr is True: 
+		allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=False,s=1)*0.7+simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=True,s=100+s)*0.3
+            else:		
+		allsky_map += simulate_atmosphere(freq, nside_out = nside_out, lmax = lmax, beam_FWHM = None, unit = unit, white=False,s=1)   
             print('Red noise complete.') 
 
     if sensitivity is not None and red_noise is False:

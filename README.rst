@@ -15,8 +15,9 @@ on the microwave sky.
 Install the CCATp sky model
 ===========================
 
-ccatp_sky_model is a pure Python module and should therefore be pretty easy to install.
-All you'll need is numpy, astropy, `PySM <https://github.com/bthorne93/PySM_public>`_ , tqdm, and `healpy <https://github.com/healpy/healpy>`_ .
+ccatp_sky_model is a pure Python module.
+You'll need is numpy, astropy, `PySM <https://github.com/bthorne93/PySM_public>`_ , tqdm, and `healpy <https://github.com/healpy/healpy>`_ .
+The extra-galactic simulations templates are not provided but can be downloaded from `WebSky <https://mocks.cita.utoronto.ca/data/websky/v0.0/>`_ , `SO&Sehgal <https://lambda.gsfc.nasa.gov/simulation/tb_sim_ov.cfm>`_ 
 
 .. _source:
 
@@ -39,6 +40,12 @@ Test the installation
 To make sure that the installation went alright and to familiarise yourself with 
 ccatp_sky_model, we recommend running the provided jupyter notebooks that can be found in
 the /examples directory. 
+
+
+Community guidelines
+====================
+
+Contributions are welcome and appreciated please submit an Issue or a Pull request. 
 
 
 Copyright 2020 Maude Charmetant, Jens Erler, and contributors.

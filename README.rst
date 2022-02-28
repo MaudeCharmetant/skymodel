@@ -2,7 +2,7 @@ ccatp_sky_model
 ===============
 
 **ccatp_sky_model** 
-Generate high-resolution maps of the microwave sky using maps 
+generate high-resolution maps of the microwave sky using maps 
 from numerical simulations of extragalactic emissions and PySM 
 code to generate maps of the galactic foregrounds. 
 The sky model allow to generate any component or combination of 

@@ -17,7 +17,7 @@ Install the CCATp sky model
 
 ccatp_sky_model is a pure Python module.
 You'll need is numpy, astropy, `PySM <https://github.com/bthorne93/PySM_public>`_ , tqdm, and `healpy <https://github.com/healpy/healpy>`_ .
-The extra-galactic simulations templates are not provided but can be downloaded from `WebSky <https://mocks.cita.utoronto.ca/data/websky/v0.0/>`_ , `SO&Sehgal <https://lambda.gsfc.nasa.gov/simulation/tb_sim_ov.cfm>`_ 
+The extra-galactic simulations templates are not provided but can be downloaded from `WebSky <https://mocks.cita.utoronto.ca/data/websky/v0.0/>`_ , `SO&Sehgal <https://lambda.gsfc.nasa.gov/simulation/tb_sim_ov.cfm>`_ then simply change the data path at the beginning of the code file to indicate where you saved the data.
 
 .. _source:
 

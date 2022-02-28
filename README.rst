@@ -5,7 +5,7 @@ ccatp_sky_model
 generate high-resolution maps of the microwave sky using maps 
 from numerical simulations of extragalactic emissions and PySM 
 code to generate maps of the galactic foregrounds. 
-The sky model allows to generate any component or combination of 
+The sky model allows generating any component or combination of 
 components at a desired frequency, unit, beam size, including 
 instrumental and atmospheric noises. 
 It was thought to be easy and versatile to use for anyone working

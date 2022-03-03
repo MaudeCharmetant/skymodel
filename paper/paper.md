@@ -26,6 +26,7 @@ date: 1 Mach 2022
 bibliography: paper.bib
 
 # Summary
+%must be for non specialists and less than 1000 words long. 
 
 The study of microwave sky emissions is rich in information for Cosmology 
 and Astrophysics. Observation of extra-galactic components such as the Cosmic Microwave Background (CMB) allowed 
@@ -62,8 +63,12 @@ by students. It was also designed for the (Cerro Chajnantor Atacama Telescope - 
 CCAT-prime collaboration whose upcoming Fred Young Submillimeter Telescope (FYST) first 
 light is scheduled for 2023. Having a code that allows modeling the sky as FYST would 
 see it is essential to make predictions. The skymodel was already used in the first collaboration 
-paper to make predictions [@CCAT_2021].
-
+paper to make predictions [@CCAT_2021]. Note, that a more advanced version of the PySM software, 
+PySM3[@PySM_2021] extends the PySM code not only to simulate galactic foregrounds but also extra-galactic foregrounds
+thus simulation the microwave sky exactly like the skymodel. However, differences exists, PySM3 
+does not only simulate Intensity maps of the microwave sky but also Polarization, which the skymodel 
+does not do. The skymodel offers more variety in terms of the base simulations to generate the 
+extra-galactic components, some like the Sehgal, going to very high-resolution ($p_{size}\approx 0.43'$).
 
 # Acknowledgements
 

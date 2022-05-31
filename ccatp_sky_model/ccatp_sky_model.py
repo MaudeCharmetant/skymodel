@@ -17,6 +17,18 @@ h = cst.h.si.value
 c = cst.c.si.value
 T_CMB = 2.7255
 
+"""
+========================================================
+ccatp_sky_model.py : simulate the microwave sky
+========================================================
+This module provides functions to simulate the differentcomponents of the microwave sky. 
+
+extra-galactic components
+----------------------------------
+- :func:`simulate_cib` Simulate the Cosmic Infrared Background (CIB)
+
+"""
+
 __all__ = [
     "simulate_cib",
 ]

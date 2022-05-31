@@ -38,6 +38,7 @@ Reference
    :maxdepth: 2	
    
    ccatp_sky_model
+   simulate_cib
 
 
 Indices and tables

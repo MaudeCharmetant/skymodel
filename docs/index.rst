@@ -24,9 +24,11 @@ ccatp_sky_model is a pure Python module. You'll need is numpy, astropy, PySM , t
 From source
 
 ccatp_sky_model is developed on GitHub and can be installed by cloning the source repository and install from there
+ 
+1. git clone https://github.com/MaudeCharmetant/CCATp_sky_model.git 
+2. cd CCATp_sky_model 
+3. python setup.py install
 
-.. literalinclude:: git clone https://github.com/MaudeCharmetant/CCATp_sky_model.git cd CCATp_sky_model python setup.py install
-   :linenos:
    
  
 Reference

@@ -36,9 +36,8 @@ Reference
 
 .. toctree::
    :maxdepth: 2	
-
-   simulate_cib
-
+   
+   ccatp_sky_model
 
 
 Indices and tables

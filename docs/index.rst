@@ -18,9 +18,19 @@ Installation
 ------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 1 
 
-   install
+ccatp_sky_model is a pure Python module. You'll need is numpy, astropy, PySM , tqdm, and healpy . The extra-galactic simulations templates are not provided but can be downloaded from WebSky , SO&Sehgal then simply change the data path at the beginning of the code file to indicate where you saved the data.
+From source
+
+ccatp_sky_model is developed on GitHub and can be installed by cloning the source repository and install from there
+
+.. literalinclude:: 
+git clone https://github.com/MaudeCharmetant/CCATp_sky_model.git
+cd CCATp_sky_model
+python setup.py install
+   :linenos:
+   
  
 Reference
 ---------

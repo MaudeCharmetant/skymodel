@@ -17,6 +17,10 @@ h = cst.h.si.value
 c = cst.c.si.value
 T_CMB = 2.7255
 
+__all__ = [
+    "simulate_cib",
+]
+
 
 def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False, mjy2rj = False, cmb2rj = False, rj2cmb = False):
 

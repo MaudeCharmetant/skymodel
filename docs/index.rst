@@ -25,10 +25,7 @@ From source
 
 ccatp_sky_model is developed on GitHub and can be installed by cloning the source repository and install from there
 
-.. literalinclude:: 
-git clone https://github.com/MaudeCharmetant/CCATp_sky_model.git
-cd CCATp_sky_model
-python setup.py install
+.. literalinclude:: git clone https://github.com/MaudeCharmetant/CCATp_sky_model.git cd CCATp_sky_model python setup.py install
    :linenos:
    
  

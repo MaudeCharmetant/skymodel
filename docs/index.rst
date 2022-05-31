@@ -38,7 +38,7 @@ Reference
    :maxdepth: 2	
 
    ccatp_sky_model
-   convert_units
+   simulate_cib
 
 
 

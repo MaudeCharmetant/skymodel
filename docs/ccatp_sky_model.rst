@@ -4,6 +4,15 @@
 :mod:`ccatp_sky_model` -- simulation microwave components 
 ==========================================================
 
+Main
+----
+.. autosummary::
+   :toctree: generated/
+   
+   ccatp_sky_model
+   
+   
+   
 Extragalactic components
 ------------------------
 .. autosummary::
@@ -32,3 +41,19 @@ Noises
 
    simulate_white_noise
    simulate_atmosphere
+   
+   
+Other
+------
+.. autosummary::
+   :toctree: generated/
+
+   convert_units
+   px_size
+   sample_sphere_uniform
+   project_maps
+   sigmoid_filter
+   return_mask
+   
+   
+   

@@ -29,7 +29,27 @@ h = cst.h.si.value
 c = cst.c.si.value
 T_CMB = 2.7255
 
+def corr2cov(corr, var):
+	'''Converts a given correlation matrix into a covariance matrix 
 
+	Parameters
+	----------
+	corr: 2D float array
+		Correlation matrix of n components
+	var: 1D float array
+		Variance of the n components
+		
+	Returns
+	-------
+	corr: 2D float array
+		Covariance matrix
+	'''
+
+	x_var, y_var = np.meshgrid(np.sqrt(var), np.sqrt(var))
+
+	cov = corr * x_var * y_var
+
+	return(cov)
 
 def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False, mjy2rj = False, cmb2rj = False, rj2cmb = False):
 	'''Convert observed signal at given frequencies to different units. 

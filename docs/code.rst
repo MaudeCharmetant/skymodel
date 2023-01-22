@@ -10,6 +10,7 @@ Main
    :toctree: generated/
    
    ccatp_sky_model
+   corr2cov
    
    
    

@@ -38,7 +38,7 @@ Reference
 .. toctree::
    :maxdepth: 2
    
-   ccatp_sky_model
+   code
 
 
 Indices and tables

@@ -18,7 +18,8 @@ Installation
 ------------
 
 .. toctree::
-   :maxdepth: 1 
+   :maxdepth: 2
+   :caption: Contents:
 
 ccatp_sky_model is a pure Python module. You'll need is numpy, astropy, PySM , tqdm, and healpy . The extra-galactic simulations templates are not provided but can be downloaded from WebSky , SO&Sehgal then simply change the data path at the beginning of the code file to indicate where you saved the data.
 From source
@@ -35,10 +36,9 @@ Reference
 ---------
 
 .. toctree::
-   :maxdepth: 1	
+   :maxdepth: 2
    
    ccatp_sky_model
-   simulate_cib
 
 
 Indices and tables

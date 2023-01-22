@@ -1,3 +1,15 @@
+# -*- coding: utf-8 -*-
+# 
+#  This file is part of skymodel.
+# 
+#  Skymodel is free software; you can redistribute it and/or modify
+#  it under the terms of the MIT License.
+# 
+#  skymodel is distributed in the hope that it will be useful,but 
+#  WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See 
+#  the provided copy of the MIT License for more details.
+
 import numpy as np 
 import healpy as hp
 from astropy.io import fits, ascii
@@ -17,21 +29,6 @@ h = cst.h.si.value
 c = cst.c.si.value
 T_CMB = 2.7255
 
-"""
-========================================================
-ccatp_sky_model.py : simulate the microwave sky
-========================================================
-This module provides functions to simulate the differentcomponents of the microwave sky. 
-
-extra-galactic components
-----------------------------------
-- :func:`simulate_cib` Simulate the Cosmic Infrared Background (CIB)
-
-"""
-
-__all__ = [
-    "simulate_cib",
-]
 
 
 def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False, mjy2rj = False, cmb2rj = False, rj2cmb = False):

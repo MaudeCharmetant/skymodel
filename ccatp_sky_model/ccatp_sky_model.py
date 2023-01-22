@@ -16,9 +16,9 @@ from astropy.io import fits, ascii
 from astropy import constants as cst
 from astropy.coordinates import SkyCoord
 from astropy import units as u
-import pysm
+#import pysm
 from tqdm import tqdm 
-from pysm.nominal import models
+#from pysm.nominal import models
 import os.path
 
 os_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'masks/')

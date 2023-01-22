@@ -32,7 +32,6 @@ T_CMB = 2.7255
 
 
 def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False, mjy2rj = False, cmb2rj = False, rj2cmb = False):
-
 	'''Convert observed signal at given frequencies to different units. 
 	
 	Parameters
@@ -88,10 +87,8 @@ def convert_units(freq, values, cmb2mjy = False, mjy2cmb = False, rj2mjy = False
 	return(converted_signal)
 
 
-def px_size(nside,arcmin=True):   
-            
-    '''
-    Computes the size of Healpy pixels in function of the nside of the map.  
+def px_size(nside,arcmin=True):               
+    '''Computes the size of Healpy pixels in function of the nside of the map.  
 
     Parameters
     ----------
@@ -123,7 +120,6 @@ def px_size(nside,arcmin=True):
 
 
 def sample_sphere_uniform(n, mask = None, radec = True):
-
 	'''Draws uniformly sampled tuples of coordinates on the sphere. 
 	All-sky masks in the healpix format can be applied, in which case 
 	masked areas will be excluded.
@@ -192,7 +188,6 @@ def sample_sphere_uniform(n, mask = None, radec = True):
 
 
 def project_maps(allsky_map, RA, DEC, map_size = 10, pixel_size = 0.4):
-
 	'''Creates gnomic projections of HEALPix all-sky maps.
 
 	Parameters
@@ -230,8 +225,7 @@ def project_maps(allsky_map, RA, DEC, map_size = 10, pixel_size = 0.4):
 	return(maps)
 
 
-def sigmoid_filter(l_0, d_l, lmax):
-    
+def sigmoid_filter(l_0, d_l, lmax):    
     '''Computes a sigmoid-shaped filer high-pass window in spherical harmonic space. 
     
     Parameters
@@ -256,7 +250,6 @@ def sigmoid_filter(l_0, d_l, lmax):
 
 
 def return_mask(survey, nside_out = 256, coord = 'G'):
-
     '''Returns the specified all-sky survey map. 
     
     Parameters
@@ -303,7 +296,6 @@ def return_mask(survey, nside_out = 256, coord = 'G'):
 
 
 def simulate_gal_foregrounds(freq, components = 'all', nside_out = 4096, lmax = None, beam_FWHM = None, intrinsic_FWHM = 10, unit = 'cmb'):
-
     '''Computes an all-sky galactic foregrounds noise map at a given frequency and nside using 
     the Python Sky model (PySM, Thorne et al. 2017), which is build from Planck data. 
 
@@ -396,7 +388,6 @@ def simulate_gal_foregrounds(freq, components = 'all', nside_out = 4096, lmax = 
 
 
 def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
-
     '''Computes an all-sky CIB map at a given frequency and nside based on . 
 
     Parameters
@@ -496,7 +487,6 @@ def simulate_cib(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
 
 
 def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
-
     '''Computes an all-sky radio point source map at a given frequency and nside based on 
     the simulations provided by Sehgal et al. (2010), which have been recalibrated by the
     SO collaboration. The original simulations by Sehgal et al. are modelled by a curved 
@@ -630,10 +620,8 @@ def simulate_radio_ps(freq, nside_out = 4096, lmax = None, beam_FWHM = None, tem
     return(np.float32(radio_ps))
 
 
-def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'): 
-         
-    '''
-    Function that computes a CMB map from a power spectrum.
+def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):          
+    '''Function that computes a CMB map from a power spectrum.
 
     Parameters
     ----------
@@ -748,10 +736,8 @@ def simulate_cmb(freq, cl_file = None, lensed = True, nside_out = 4096, lmax = N
     return(CMB)
 
 
-def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
-    
-    '''
-    Function which compute tSZ maps at different frequencies and different nside. 
+def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'): 
+    '''Function which compute tSZ maps at different frequencies and different nside. 
     
     Parameters
     ----------
@@ -850,9 +836,7 @@ def simulate_tSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
   
 
 def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
-
-    '''
-    Function which computes kSZ maps at different frequencies and different nside. 
+    '''Function which computes kSZ maps at different frequencies and different nside. 
     
     Parameters
     ----------
@@ -928,10 +912,8 @@ def simulate_kSZ(freq, nside_out = 4096, lmax = None, beam_FWHM = None, template
     return(kSZ)
 
 
-def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, arcmin = True, unit = 'cmb'): 
-        
-    '''
-    Function which create a White noise map for a given noise/arcmin or noise/radians. 
+def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, arcmin = True, unit = 'cmb'):       
+    '''Function which create a White noise map for a given noise/arcmin or noise/radians. 
     By default the code expect the noise level to be given in microK_CMB/arcmin
 
     Parameters
@@ -981,7 +963,6 @@ def simulate_white_noise(freq, noise_level, nside_out = 4096, unit_noise = 1, ar
 
 
 def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, unit = 'cmb', white = False,s=1):
-
     '''Computes an all-sky atmospheric noise map at a given frequency and nside based on 
     the SO noise model presented by the SO Collaboration (2019) and using the model parameters
     provided by Choi et al. (2019). 
@@ -1060,7 +1041,6 @@ def simulate_atmosphere(freq, nside_out = 4096, lmax = None, beam_FWHM = None, u
 
 
 def simulate_iras_ps(freq, nside_out = 4096, beam_FWHM = None, unit = 'cmb'):
-
     '''Computes a map that contains all ~250,000 point sources from the IRAS PS catalog.
     The measured IRAS FIR spectra have been fit with modified blackbodies and are extrapolated
     to the mm/sum-mm regime. This function is not part of the default CCAT-p sky model and 
@@ -1140,7 +1120,6 @@ def simulate_iras_ps(freq, nside_out = 4096, beam_FWHM = None, unit = 'cmb'):
 
 
 def simulate_nvss_ps(freq, nside_out = 4096, beam_FWHM = None, unit = 'cmb'):
-
     '''Computes a map that contains all ~1,800,000 point sources from the NVSS PS catalog 
     (Condon et al. 1998). The measured 1.4 GHz fluxes are extrapolated to the mm/sub-mm 
     regime my assigning each source a random spectral index drawn from N(-0.5, 0.1). This 
@@ -1221,7 +1200,6 @@ def simulate_nvss_ps(freq, nside_out = 4096, beam_FWHM = None, unit = 'cmb'):
 
 
 def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = False, cl_file = None, lensed = True, out_file = None, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
-
     '''Computes an all-sky map of the simulated microwave sky at the specified frequency. 
     The CCAT-prime sky model uses all-sky templates in the healpix format and includes the
     most important galactic foregrounds, extragalactic backgrounds, the tSZ and kSZ effects 

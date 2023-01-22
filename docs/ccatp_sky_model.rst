@@ -1,4 +1,5 @@
-.. currentmodule:: ccatp_sky_model.ccatp_sky_model
+.. ccatp_sky_model:
+.. currentmodule:: ccatp_sky_model
 
 :mod:`ccatp_sky_model` -- simulation microwave components 
 ==========================================================

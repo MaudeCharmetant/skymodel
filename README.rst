@@ -42,6 +42,12 @@ ccatp_sky_model, we recommend running the provided jupyter notebooks that can be
 the /examples directory. 
 
 
+Read the dDoc page
+==================
+A webpage containing all the functions, inputs, outputs, and a short description of their 
+roles, can be found at:  https://skymodel.readthedocs.io/en/latest/index.html 
+
+
 Community guidelines
 ====================
 

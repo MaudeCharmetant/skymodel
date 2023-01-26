@@ -11,6 +11,9 @@ instrumental and atmospheric noises.
 It was thought to be easy and versatile to use for anyone working
 on the microwave sky. 
 
+[![General badge](https://img.shields.io/badge/<Doc>-<readthedoc>-<green>.svg)](https://shields.io/)
+
+
 
 Install the CCATp sky model
 ===========================

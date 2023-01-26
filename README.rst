@@ -11,11 +11,11 @@ instrumental and atmospheric noises.
 It was thought to be easy and versatile to use for anyone working
 on the microwave sky. 
 
+.. image:: https://img.shields.io/badge/License-MIT-blue.svg
 .. image:: https://img.shields.io/badge/Doc-readthedoc-green.svg
     :target: https://skymodel.readthedocs.io/en/latest/index.html 
 .. image:: https://img.shields.io/badge/Doc-PDF-green.svg
     :target: https://github.com/MaudeCharmetant/CCATp_sky_model/blob/master/Documentation.pdf
-.. image:: https://img.shields.io/badge/License-MIT-blue.svg
 .. image:: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
 .. image:: https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white
     :target: mcharmetant.astro@gmail.com

@@ -11,7 +11,6 @@ instrumental and atmospheric noises.
 It was thought to be easy and versatile to use for anyone working
 on the microwave sky. 
 
-.. image:: https://img.shields.io/badge/License-MIT-blue.svg
 .. image:: https://img.shields.io/badge/Doc-readthedoc-green.svg
     :target: https://skymodel.readthedocs.io/en/latest/index.html 
 .. image:: https://img.shields.io/badge/Doc-PDF-green.svg

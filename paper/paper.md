@@ -28,22 +28,6 @@ bibliography: paper.bib
 # Summary
 %must be for non specialists and less than 1000 words long. 
 
-The study of microwave sky emissions is rich in information for Cosmology 
-and Astrophysics. Observation of extra-galactic components such as the Cosmic Microwave Background (CMB) allowed 
-to put unpreceded constraints on cosmological parameters and confirmed the big bang 
-theory [@COBE_1994][@Bennett_2003][@Planck_2014]. The Cosmic Infrared Background (CIB) is a probe of the Large Scale Structure (LSS) [@Lenz_2019]
-of the universe. The thermal Sunyaev-Zeldovich (tSZ) effect probe the integrated pressure, 
-the hot baryons in the Universe and was vastly used to detect galaxy clusters [@Planck_2011]. 
-Another flavor of it, the kinematic SZ (kSZ) effect probe the bulk motion of those 
-clusters and the LSS [@Hern_2015]. All the galactic foregrounds, galactic dust, synchrotron, free-free emission, 
-and Anomalous Microwave Emission (AME) are often treated as contaminants but can also 
-be studied to learn more about our galaxy properties. Therefore, having a code 
-that allows to easily generate those components, together, or separately at any frequency, 
-resolution or unit is essential to many different fields. 
-
-
-# Statement of need
-
 `skymodel` is a Python package that generate high-resolution ($p_{size}\approx 0.86'$) full-sky map in HEALPy [@Healpy_2005]
 format for the various components of the Microwave sky at the desired frequency
 $\nu \in [27,860]$GHz. It makes use of extra-galactic template maps from three existing 
@@ -70,8 +54,17 @@ does not only simulate Intensity maps of the microwave sky but also Polarization
 does not do. The skymodel offers more variety in terms of the base simulations to generate the 
 extra-galactic components, some like the Sehgal, going to very high-resolution ($p_{size}\approx 0.43'$).
 
+
+# Statement of need
+
+The study of the sky at microwave wavelengths is rich in information for cosmology 
+and astrophysics. In particular, the study of the Cosmic Microwave Background (CMB) has lead to tremendous advances in our understanding of the Universe, it’s age, it’s history, it’s composition, and the properties of it’s components. The CMB is a relic radiation that carries information from the hot and dense Universe roughly 380.000 years after the big bang. The study of emission from distant galaxies through the Cosmic Infrared Background allows to probe the large-scale structure of the cosmos. Besides these extragalactic sources, our own Milky Way Galaxy emits microwaves through various mechanisms like synchrotron and bremsstrahlung emission or thermal radiation from interstellar dust grains, all of which allow to probe complex physics, such as star formation or astrochemistry. 
+A major challenge in studies of the microwave sky is the separation of these different astrophysical components and the reduction of instrumental effects like noise. Sophisticated component separation and data analysis software is required and usually custom made for each experiment. To development and test such software and create forecasts for future instruments, realistic mock data sets are needed. With the recent push towards ground based wide field multifrequency surveys, a tool to produce mock images of the microwave based on most recent observations and high-resolution simulations is needed. We provide an easy-to-use and open source tool to create high-resolution maps of the microwave sky in the frequency range between $27$ and $860 \,$GHz.
+
+
 # Acknowledgements
 
-What to put here ? 
+The authors would like to thank Ben Thorne, Kaustuv Basu, Frank Bertoldi, Steve Choi and the CCAT-p collaboration members for insightful discussions. MC and JE acknowledge partial funding from the Transregio programme TRR33 of the Deutsche Forschungsgemeinschaft (DFG). MC and JE furthermore acknowledge support by the Bonn-Cologne Graduate School of Physics and Astronomy (BCGS) and the International Max Planck Reseach School (IMPRS). The galactic-foreground are generated using PySM [@Ben_2017]. The simulations of the extra-galactic components used in this paper were developed by the WebSky Extragalactic CMB Mocks team, with the continuous support of the Canadian Institute for Theoretical Astrophysics (CITA), the Canadian Institute for Advanced Research (CIFAR), and the Natural Sciences and Engineering Council of Canada (NSERC), and were generated on the GPC supercomputer at the SciNet HPC Consortium. SciNet is funded by the Canada Foundation for Innovation under the auspices of Compute Canada, the Government of Ontario, Ontario Research Fund – Research Excellence, and the University of Toronto. This work made use of Astropy:\footnote{http://www.astropy.org} a community-developed core Python package and an ecosystem of tools and resources for astronomy.
+
 
 # References

@@ -6,7 +6,7 @@ is a tool that generates high-resolution maps of the microwave sky based on nume
 simulations of extragalactic emission and the python sky model (PySM) library, which generates 
 maps of galactic foreground emission. The sky model allows generating the most relevant microwave
 sky components and return them in any desired combination. Maps can be returned at arbitrary 
-frequencies between 30 and 860 GHz, a variety of commonly used units, custom angular resulution, 
+frequencies between 27 and 860 GHz, a variety of commonly used units, custom angular resulution, 
 and including instrumental and/or atmospheric noise components. It was build to be easy to use 
 and versatile for anyone working on the microwave sky. 
 

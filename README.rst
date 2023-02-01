@@ -13,6 +13,8 @@ and versatile for anyone working on the microwave sky.
 .. image:: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
 .. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
     :target: http://www.astropy.org/
+.. image:: https://img.shields.io/badge/license-MIT-red.svg?style=flat
+    :target: https://github.com/MaudeCharmetant/CCATp_sky_model/blob/master/LICENSE    
 .. image:: https://img.shields.io/badge/Doc-readthedoc-green.svg
     :target: https://skymodel.readthedocs.io/en/latest/index.html 
 .. image:: https://img.shields.io/badge/Doc-PDF-green.svg
@@ -23,7 +25,7 @@ How to install the CCATp sky model
 ==================================
 
 ccatp_sky_model is a pure Python module.
-You'll need the `NumPy <https://numpy.org/>`_ , `Astropy <https://www.astropy.org/>`_, `PySM <https://github.com/bthorne93/PySM_public>`_ , `tqdm <https://github.com/tqdm/tqdm>`_, and `healpy <https://github.com/healpy/healpy>`_ packages. The required template maps can be dowloaded `here <https://uni-bonn.sciebo.de/s/zgPsb7qvXTnNsrO>`_ with the password: pw4referee, then simply change the data path at the beginning of the code file to indicate where you saved the data. The original extra-galactic simulation templates can be downloaded from `WebSky <https://mocks.cita.utoronto.ca/data/websky/v0.0/>`_ , `SO&Sehgal <https://lambda.gsfc.nasa.gov/simulation/tb_sim_ov.cfm>`_ 
+You'll need the `NumPy <https://numpy.org/>`_ , `Astropy <https://www.astropy.org/>`_, `PySM <https://github.com/bthorne93/PySM_public>`_ , `tqdm <https://github.com/tqdm/tqdm>`_, and `healpy <https://github.com/healpy/healpy>`_ packages. The required template maps can be dowloaded `here <https://uni-bonn.sciebo.de/s/zgPsb7qvXTnNsrO>`_ with the password: pw4referee, then simply change the data path at the beginning of the code file to indicate where you saved the data. The original extra-galactic simulation templates can be downloaded from `WebSky <https://mocks.cita.utoronto.ca/data/websky/v0.0/>`_ and `SO&Sehgal <https://lambda.gsfc.nasa.gov/simulation/tb_sim_ov.cfm>`_ .
 
 .. _source:
 

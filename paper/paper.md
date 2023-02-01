@@ -28,17 +28,20 @@ bibliography: paper.bib
 # Summary
 %must be for non specialists and less than 1000 words long. 
 
-`skymodel` is a Python package that generates high-resolution ($p_{size}\approx 0.86'$) full-sky maps in the HEALPix [@Healpy_2005]
-format that include various components of the microwave sky at frequencies
-$\nu \in [27,860]$GHz. It makes use of extra-galactic template maps from three existing 
-simulations: WebSky [@CITA_2020], Sehgal [@Sehgal_2010] and SO [@SO_2019]. Galactic foregrounds are simulated based on maps generated with the python sky model (PySM) [@Ben_2017].
-Chosing components, switching between simulations, unit conversion
-$\mathrm{K}_{\mathrm{CMB}}$, $\mathrm{K}_{\mathrm{RJ}}$, MJy/sr$^{-1}$, choice of spatial resolution, instrumental white noise and atmospheric red noise handling 
-are made easy thanks to a slim user interface through a single function. The skymodel deals with all the calculation 
-and ensure consistency between the different data for the user. To function it requires 
-having HEALPy, PySM, numpy, astropy[@astropy], and the extra-galactic templates maps that are publicly 
-available and can be downloaded from WebSky\footnote{\url{https://mocks.cita.utoronto.ca/data/websky/v0.0/}}
-SO&Sehgal\footnote{\url{https://lambda.gsfc.nasa.gov/simulation/tb_sim_ov.cfm}}.
+`skymodel` is a Python package that generates high-resolution ($p_{size}\approx 0.86'$) 
+full-sky maps in the HEALPix [@Healpy_2005] format that include various components of 
+the microwave sky at frequencies $\nu \in [27,860]$GHz. It makes use of extra-galactic 
+template maps from three existing simulations: WebSky [@CITA_2020], Sehgal [@Sehgal_2010] 
+and SO [@SO_2019]. Galactic foregrounds are simulated based on maps generated with the 
+python sky model (PySM) [@Ben_2017]. Chosing components, switching between simulations, 
+unit conversion between $\mathrm{K}_{\mathrm{CMB}}$, $\mathrm{K}_{\mathrm{RJ}}$, and 
+MJy/sr$^{-1}$, choice of spatial resolution, instrumental white noise and atmospheric 
+red noise handling are made easy thanks to a slim user interface through a single 
+function. The skymodel deals with all the calculation  and ensure consistency between 
+the different data for the user. To function it requires having HEALPy, PySM, numpy, 
+astropy[@astropy], and full-sky template maps that can be downloaded [here](https://uni-bonn.sciebo.de/s/zgPsb7qvXTnNsrO/authenticate) 
+and are derived by spectral modelling and subsequent processing of the WebSky\footnote{\url{https://mocks.cita.utoronto.ca/data/websky/v0.0/}}, 
+SO and Sehgal extragalactic maps \footnote{\url{https://lambda.gsfc.nasa.gov/simulation/tb_sim_ov.cfm}}.
 
 `skymodel` is designed around one easy-to-use function that generates
 a full-sky map of the microwave sky with the desired parameters so that it can 

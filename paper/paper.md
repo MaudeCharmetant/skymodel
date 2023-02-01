@@ -10,14 +10,14 @@ tags:
 authors:
   - name: Jens Erler
     orcid : 0000-0002-5486-6745
-    affiliation: 1 # (Multiple affiliations must be quoted)
+    affiliation: 2, 1 # (Multiple affiliations must be quoted)
   - name: Maude Charmetant # note this makes a footnote saying 'co-first author'
     orcid : 0000-0002-3137-1328 
     affiliation: 2
   - name: Frank Bertoldi 
     affiliation: 2
 affiliations:
- - name: Deutsches Zentrum für Luft- und Raumfahrt (DLR)
+ - name: Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR) Projektträger, Joseph-Beuys-Allee 4, 53113 Bonn, Germany 
    index: 1
  - name: Argelander-Institut für Astronomie, University of Bonn, Auf dem Hügel 71, 53121 Bonn, Germany
    index: 2
@@ -28,23 +28,22 @@ bibliography: paper.bib
 # Summary
 %must be for non specialists and less than 1000 words long. 
 
-`skymodel` is a Python package that generate high-resolution ($p_{size}\approx 0.86'$) full-sky map in HEALPy [@Healpy_2005]
-format for the various components of the Microwave sky at the desired frequency
+`skymodel` is a Python package that generates high-resolution ($p_{size}\approx 0.86'$) full-sky maps in the HEALPix [@Healpy_2005]
+format that include various components of the microwave sky at frequencies
 $\nu \in [27,860]$GHz. It makes use of extra-galactic template maps from three existing 
-simulations WebSky [@CITA_2020], Sehgal [@Sehgal_2010] and SO [@SO_2019], and of the PySM [@Ben_2017] code to simulate galactic foregrounds.
-Switching components on and off, switching between simulations, units conversion
-$\mathrm{K}_{\mathrm{CMB}}$, $\mathrm{K}_{\mathrm{RJ}}$, MJy/sr$^{-1}$, beam, instrumental white noise and atmospheric red noise handling 
-is made easy thanks to one single function. The skymodel deals with all the calculation 
+simulations: WebSky [@CITA_2020], Sehgal [@Sehgal_2010] and SO [@SO_2019]. Galactic foregrounds are simulated based on maps generated with the python sky model (PySM) [@Ben_2017].
+Chosing components, switching between simulations, unit conversion
+$\mathrm{K}_{\mathrm{CMB}}$, $\mathrm{K}_{\mathrm{RJ}}$, MJy/sr$^{-1}$, choice of spatial resolution, instrumental white noise and atmospheric red noise handling 
+are made easy thanks to a slim user interface through a single function. The skymodel deals with all the calculation 
 and ensure consistency between the different data for the user. To function it requires 
 having HEALPy, PySM, numpy, astropy[@astropy], and the extra-galactic templates maps that are publicly 
 available and can be downloaded from WebSky\footnote{\url{https://mocks.cita.utoronto.ca/data/websky/v0.0/}}
 SO&Sehgal\footnote{\url{https://lambda.gsfc.nasa.gov/simulation/tb_sim_ov.cfm}}.
 
-`skymodel` is designed so that only one short easy-to-use function could generate
+`skymodel` is designed around one easy-to-use function that generates
 a full-sky map of the microwave sky with the desired parameters so that it can 
-be used by researchers in Astrophysics that are not experts on microwave sky and 
-by students. It was also designed for the (Cerro Chajnantor Atacama Telescope - prime) 
-CCAT-prime collaboration whose upcoming Fred Young Submillimeter Telescope (FYST) first 
+be easely and intuitively used by researchers in Astrophysics. The package was initially designed for the (Cerro Chajnantor Atacama Telescope - prime) 
+CCAT-prime collaboration, whose upcoming Fred Young Submillimeter Telescope (FYST) first 
 light is scheduled for 2023. Having a code that allows modeling the sky as FYST would 
 see it is essential to make predictions. The skymodel was already used in the first collaboration 
 paper to make predictions [@CCAT_2021]. Note, that a more advanced version of the PySM software, 
@@ -64,7 +63,7 @@ A major challenge in studies of the microwave sky is the separation of these dif
 
 # Acknowledgements
 
-The authors would like to thank Ben Thorne, Kaustuv Basu, Frank Bertoldi, Steve Choi and the CCAT-p collaboration members for insightful discussions. MC and JE acknowledge partial funding from the Transregio programme TRR33 of the Deutsche Forschungsgemeinschaft (DFG). MC and JE furthermore acknowledge support by the Bonn-Cologne Graduate School of Physics and Astronomy (BCGS) and the International Max Planck Reseach School (IMPRS). The galactic-foreground are generated using PySM [@Ben_2017]. The simulations of the extra-galactic components used in this paper were developed by the WebSky Extragalactic CMB Mocks team, with the continuous support of the Canadian Institute for Theoretical Astrophysics (CITA), the Canadian Institute for Advanced Research (CIFAR), and the Natural Sciences and Engineering Council of Canada (NSERC), and were generated on the GPC supercomputer at the SciNet HPC Consortium. SciNet is funded by the Canada Foundation for Innovation under the auspices of Compute Canada, the Government of Ontario, Ontario Research Fund – Research Excellence, and the University of Toronto. This work made use of Astropy:\footnote{http://www.astropy.org} a community-developed core Python package and an ecosystem of tools and resources for astronomy.
+The authors would like to thank Ben Thorne, Kaustuv Basu, Frank Bertoldi, Steve Choi and the CCAT-p collaboration members for insightful discussions. MC and JE acknowledge support by the Bonn-Cologne Graduate School of Physics and Astronomy (BCGS) and the International Max Planck Reseach School (IMPRS). The galactic-foreground are generated using PySM [@Ben_2017]. The simulations of the extra-galactic components used in this paper were developed by the WebSky Extragalactic CMB Mocks team, with the continuous support of the Canadian Institute for Theoretical Astrophysics (CITA), the Canadian Institute for Advanced Research (CIFAR), and the Natural Sciences and Engineering Council of Canada (NSERC), and were generated on the GPC supercomputer at the SciNet HPC Consortium. SciNet is funded by the Canada Foundation for Innovation under the auspices of Compute Canada, the Government of Ontario, Ontario Research Fund – Research Excellence, and the University of Toronto. This work made use of Astropy:\footnote{http://www.astropy.org} a community-developed core Python package and an ecosystem of tools and resources for astronomy.
 
 
 # References

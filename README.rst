@@ -2,26 +2,28 @@ ccatp_sky_model
 ===============
 
 **ccatp_sky_model** 
-generate high-resolution maps of the microwave sky using maps 
-from numerical simulations of extragalactic emissions and PySM 
-code to generate maps of the galactic foregrounds. 
-The sky model allows generating any component or combination of 
-components at a desired frequency, unit, beam size, including 
-instrumental and atmospheric noises. 
-It was thought to be easy and versatile to use for anyone working
-on the microwave sky. 
+is a tool that generates high-resolution maps of the microwave sky based on numerical 
+simulations of extragalactic emission and the python sky model (PySM) library, which generates 
+maps of galactic foreground emission. The sky model allows generating the most relevant microwave
+sky components and return them in any desired combination. Maps can be returned at arbitrary 
+frequencies between 30 and 860 GHz, a variety of commonly used units, custom angular resulution, 
+and including instrumental and/or atmospheric noise components. It was build to be easy to use 
+and versatile for anyone working on the microwave sky. 
 
+.. image:: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
+.. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
+    :target: http://www.astropy.org/
 .. image:: https://img.shields.io/badge/Doc-readthedoc-green.svg
     :target: https://skymodel.readthedocs.io/en/latest/index.html 
 .. image:: https://img.shields.io/badge/Doc-PDF-green.svg
     :target: https://github.com/MaudeCharmetant/CCATp_sky_model/blob/master/Documentation.pdf
-.. image:: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
 
-Install the CCATp sky model
-===========================
+
+How to install the CCATp sky model
+==================================
 
 ccatp_sky_model is a pure Python module.
-You'll need is numpy, astropy, `PySM <https://github.com/bthorne93/PySM_public>`_ , tqdm, and `healpy <https://github.com/healpy/healpy>`_ . The required templates maps can be dowloaded `here <https://uni-bonn.sciebo.de/s/zgPsb7qvXTnNsrO>`_ with the password: pw4referee, then simply change the data path at the beginning of the code file to indicate where you saved the data. The raw extra-galactic simulations templates be downloaded from `WebSky <https://mocks.cita.utoronto.ca/data/websky/v0.0/>`_ , `SO&Sehgal <https://lambda.gsfc.nasa.gov/simulation/tb_sim_ov.cfm>`_ 
+You'll need the numpy, astropy, `PySM <https://github.com/bthorne93/PySM_public>`_ , tqdm, and `healpy <https://github.com/healpy/healpy>`_ packages. The required template maps can be dowloaded `here <https://uni-bonn.sciebo.de/s/zgPsb7qvXTnNsrO>`_ with the password: pw4referee, then simply change the data path at the beginning of the code file to indicate where you saved the data. The original extra-galactic simulation templates can be downloaded from `WebSky <https://mocks.cita.utoronto.ca/data/websky/v0.0/>`_ , `SO&Sehgal <https://lambda.gsfc.nasa.gov/simulation/tb_sim_ov.cfm>`_ 
 
 .. _source:
 
@@ -29,7 +31,7 @@ From source
 -----------
 
 ccatp_sky_model is developed on `GitHub <https://github.com/MaudeCharmetant/CCATp_sky_model>`_ and can be 
-installed by cloning the source repository and install from there
+installed by cloning the source repository and install from there:
 
 .. code-block:: bash
 
@@ -41,7 +43,7 @@ installed by cloning the source repository and install from there
 Test the installation
 =====================
 
-To make sure that the installation went alright and to familiarise yourself with 
+To make sure that the installation was successful and to familiarise yourself with 
 ccatp_sky_model, we recommend running the provided jupyter notebooks that can be found in
 the /examples directory. 
 
@@ -55,7 +57,7 @@ roles, can be found at:  https://skymodel.readthedocs.io/en/latest/index.html
 Community guidelines
 ====================
 
-Contributions are welcome and appreciated please submit an Issue or a Pull request. 
+Contributions are welcome and appreciated please submit an issue or a pull request. 
 
 
 Copyright 2020 Maude Charmetant, Jens Erler, and contributors.

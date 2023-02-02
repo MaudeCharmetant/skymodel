@@ -1,7 +1,7 @@
-ccatp_sky_model
-===============
+skymodel
+========
 
-**ccatp_sky_model** 
+**skymodel** 
 is a tool that generates high-resolution maps of the microwave sky based on numerical 
 simulations of extragalactic emission and the python sky model (PySM) library, which generates 
 maps of galactic foreground emission. The sky model allows generating the most relevant microwave
@@ -21,10 +21,10 @@ and versatile for anyone working on the microwave sky.
     :target: https://github.com/MaudeCharmetant/CCATp_sky_model/blob/master/Documentation.pdf
 
 
-How to install the CCATp sky model
+How to install the skymodel
 ==================================
 
-ccatp_sky_model is a pure Python module.
+skymodel is a pure Python module.
 You'll need the `NumPy <https://numpy.org/>`_ , `Astropy <https://www.astropy.org/>`_, `PySM <https://github.com/bthorne93/PySM_public>`_ , `tqdm <https://github.com/tqdm/tqdm>`_, and `healpy <https://github.com/healpy/healpy>`_ packages. The required template maps can be dowloaded `here <https://uni-bonn.sciebo.de/s/zgPsb7qvXTnNsrO>`_ with the password: pw4referee, then simply change the data path at the beginning of the code file to indicate where you saved the data. The original extra-galactic simulation templates can be downloaded from `WebSky <https://mocks.cita.utoronto.ca/data/websky/v0.0/>`_ and `SO&Sehgal <https://lambda.gsfc.nasa.gov/simulation/tb_sim_ov.cfm>`_.
 
 .. _source:
@@ -32,13 +32,13 @@ You'll need the `NumPy <https://numpy.org/>`_ , `Astropy <https://www.astropy.or
 From source
 -----------
 
-ccatp_sky_model is developed on `GitHub <https://github.com/MaudeCharmetant/CCATp_sky_model>`_ and can be 
+ccatp_sky_model is developed on `GitHub <https://github.com/MaudeCharmetant/skymodel>`_ and can be 
 installed by cloning the source repository and install from there:
 
 .. code-block:: bash
 
-    git clone https://github.com/MaudeCharmetant/CCATp_sky_model.git
-    cd CCATp_sky_model
+    git clone https://github.com/MaudeCharmetant/skymodel.git
+    cd skymodel
     python setup.py install
 
 
@@ -46,7 +46,7 @@ Test the installation
 =====================
 
 To make sure that the installation was successful and to familiarise yourself with 
-ccatp_sky_model, we recommend running the provided jupyter notebooks that can be found in
+skymodel, we recommend running the provided jupyter notebooks that can be found in
 the /examples directory. 
 
 

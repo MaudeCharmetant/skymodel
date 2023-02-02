@@ -11,7 +11,7 @@ authors:
   - name: Jens Erler
     orcid : 0000-0002-5486-6745
     equal-contrib: true
-    affiliation: 2, 1 # (Multiple affiliations must be quoted)
+    affiliation: 1,2 # (Multiple affiliations must be quoted)
   - name: Maude Charmetant # note this makes a footnote saying 'co-first author'
     orcid : 0000-0002-3137-1328 
     equal-contrib: true
@@ -22,7 +22,7 @@ affiliations:
  - name: Argelander-Institut für Astronomie, University of Bonn, Auf dem Hügel 71, 53121 Bonn, Germany
    index: 2
 
-date: 1 Mach 2022
+date: 3 February 2023
 bibliography: paper.bib
 ---
 

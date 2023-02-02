@@ -22,4 +22,4 @@ __bibtex__ = """
 
 """
 
-from .ccatp_sky_model import (convert_units, px_size, sample_sphere_uniform, project_maps, sigmoid_filter, return_mask, simulate_gal_foregrounds, simulate_cib, simulate_radio_ps, simulate_cmb, simulate_tSZ, simulate_kSZ, simulate_white_noise, simulate_atmosphere, simulate_iras_ps, simulate_nvss_ps, skymodel)
+from .skymodel import (convert_units, px_size, sample_sphere_uniform, project_maps, sigmoid_filter, return_mask, simulate_gal_foregrounds, simulate_cib, simulate_radio_ps, simulate_cmb, simulate_tSZ, simulate_kSZ, simulate_white_noise, simulate_atmosphere, simulate_iras_ps, simulate_nvss_ps, skymodel)

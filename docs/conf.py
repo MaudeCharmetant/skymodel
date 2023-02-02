@@ -36,15 +36,15 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General substitutions.
-project = u'ccatp_sky_model'
+project = u'skymodel'
 copyright = u' 2020 Maude Charmetant & contributors'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-import ccatp_sky_model
-version = ccatp_sky_model.__version__
+import skymodel
+version = skymodel.__version__
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -151,7 +151,7 @@ html_additional_pages = {
 #html_file_suffix = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'ccatp_sky_modeldoc'
+htmlhelp_basename = 'skymodeldoc'
 
 
 # Options for LaTeX output
@@ -166,7 +166,7 @@ htmlhelp_basename = 'ccatp_sky_modeldoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'ccatp_sky_model.tex', u'CCATp_sky_model Documentation',
+  ('index', 'skymodel.tex', u'skymodel Documentation',
    u'', 'manual'),
 ]
 

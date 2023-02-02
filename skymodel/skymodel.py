@@ -1219,9 +1219,9 @@ def simulate_nvss_ps(freq, nside_out = 4096, beam_FWHM = None, unit = 'cmb'):
     return(ps_model)
 
 
-def ccatp_sky_model(freq, sensitivity = None, components = 'all', red_noise = False, cl_file = None, lensed = True, out_file = None, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
+def skymodel(freq, sensitivity = None, components = 'all', red_noise = False, cl_file = None, lensed = True, out_file = None, nside_out = 4096, lmax = None, beam_FWHM = None, template = 'WebSky', unit = 'cmb'):
     '''Computes an all-sky map of the simulated microwave sky at the specified frequency. 
-    The CCAT-prime sky model uses all-sky templates in the healpix format and includes the
+    The skymodel uses all-sky templates in the healpix format and includes the
     most important galactic foregrounds, extragalactic backgrounds, the tSZ and kSZ effects 
     of galaxy clusters, and instrumental white/red noise. The individual components can be
     selectively switched on and of.

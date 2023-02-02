@@ -10,9 +10,11 @@ tags:
 authors:
   - name: Jens Erler
     orcid : 0000-0002-5486-6745
+    equal-contrib: true
     affiliation: 2, 1 # (Multiple affiliations must be quoted)
   - name: Maude Charmetant # note this makes a footnote saying 'co-first author'
     orcid : 0000-0002-3137-1328 
+    equal-contrib: true
     affiliation: 2
 affiliations:
  - name: Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR) Projektträger, Joseph-Beuys-Allee 4, 53113 Bonn, Germany 
@@ -31,7 +33,6 @@ and astrophysics. In particular, the study of the Cosmic Microwave Background (C
 
 
 # Summary
-%must be for non-specialists and less than 1000 words long. 
 
 `skymodel` is a Python package that generates high-resolution ($p_{size}\approx 0.86'$) 
 full-sky maps in the HEALPix [@Healpy_2005] format that include various components of 

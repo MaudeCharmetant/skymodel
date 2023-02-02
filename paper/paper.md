@@ -14,8 +14,6 @@ authors:
   - name: Maude Charmetant # note this makes a footnote saying 'co-first author'
     orcid : 0000-0002-3137-1328 
     affiliation: 2
-  - name: Frank Bertoldi 
-    affiliation: 2
 affiliations:
  - name: Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR) Projektträger, Joseph-Beuys-Allee 4, 53113 Bonn, Germany 
    index: 1
@@ -66,7 +64,7 @@ A major challenge in studies of the microwave sky is the separation of these dif
 
 # Acknowledgements
 
-The authors would like to thank Ben Thorne, Kaustuv Basu, Frank Bertoldi, Steve Choi and the CCAT-p collaboration members for insightful discussions. MC and JE acknowledge support by the Bonn-Cologne Graduate School of Physics and Astronomy (BCGS) and the International Max Planck Reseach School (IMPRS). The galactic-foreground are generated using PySM [@Ben_2017]. The simulations of the extra-galactic components used in this paper were developed by the WebSky Extragalactic CMB Mocks team, with the continuous support of the Canadian Institute for Theoretical Astrophysics (CITA), the Canadian Institute for Advanced Research (CIFAR), and the Natural Sciences and Engineering Council of Canada (NSERC), and were generated on the GPC supercomputer at the SciNet HPC Consortium. SciNet is funded by the Canada Foundation for Innovation under the auspices of Compute Canada, the Government of Ontario, Ontario Research Fund – Research Excellence, and the University of Toronto. This work made use of Astropy:\footnote{http://www.astropy.org} a community-developed core Python package and an ecosystem of tools and resources for astronomy.
+The authors would like to thank Ben Thorne, Kaustuv Basu, Frank Bertoldi, Steve Choi and the CCAT-p collaboration members for insightful discussions. MC and JE acknowledge support from Frank Bertoldi, by the Bonn-Cologne Graduate School of Physics and Astronomy (BCGS) and the International Max Planck Reseach School (IMPRS). The galactic-foreground are generated using PySM [@Ben_2017]. The simulations of the extra-galactic components used in this paper were developed by the WebSky Extragalactic CMB Mocks team, with the continuous support of the Canadian Institute for Theoretical Astrophysics (CITA), the Canadian Institute for Advanced Research (CIFAR), and the Natural Sciences and Engineering Council of Canada (NSERC), and were generated on the GPC supercomputer at the SciNet HPC Consortium. SciNet is funded by the Canada Foundation for Innovation under the auspices of Compute Canada, the Government of Ontario, Ontario Research Fund – Research Excellence, and the University of Toronto. This work made use of Astropy:\footnote{http://www.astropy.org} a community-developed core Python package and an ecosystem of tools and resources for astronomy.
 
 
 # References

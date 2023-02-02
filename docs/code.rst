@@ -1,7 +1,7 @@
-.. ccatp_sky_model:
-.. currentmodule:: ccatp_sky_model
+.. skymodel:
+.. currentmodule:: skymodel
 
-:mod:`ccatp_sky_model` -- simulation microwave components 
+:mod:`skymodel` -- simulation microwave components 
 ==========================================================
 
 Main
@@ -9,7 +9,7 @@ Main
 .. autosummary::
    :toctree: generated/
    
-   ccatp_sky_model
+   skymodel
    corr2cov
    
    

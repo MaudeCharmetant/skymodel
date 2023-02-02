@@ -10,16 +10,16 @@ if sys.argv[-1] == "publish":
     sys.exit()
 
 setup(
-    name="ccatp_sky_model",
+    name="skymodel",
     version="1.0",
     author="Maude Charmetant & Jens Erler",
     author_email="mcharmetant@astro.uni-bonn.de, jens@astro.uni-bonn.de",
-    packages=["ccatp_sky_model"],
-    url="https://github.com/MaudeCharmetant/CCATp_sky_model",
+    packages=["skymodel"],
+    url="https://github.com/MaudeCharmetant/skymodel",
     license="MIT License",
     description=("A template-based model of the microwave sky for CCAT-p science forecasts"),
     long_description=open("README.rst").read(),
-    package_data={"ccatp_sky_model": ["LICENSE", "masks/*.fits"]},
+    package_data={"skymodel": ["LICENSE", "masks/*.fits"]},
     include_package_data=True,
     install_requires=["numpy", "healpy", "astropy", "pysm", "tqdm"],
     classifiers=[

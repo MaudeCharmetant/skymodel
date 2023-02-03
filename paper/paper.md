@@ -11,15 +11,15 @@ authors:
   - name: Maude Charmetant # note this makes a footnote saying 'co-first author'
     orcid : 0000-0002-3137-1328 
     equal-contrib: true
-    affiliation: 2
+    affiliation: 1
   - name: Jens Erler
     orcid : 0000-0002-5486-6745
     equal-contrib: true
     affiliation: 1,2 # (Multiple affiliations must be quoted)
 affiliations:
- - name: Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR) Projektträger, Joseph-Beuys-Allee 4, 53113 Bonn, Germany 
-   index: 1
  - name: Argelander-Institut für Astronomie, University of Bonn, Auf dem Hügel 71, 53121 Bonn, Germany
+   index: 1
+ - name: Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR) Projektträger, Joseph-Beuys-Allee 4, 53113 Bonn, Germany 
    index: 2
 
 date: 3 February 2023
